@@ -4,28 +4,40 @@ import { business } from '../data/site';
 ---
 <div class="topbar">
   <div class="container topbar__inner">
-    <ul class="topbar__info intro-item">
-      <li><a href={business.phoneHref}><Icon name="phone" size={15} /> {business.phoneTopbar}</a></li>
-      <li><a href={`mailto:${business.email}`}><Icon name="mail" size={15} /> {business.email}</a></li>
-      <li class="topbar__hours"><Icon name="clock" size={15} /> {business.hours}</li>
-    </ul>
-    <ul class="topbar__social intro-item">
-      <li><a href={business.facebook} rel="noopener" target="_blank" aria-label="Mode Mechanical on Facebook"><Icon name="facebook" size={16} /></a></li>
-      <li><a href={business.instagram} rel="noopener" target="_blank" aria-label="Mode Mechanical on Instagram"><Icon name="instagram" size={16} /></a></li>
+    <p class="topbar__status intro-item">
+      <span class="topbar__dot" aria-hidden="true"></span>
+      <strong>24/7 emergency service</strong>
+      <span class="topbar__area"><Icon name="pin" size={14} /> Serving NYC, Long Island &amp; Westchester</span>
+    </p>
+    <ul class="topbar__links intro-item" style="--intro-delay:.05s">
+      <li class="topbar__hours"><Icon name="clock" size={14} /> {business.hours}</li>
+      <li><a href={`mailto:${business.email}`}><Icon name="mail" size={14} /> {business.email}</a></li>
+      <li class="topbar__social">
+        <a href={business.facebook} rel="noopener" target="_blank" aria-label="Mode Mechanical on Facebook"><Icon name="facebook" size={14} /></a>
+        <a href={business.instagram} rel="noopener" target="_blank" aria-label="Mode Mechanical on Instagram"><Icon name="instagram" size={14} /></a>
+      </li>
     </ul>
   </div>
 </div>
 <style>
-  .topbar { background: var(--blue-800); color: #fff; font-size: 0.875rem; }
-  .topbar__inner { display: flex; justify-content: space-between; align-items: center; min-height: 40px; }
-  ul { list-style: none; margin: 0; padding: 0; display: flex; }
-  .topbar__info li { display: flex; align-items: center; padding: 8px 16px; border-right: 1px solid rgba(255,255,255,.18); }
-  .topbar__info li:first-child { padding-left: 0; }
-  .topbar__info li:last-child { border-right: 0; }
-  .topbar__info a, .topbar__info li { display: inline-flex; gap: 8px; align-items: center; }
-  .topbar__info a:hover { text-decoration: underline; }
-  .topbar__social { gap: 14px; }
-  .topbar__social a { display: inline-flex; padding: 6px; }
-  @media (max-width: 900px) { .topbar__hours { display: none !important; } }
+  .topbar { position: relative; background: var(--ink); color: rgba(255,255,255,.72); font-size: .82rem; line-height: 1.4; }
+  /* Hairline in the two temperatures along the bottom edge. */
+  .topbar::after { content: ''; position: absolute; inset: auto 0 0 0; height: 1px; background: linear-gradient(90deg, rgba(44,107,224,0), rgba(111,195,255,.5) 30%, rgba(255,161,92,.5) 70%, rgba(238,90,36,0)); }
+  .topbar__inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 38px; }
+  .topbar__status { display: flex; align-items: center; gap: 10px; margin: 0; white-space: nowrap; }
+  .topbar__status strong { color: #fff; font-weight: 700; }
+  .topbar__dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #34D399; }
+  .topbar__dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: topbar-pulse 2s ease-out infinite; }
+  @keyframes topbar-pulse { to { transform: scale(2.6); opacity: 0; } }
+  .topbar__area { display: inline-flex; align-items: center; gap: 6px; padding-left: 12px; margin-left: 2px; border-left: 1px solid rgba(255,255,255,.16); }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 22px; }
+  li, li a { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+  li a { transition: color .2s ease; }
+  li a:hover { color: #fff; }
+  .topbar__social { gap: 4px; padding-left: 14px; border-left: 1px solid rgba(255,255,255,.16); }
+  .topbar__social a { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; transition: background-color .2s ease, color .2s ease; }
+  .topbar__social a:hover { background: rgba(255,255,255,.12); }
+  @media (max-width: 1100px) { .topbar__hours { display: none !important; } }
+  @media (max-width: 860px) { .topbar__area { display: none !important; } }
   @media (max-width: 640px) { .topbar { display: none; } }
 </style>

@@ -8,99 +8,139 @@ const company = [
   { label: 'Services', href: '/installation/' },
   { label: 'Contact', href: '/contact/' },
 ];
+const { address } = business;
+const mapHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${address.street}, ${address.city}, ${address.region} ${address.zip}`)}`;
 ---
 <footer class="footer">
   <div class="container">
-    <div class="footer__band">
-      <div data-reveal="fade-left">
-        <p class="footer__kicker">Quality heating &amp; air conditioning solutions, 24/7</p>
-        <a class="footer__big" href={business.phoneHref}>{business.phoneDisplay}</a>
+    <div class="footer__cta" data-reveal="fade-up">
+      <div class="footer__cta-copy">
+        <p class="footer__kicker"><span class="footer__dot" aria-hidden="true"></span> Available 24/7 for emergencies</p>
+        <h2 class="footer__cta-title">Too hot or too cold? Let’s fix it today.</h2>
+        <p class="footer__cta-text">Licensed HVAC technicians across New York City, with a written price before any work starts.</p>
       </div>
-      <div class="footer__actions" data-reveal="fade-right">
-        <a class="btn btn--primary" href={bookingUrl} data-booking-external={bookingIsExternal ? '' : undefined}>Schedule Appointment</a>
-        <a class="btn footer__ghost" href={`mailto:${business.email}`}><Icon name="mail" size={18} /> Email us</a>
+      <div class="footer__actions">
+        <a class="btn btn--primary" href={bookingUrl} data-booking-external={bookingIsExternal ? '' : undefined}>Schedule Appointment <Icon name="arrow" size={16} /></a>
+        <a class="btn footer__ghost" href={business.phoneHref}><Icon name="phone" size={17} /> {business.phoneDisplay}</a>
       </div>
     </div>
   </div>
+
   <div class="container footer__grid">
     <div class="footer__brand" data-reveal="fade-up">
-      <a href="/" aria-label="Mode Mechanical home"><img src="/images/logo-white.png" alt="Mode Mechanical" width="120" height="120" loading="lazy" /></a>
-      <p>We specialize in providing top-quality heating, ventilation, and air conditioning services tailored to your unique requirements. Our skilled technicians are dedicated to delivering reliable solutions that ensure your comfort and satisfaction.</p>
+      <a class="footer__logo" href="/" aria-label="Mode Mechanical home">
+        <img src="/images/logo-header-white.png" alt="Mode Mechanical" width="300" height="305" loading="lazy" />
+      </a>
+      <p>Top-quality heating, ventilation and air conditioning services tailored to your home or business. Reliable work from skilled technicians, built around your comfort.</p>
       <div class="footer__social">
-        <a href={business.facebook} target="_blank" rel="noopener" aria-label="Mode Mechanical on Facebook"><Icon name="facebook" /></a>
-        <a href={business.instagram} target="_blank" rel="noopener" aria-label="Mode Mechanical on Instagram"><Icon name="instagram" /></a>
+        <a href={business.facebook} target="_blank" rel="noopener" aria-label="Mode Mechanical on Facebook"><Icon name="facebook" size={17} /></a>
+        <a href={business.instagram} target="_blank" rel="noopener" aria-label="Mode Mechanical on Instagram"><Icon name="instagram" size={17} /></a>
       </div>
     </div>
-    <nav aria-label="Company" data-reveal="fade-up" style="--reveal-delay:.2s">
+    <nav aria-label="Company" data-reveal="fade-up" style="--reveal-delay:.1s">
       <h2 class="footer__title">Company</h2>
-      <ul>{company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+      <ul class="footer__links">{company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
     </nav>
-    <nav aria-label="Services" data-reveal="fade-up" style="--reveal-delay:.4s">
+    <nav aria-label="Services" data-reveal="fade-up" style="--reveal-delay:.2s">
       <h2 class="footer__title">Services</h2>
-      <ul>{services.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+      <ul class="footer__links">{services.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
     </nav>
-    <div class="footer__contact" data-reveal="fade-up" style="--reveal-delay:.6s">
+    <div data-reveal="fade-up" style="--reveal-delay:.3s">
       <h2 class="footer__title">Get in touch</h2>
-      <ul class="footer__cards">
-        <li><span class="footer__ico footer__ico--cool"><Icon name="phone" size={17} /></span><div><span class="footer__label">24/7 Emergency Service</span><a href={business.phoneHref}>{business.phoneTopbar}</a></div></li>
-        <li><span class="footer__ico"><Icon name="pin" size={17} /></span><div><span class="footer__label">Location</span><address>{business.address.street}, {business.address.city}, {business.address.region} {business.address.zip}</address></div></li>
-        <li><span class="footer__ico footer__ico--warm"><Icon name="mail" size={17} /></span><div><span class="footer__label">Email Us</span><a href={`mailto:${business.email}`}>{business.email}</a></div></li>
-        <li><span class="footer__ico"><Icon name="clock" size={17} /></span><div><span class="footer__label">Opening hours</span><span>{business.hours}</span></div></li>
+      <ul class="footer__contact">
+        <li><Icon name="phone" size={16} /><a href={business.phoneHref}>{business.phoneDisplay}</a></li>
+        <li><Icon name="mail" size={16} /><a href={`mailto:${business.email}`}>{business.email}</a></li>
+        <li><Icon name="pin" size={16} /><a href={mapHref} target="_blank" rel="noopener"><address>{address.street}, {address.city}, {address.region} {address.zip}</address></a></li>
+        <li><Icon name="clock" size={16} /><span>{business.hours}</span></li>
       </ul>
     </div>
   </div>
+
+  <div class="container">
+    <div class="footer__areas" data-reveal="fade-up">
+      <span class="footer__areas-label">Service areas</span>
+      <ul>{business.areaServed.map((a) => <li>{a}</li>)}</ul>
+    </div>
+  </div>
+
   <div class="footer__bottom">
-    <div class="container footer__bottom-inner" data-reveal="fade-up">
-      <p>Copyright © {year} {business.name}. Licensed HVAC contractor in Brooklyn, NY.</p>
-      <ul>{services.map((l) => <li><a href={l.href}>{l.label}</a></li>)}<li><a class="footer__top" href="#main">Back to top ↑</a></li></ul>
+    <div class="container footer__bottom-inner">
+      <p>© {year} {business.name}. Licensed HVAC contractor in Brooklyn, NY.</p>
+      <a class="footer__top" href="#main">Back to top <span aria-hidden="true">↑</span></a>
     </div>
   </div>
 </footer>
 <style>
-  .footer { position: relative; overflow: hidden; background:
-      radial-gradient(60% 50% at 0% 100%, rgba(44,107,224,.18), transparent 70%),
-      radial-gradient(50% 45% at 100% 0%, rgba(238,90,36,.14), transparent 70%),
+  .footer {
+    position: relative; overflow: hidden; color: rgba(255,255,255,.66); font-size: .95rem;
+    background:
+      radial-gradient(55% 45% at 0% 100%, rgba(44,107,224,.16), transparent 70%),
+      radial-gradient(45% 40% at 100% 0%, rgba(238,90,36,.12), transparent 70%),
       var(--ink);
-    color: rgba(255,255,255,.72); padding-top: clamp(64px, 9vw, 112px); }
-  .footer__actions { display: flex; flex-wrap: wrap; gap: 12px; }
-  .footer__ghost { color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
-  .footer__ghost:hover { background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1.5px #fff; }
-  .footer__cards { display: grid; gap: 14px; }
-  .footer__cards li { display: flex; gap: 12px; align-items: flex-start; margin: 0; }
-  .footer__cards a, .footer__cards address, .footer__cards span:not(.footer__label):not(.footer__ico) { color: #fff; font-weight: 600; }
-  .footer__label { display: block; font-size: .8rem; color: rgba(255,255,255,.55); font-weight: 600; margin-bottom: 2px; }
-  .footer__ico { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; }
-  .footer__ico--cool { background: rgba(44,107,224,.35); }
-  .footer__ico--warm { background: rgba(194,65,12,.4); }
-  .footer nav a, .footer__bottom a { display: inline-block; transition: color .2s ease, transform .2s ease; }
-  .footer nav a:hover { transform: translateX(3px); }
-  .footer__top { font-weight: 700; color: #fff; }
-  .footer::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--cool), var(--cool-glow) 45%, var(--warm-glow) 55%, var(--warm)); }
-  .footer__kicker { margin: 0 0 6px; color: rgba(255,255,255,.7); font-size: 1.05rem; }
-  .footer__big { display: block; color: #fff; font-family: var(--display); font-stretch: 80%; font-weight: 750; font-size: clamp(3rem, 9vw, 7.5rem); line-height: .9; letter-spacing: -0.045em; transition: color .3s ease; }
-  .footer__big:hover { background: linear-gradient(90deg, var(--cool-glow), var(--warm-glow)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .footer__band { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; padding-bottom: 40px; margin-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.1); }
-  
-  .footer__grid { display: grid; grid-template-columns: 1.5fr .8fr .8fr 1.4fr; gap: clamp(28px, 4vw, 56px); padding-bottom: 56px; }
-  .footer__brand img { width: 110px; margin-bottom: 18px; }
-  .footer__brand p { max-width: 40ch; }
-  .footer__social { display: flex; gap: 12px; }
-  .footer__social a { display: inline-flex; padding: 10px; border-radius: 12px; background: rgba(255,255,255,.08); color: #fff; transition: background-color .2s ease, transform .2s ease; }
-  .footer__social a:hover { transform: translateY(-2px); }
-  .footer__social a:hover { background: var(--blue-500); }
-  .footer__title { color: #fff; font-family: var(--font); font-stretch: 100%; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; margin-bottom: 18px; }
-  .footer__title--sm { font-size: 1rem; margin: 18px 0 4px; display: flex; align-items: center; gap: 8px; }
+    padding-top: clamp(56px, 7vw, 88px);
+  }
+  .footer::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: linear-gradient(90deg, var(--cool), var(--cool-glow) 45%, var(--warm-glow) 55%, var(--warm)); }
   ul { list-style: none; margin: 0; padding: 0; }
-  li { margin-bottom: 10px; }
-  a:hover { color: #fff; }
   address { font-style: normal; }
-  .footer__eyebrow { color: var(--cool-glow); font-size: 1.2rem; margin-bottom: 8px; }
-  .footer__phone { display: inline-flex; align-items: center; gap: 12px; color: #fff; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 600; letter-spacing: -0.02em; }
-  .footer__bottom { border-top: 1px solid rgba(255,255,255,.1); }
-  .footer__bottom-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; flex-wrap: wrap; }
+
+  /* Call-to-action card with a two-temperature edge. */
+  .footer__cta {
+    display: flex; justify-content: space-between; align-items: center; gap: 28px 40px; flex-wrap: wrap;
+    padding: clamp(28px, 4vw, 44px); border-radius: var(--radius-lg);
+    background:
+      linear-gradient(120deg, rgba(44,107,224,.22), rgba(22,48,77,.6) 45%, rgba(238,90,36,.18)) padding-box,
+      linear-gradient(120deg, rgba(111,195,255,.55), rgba(255,255,255,.08) 50%, rgba(255,161,92,.55)) border-box;
+    border: 1px solid transparent;
+  }
+  .footer__cta-copy { flex: 1 1 420px; }
+  .footer__kicker { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 12px; color: rgba(255,255,255,.8); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .footer__dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #34D399; }
+  .footer__dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: footer-pulse 2s ease-out infinite; }
+  @keyframes footer-pulse { to { transform: scale(2.6); opacity: 0; } }
+  .footer__cta-title { color: #fff; font-size: clamp(1.7rem, 3vw, 2.4rem); margin-bottom: 10px; }
+  .footer__cta-text { margin: 0; max-width: 52ch; color: rgba(255,255,255,.7); }
+  .footer__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .footer__actions .btn { border-radius: 999px; }
+  .footer__actions .btn :global(svg) { transition: transform .25s ease; }
+  .footer__actions .btn--primary:hover :global(svg) { transform: translateX(3px); }
+  .footer__ghost { color: #fff; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.3); }
+  .footer__ghost:hover { background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 1.5px #fff; }
+
+  .footer__grid { display: grid; grid-template-columns: 1.6fr .8fr .8fr 1.5fr; gap: clamp(28px, 4vw, 56px); padding-block: clamp(48px, 6vw, 72px) 40px; }
+  .footer__logo { display: inline-block; margin-bottom: 18px; }
+  .footer__logo img { width: 84px; }
+  .footer__brand p { max-width: 38ch; margin-bottom: 22px; }
+  .footer__social { display: flex; gap: 10px; }
+  .footer__social a { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); color: #fff; transition: background-color .2s ease, transform .2s ease; }
+  .footer__social a:hover { background: var(--cool); transform: translateY(-2px); }
+
+  .footer__title { color: #fff; font-family: var(--font); font-stretch: 100%; font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 18px; }
+  .footer__links li { margin-bottom: 10px; }
+  .footer__links a { position: relative; display: inline-block; transition: color .2s ease, transform .2s ease; }
+  .footer__links a:hover { color: #fff; transform: translateX(3px); }
+  .footer__contact { display: grid; gap: 12px; }
+  .footer__contact li { display: flex; gap: 12px; align-items: flex-start; color: #fff; font-weight: 600; }
+  .footer__contact li > :global(svg) { flex: none; margin-top: 4px; color: var(--cool-glow); }
+  .footer__contact li:nth-child(even) > :global(svg) { color: var(--warm-glow); }
+  .footer__contact a { transition: color .2s ease; }
+  .footer__contact a:hover { color: var(--cool-glow); }
+
+  .footer__areas { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding-block: 24px; border-top: 1px solid rgba(255,255,255,.1); }
+  .footer__areas-label { color: #fff; font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .footer__areas ul { display: flex; flex-wrap: wrap; gap: 8px; }
+  .footer__areas li { padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.06); font-size: .85rem; line-height: 1.5; }
+
+  .footer__bottom { border-top: 1px solid rgba(255,255,255,.1); font-size: .875rem; }
+  .footer__bottom-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; padding-block: 20px; flex-wrap: wrap; }
   .footer__bottom p { margin: 0; }
-  .footer__bottom ul { display: flex; flex-wrap: wrap; gap: 10px 24px; }
-  .footer__bottom li { margin: 0; }
-  @media (max-width: 900px) { .footer__grid { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 560px) { .footer__grid { grid-template-columns: 1fr; } }
+  .footer__top { display: inline-flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; transition: color .2s ease; }
+  .footer__top span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.08); transition: transform .2s ease, background-color .2s ease; }
+  .footer__top:hover span { transform: translateY(-2px); background: var(--cool); }
+
+  @media (max-width: 900px) { .footer__grid { grid-template-columns: 1fr 1fr; } .footer__brand { grid-column: 1 / -1; } }
+  @media (max-width: 560px) {
+    .footer__grid { grid-template-columns: 1fr 1fr; }
+    .footer__grid > div:last-child { grid-column: 1 / -1; }
+    .footer__actions, .footer__actions .btn { width: 100%; }
+  }
 </style>

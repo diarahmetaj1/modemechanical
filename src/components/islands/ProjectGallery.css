@@ -1,8 +1,91 @@
-.gallery { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
-.gallery a { display: block; overflow: hidden; border-radius: var(--radius-md); }
-.gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; transition: transform .3s ease; }
-.gallery a:hover img, .gallery a:focus-visible img { transform: scale(1.04); }
-.gallery p { margin: 10px 0 0; font-style: italic; text-align: center; }
+/* 3D coverflow. Every slide sits at the stage center; --o (signed distance from the front slide),
+   --abs and --s (its sign) push it sideways, back in depth and turn it away from the viewer. */
+.cf {
+  --w: clamp(230px, 30vw, 380px);   /* slide width */
+  --step: calc(var(--w) * .6);       /* sideways gap between slides */
+  --depth: 170px;                    /* how far each step recedes */
+  --turn: 40deg;                     /* how far side slides turn away */
+  position: relative;
+}
+.cf__stage {
+  position: relative; height: calc(var(--w) * 1.25 + 56px); perspective: 1500px; touch-action: pan-y; user-select: none;
+  /* Soft two-temperature glow on the floor behind the photos. */
+  background:
+    radial-gradient(40% 30% at 30% 92%, rgba(44,107,224,.14), transparent 70%),
+    radial-gradient(40% 30% at 70% 92%, rgba(238,90,36,.12), transparent 70%);
+}
+.cf__track { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; transform-style: preserve-3d; }
+.cf__slide {
+  position: absolute; left: 50%; top: 24px; width: var(--w); aspect-ratio: 4 / 5;
+  transform:
+    translateX(-50%)
+    translateX(calc(var(--o) * var(--step)))
+    translateZ(calc(var(--abs) * var(--depth) * -1))
+    rotateY(calc(var(--s) * var(--turn) * -1));
+  transition: transform .8s cubic-bezier(.22, .8, .24, 1), opacity .5s ease;
+  transform-style: preserve-3d;
+}
+.cf__slide[data-hidden="true"] { opacity: 0; pointer-events: none; }
+/* Shadow on the floor under each photo. */
+.cf__slide::after {
+  content: ''; position: absolute; left: 8%; right: 8%; bottom: -26px; height: 26px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(14,34,56,.32), transparent); filter: blur(4px);
+  transform: translateZ(-1px); pointer-events: none;
+}
+.cf__card {
+  position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; overflow: hidden; cursor: pointer;
+  border-radius: var(--radius-lg); background: var(--ink); box-shadow: 0 30px 60px -28px rgba(14,34,56,.55);
+  transform: rotateX(calc(var(--ty, 0) * -9deg)) rotateY(calc(var(--tx, 0) * 12deg));
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.cf__card img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.22, .8, .24, 1); pointer-events: none; }
+/* Side photos are dimmed the further back they sit. */
+.cf__card::after { content: ''; position: absolute; inset: 0; background: var(--ink); opacity: calc(var(--abs) * .17); transition: opacity .6s ease; pointer-events: none; }
+/* Light glare that follows the tilt on the front photo. */
+.cf__slide[data-front="true"] .cf__card::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .3s ease;
+  background: radial-gradient(60% 50% at calc(50% + var(--tx, 0) * 100%) calc(50% + var(--ty, 0) * 100%), rgba(255,255,255,.28), transparent 70%);
+}
+.cf__slide[data-front="true"] .cf__card:hover::before { opacity: 1; }
+.cf__slide[data-front="true"] .cf__card { box-shadow: 0 40px 80px -30px rgba(14,34,56,.7); }
+.cf__slide[data-front="true"] .cf__card:hover img { transform: scale(1.04); }
+.cf__slide:not([data-front="true"]) .cf__card:hover::after { opacity: calc(var(--abs) * .17 - .1); }
+
+.cf__tag {
+  position: absolute; z-index: 2; left: 14px; right: 14px; bottom: 14px; display: flex; align-items: center; gap: 10px;
+  padding: 10px 10px 10px 14px; border-radius: 999px; color: #fff; font-weight: 700; font-size: .92rem; line-height: 1.2;
+  background: rgba(14,34,56,.55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.cf__tag-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cf__pin { flex: none; width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, var(--cool-glow), var(--warm-glow)); }
+.cf__zoom { flex: none; margin-left: auto; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #fff; color: var(--ink); }
+
+.cf__controls { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 28px; }
+.cf__btn {
+  flex: none; display: grid; place-items: center; width: 52px; height: 52px; border: 0; border-radius: 50%; cursor: pointer;
+  background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); transition: background-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.cf__btn:hover { background: var(--ink); color: #fff; box-shadow: none; }
+.cf__btn:active { transform: scale(.95); }
+.cf__btn--play { width: 40px; height: 40px; margin-left: 4px; }
+.cf__meta { width: min(320px, 50vw); text-align: center; }
+.cf__caption { margin: 0 0 8px; color: var(--ink); font-family: var(--display); font-stretch: 86%; font-weight: 700; font-size: 1.25rem; line-height: 1.2; letter-spacing: -0.01em; }
+.cf__progress { display: flex; align-items: center; gap: 12px; font-size: .8rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); }
+.cf__bar { flex: 1; height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.cf__bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cool), var(--warm)); transition: width .6s cubic-bezier(.22, .8, .24, 1); }
+
+@media (max-width: 640px) {
+  .cf { --w: 64vw; --step: calc(var(--w) * .42); --depth: 140px; --turn: 46deg; }
+  .cf__controls { gap: 10px; }
+  .cf__tag { left: 10px; right: 10px; bottom: 10px; padding: 8px 8px 8px 12px; font-size: .82rem; gap: 8px; }
+  .cf__zoom { width: 26px; height: 26px; }
+  .cf__btn { width: 46px; height: 46px; }
+  .cf__btn--play { width: 36px; height: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf__slide, .cf__card, .cf__card img, .cf__bar span { transition: none !important; }
+}
+
 .lightbox { padding: 0; border: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
 .lightbox::backdrop { background: rgba(8, 18, 32, .9); }
 .lightbox figure { margin: 0; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 56px 72px; }

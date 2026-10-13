@@ -13,7 +13,7 @@ Run `npm run assets` to download them (requires access to modemechanical.com). F
 | `public/images/service-maintenance.jpg` | `2026/10/mitsubishi.jpg` | data/seo.ts, pages/index.astro | confirmed in live HTML |
 | `public/images/specialty-1.jpg` | `2026/10/image_123650291-9-1.jpg` | pages/index.astro | confirmed in live HTML |
 | `public/images/specialty-2.jpg` | `2026/10/image00033-scaled-1.jpeg` | pages/index.astro | confirmed in live HTML |
-| `public/images/faq.jpg` | `2025/05/image_123650291-2.jpg` | pages/index.astro | same photo as `projects/project-12.jpg`; replaces the stock call-center photo (`2026/10/1-3.webp`) |
+| `public/images/faq.webp` | `2026/10/1-3.webp` | pages/index.astro | confirmed in live HTML |
 | `public/images/repair.webp` | `2026/10/7-1.webp` | data/seo.ts, pages/repair/index.astro | confirmed in live HTML |
 | `public/images/about-condensers.jpg` | `2025/09/image_123650291-9.jpg` | data/seo.ts, pages/about-us/index.astro | *unconfirmed* — matched from Projects page |
 | `public/images/about-rooftop.jpg` | `2025/09/image_123650291-10.jpg` | pages/about-us/index.astro | *unconfirmed* — matched from Projects page |

@@ -1,0 +1,101 @@
+---
+// Home hero. Two temperatures meet in the middle; the visitor picks the problem they have.
+import Airflow from './Airflow.astro';
+import AcUnit from './AcUnit.astro';
+import Icon from './Icon.astro';
+import { business } from '../data/site';
+interface Props { h1: string }
+const { h1 } = Astro.props;
+---
+<section class="thero">
+  <div class="thero__bg" aria-hidden="true"><span class="thero__half thero__half--cool"></span><span class="thero__half thero__half--warm"></span><span class="thero__glow"></span></div>
+  <Airflow />
+
+  <div class="container thero__inner">
+    <div class="thero__ac" data-reveal="fade-down"><AcUnit /></div>
+    <div class="thero__head">
+      <h1>{h1}</h1>
+      <p>Too hot or too cold? Licensed technicians across Brooklyn, Queens, Manhattan and the Bronx — with a written price before any work starts.</p>
+    </div>
+
+    <div class="thero__choices">
+      <a class="choice choice--cool" href="/repair/#air-conditioning-not-cooling" data-reveal="fade-right" style="--reveal-delay:.3s">
+        <span class="choice__kind"><span class="choice__icon" aria-hidden="true">❄</span> Cooling</span>
+        <span class="choice__title">It’s too hot</span>
+        <span class="choice__text">AC not cooling, leaking or won’t start</span>
+        <span class="choice__go">Fix my AC <Icon name="arrow" size={18} /></span>
+      </a>
+      <a class="choice choice--warm" href="/repair/#heating-system-not-working" data-reveal="fade-left" style="--reveal-delay:.3s">
+        <span class="choice__kind"><span class="choice__icon" aria-hidden="true">🔥</span> Heating</span>
+        <span class="choice__title">It’s too cold</span>
+        <span class="choice__text">No heat, uneven rooms or strange noises</span>
+        <span class="choice__go">Fix my heat <Icon name="arrow" size={18} /></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="thero__strip">
+    <div class="container thero__strip-inner">
+      <p><strong>24/7 emergency line.</strong> Planning a new system? <a href="/installation/">Get an installation estimate</a>.</p>
+      <a class="thero__phone" href={business.phoneHref}><Icon name="phone" size={22} /> {business.phoneDisplay}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .thero { position: relative; isolation: isolate; color: #fff; overflow: hidden; min-height: min(100svh, 980px); display: flex; flex-direction: column; }
+  .thero__bg { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; z-index: -1; }
+  .thero__half--cool { background: radial-gradient(120% 90% at 0% 60%, #12408C 0%, #0A2550 45%, #071a33 100%); }
+  .thero__half--warm { background: radial-gradient(120% 90% at 100% 70%, #8A2A0C 0%, #4A1709 45%, #1E0B06 100%); }
+  /* Light spilling from the unit: blue to the left, ember to the right. */
+  .thero__glow { position: absolute; left: 50%; top: calc(var(--header-h) - 20px); width: min(1100px, 120vw); height: 520px; transform: translateX(-50%);
+    background: radial-gradient(40% 55% at 30% 30%, rgba(111,195,255,.28), transparent 70%), radial-gradient(40% 55% at 70% 30%, rgba(255,138,76,.26), transparent 70%); }
+  .thero :global(.airflow__seam) { top: 34%; }
+  .thero :global(.airflow::after) { background: radial-gradient(ellipse 46% 20% at 50% 50%, rgba(6, 14, 26, .55), rgba(6, 14, 26, 0)); }
+  .thero__ac { position: relative; z-index: 1; }
+
+
+  .thero__inner { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: clamp(28px, 4vw, 44px); padding-block: calc(var(--header-h) + clamp(20px, 3vw, 40px)) clamp(36px, 4vw, 56px); }
+  .thero__head { text-align: center; max-width: 980px; margin-inline: auto; }
+  .thero h1 { color: #fff; font-size: clamp(2.2rem, 4.8vw, 4.1rem); text-wrap: balance; text-shadow: 0 2px 30px rgba(0,0,0,.35); }
+  .thero__head p { font-size: clamp(1.02rem, 1.4vw, 1.2rem); color: rgba(255,255,255,.82); max-width: 54ch; margin: 14px auto 0; text-wrap: pretty; }
+
+  .thero__choices { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 8vw, 140px); }
+  .choice {
+    position: relative; display: grid; gap: 6px; padding: 26px 28px; border-radius: var(--radius-lg);
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16);
+    transition: transform .3s ease, background-color .3s ease, border-color .3s ease;
+  }
+  .choice:hover { transform: translateY(-4px); }
+  .choice--cool { background: linear-gradient(160deg, rgba(44,107,224,.22), rgba(255,255,255,.05)); }
+  .choice--warm { background: linear-gradient(200deg, rgba(194,65,12,.26), rgba(255,255,255,.05)); }
+  .choice--cool:hover { border-color: rgba(111,195,255,.6); }
+  .choice--warm:hover { border-color: rgba(255,161,92,.6); }
+  .choice__kind { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: .95rem; }
+  .choice--cool .choice__kind { color: #9ED6FF; }
+  .choice--warm .choice__kind { color: #FFC199; }
+  .choice__title { font-family: var(--display); font-stretch: 86%; font-weight: 720; font-size: clamp(1.9rem, 3.4vw, 2.7rem); letter-spacing: -0.03em; line-height: 1; }
+  .choice__text { color: rgba(255,255,255,.78); }
+  .choice__go { justify-self: start; margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 700; }
+  .choice--cool .choice__go { background: var(--cool); }
+  .choice--warm .choice__go { background: var(--ember); }
+  .choice:hover .choice__go :global(svg) { transform: translateX(3px); }
+  .choice__go :global(svg) { transition: transform .2s ease; }
+
+  .thero__strip { position: relative; background: rgba(8, 18, 32, .82); border-top: 1px solid rgba(255,255,255,.1); }
+  @media (min-width: 761px) and (pointer: fine) {
+    .choice { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  }
+  .thero__strip-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 84px; flex-wrap: wrap; padding-block: 14px; }
+  .thero__strip p { margin: 0; color: rgba(255,255,255,.75); }
+  .thero__strip strong { color: #fff; }
+  .thero__strip p a { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+  .thero__phone { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-stretch: 86%; font-weight: 720; font-size: clamp(1.5rem, 2.6vw, 2.1rem); letter-spacing: -0.02em; }
+
+  @media (max-width: 760px) {
+    .thero { min-height: 0; }
+    .thero__choices { grid-template-columns: 1fr; gap: 14px; }
+    .choice { padding: 22px; }
+    .thero__strip-inner { justify-content: center; text-align: center; }
+  }
+</style>

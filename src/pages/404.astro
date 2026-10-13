@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const seo = { title: 'Page Not Found | Mode Mechanical', description: 'The page you were looking for does not exist.', h1: 'Page not found', ogImage: '/images/hero-1.webp' };
+---
+<BaseLayout seo={seo} overlayHeader={false}>
+  <section class="section">
+    <div class="container nf">
+      <h1>Page not found</h1>
+      <p>The page may have moved. Use the menu, or go straight to one of these:</p>
+      <p><a class="btn btn--primary" href="/">Go to the homepage</a> <a class="btn btn--dark" href="/contact/">Contact us</a></p>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .nf { text-align: center; }
+  .nf p:last-child { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+</style>

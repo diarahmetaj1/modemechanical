@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageBanner from '../../components/PageBanner.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import FeatureGrid from '../../components/FeatureGrid.astro';
+import BrandLogos from '../../components/BrandLogos.astro';
+import Stats from '../../components/Stats.astro';
+import ServiceAreas from '../../components/ServiceAreas.astro';
+import CtaBox from '../../components/CtaBox.astro';
+import { seo } from '../../data/seo';
+import { whyChooseAbout } from '../../data/features';
+---
+<BaseLayout seo={seo.about} breadcrumb={[{ name: 'About Us', path: '/about-us/' }]}>
+  <PageBanner h1={seo.about.h1} crumb="About Us" lede="Heating and air conditioning specialists for New York homes and businesses." />
+
+  <section class="section">
+    <div class="container about">
+      <div>
+        <p class="lead">Mode Mechanical is a licensed heating and air conditioning contractor based in Brooklyn, serving homeowners and businesses across New York City. We handle AC repair, furnace and boiler service, ductless mini-split installation and seasonal HVAC maintenance — with upfront pricing and 24/7 emergency response.</p>
+        <SectionHeading pill="Our History" title="New York's Trusted HVAC Company" highlight="HVAC">
+          <p>Since our founding in New York, Mode Mechanical has built a reputation as a trusted HVAC company serving homes and businesses throughout the region. From day one, we’ve specialized in air conditioning and heating services, delivering reliable installation, repair, and maintenance backed by a commitment to energy efficiency and long-lasting comfort.</p>
+          <p>Today, Mode Mechanical continues that legacy — combining decades of hands-on HVAC experience with the latest heating and cooling technology to keep New York families and businesses comfortable year-round.</p>
+        </SectionHeading>
+      </div>
+      <div class="mosaic">
+        <img src="/images/about-condensers.jpg" data-reveal="scale-in" alt="Mode Mechanical HVAC technician servicing an air conditioning unit in Brooklyn, New York" width="600" height="450" loading="lazy" decoding="async" />
+        <Stats />
+        <img src="/images/about-rooftop.jpg" data-reveal="scale-in" alt="HVAC installation crew working on a ductless mini-split system in a New York home" width="600" height="450" loading="lazy" decoding="async" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface">
+    <div class="container">
+      <SectionHeading pill="Brands" title="Leading HVAC Brands We Install and Service" highlight="Brands" center>
+        <p>Because we’re factory-familiar with these lines, we stock common parts and can often complete a repair on the first visit instead of scheduling a return trip.</p>
+      </SectionHeading>
+      <BrandLogos title="" />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading pill="Why Choose Us" title="Why New York Chooses Mode Mechanical for HVAC" highlight="Mode Mechanical" center>
+        <p>Hiring an HVAC contractor comes down to trust: that the technician knows the equipment, that the price on the estimate is the price on the invoice, and that someone answers the phone at 2 a.m. in January.</p>
+      </SectionHeading>
+      <FeatureGrid items={whyChooseAbout} />
+    </div>
+  </section>
+
+  <ServiceAreas />
+  <CtaBox />
+</BaseLayout>
+<style>
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 80px); align-items: center; }
+  .lead { font-size: 1.1rem; color: var(--ink); margin-bottom: 36px; }
+  .mosaic { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; }
+  .mosaic img { border-radius: var(--radius-md); width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .mosaic :global(.stats) { grid-row: span 2; }
+  @media (max-width: 900px) { .about { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) { .mosaic { grid-template-columns: 1fr; } }
+</style>

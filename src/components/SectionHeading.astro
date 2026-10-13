@@ -1,0 +1,22 @@
+---
+// Pill + heading + optional intro, matching the theme's "RT Heading" widget.
+// `highlight` colors one word in the accent blue, as the live theme does.
+interface Props { pill?: string; title: string; highlight?: string; as?: 'h1' | 'h2'; center?: boolean }
+const { pill, title, highlight, as: Tag = 'h2', center = false } = Astro.props;
+const parts = highlight && title.includes(highlight) ? title.split(highlight) : [title];
+---
+<div class:list={['shead', { 'shead--center': center }]}>
+  {pill && <p class="pill" data-reveal="fade-up">{pill}</p>}
+  <Tag class="shead__title" data-reveal="fade-up">
+    {parts.length === 2 ? <>{parts[0]}<span class="hl">{highlight}</span>{parts[1]}</> : title}
+  </Tag>
+  <div class="shead__body" data-reveal="fade-up"><slot /></div>
+</div>
+<style>
+  .shead { margin-bottom: 32px; }
+  .shead--center { text-align: center; margin-inline: auto; max-width: 760px; }
+  .shead__title { max-width: 22ch; }
+  .shead--center .shead__title { margin-inline: auto; }
+  .shead__body :global(p) { max-width: 70ch; }
+  .shead--center .shead__body :global(p) { margin-inline: auto; }
+</style>

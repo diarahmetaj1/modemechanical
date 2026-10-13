@@ -1,0 +1,24 @@
+---
+import Icon from './Icon.astro';
+import type { Feature } from '../data/features';
+interface Props { items: Feature[]; cols?: 2 | 3; headingLevel?: 'h3' | 'h4' }
+const { items, cols = 3, headingLevel: H = 'h3' } = Astro.props;
+---
+<ul class="fgrid" style={`--cols:${cols}`}>
+  {items.map((f, i) => (
+    <li class="fgrid__item" data-reveal="fade-up" style={`--reveal-delay:${(i % 6) * 0.2}s`}>
+      <span class="fgrid__icon"><Icon name={f.icon ?? 'check'} size={26} /></span>
+      <div><H class="fgrid__title">{f.title}</H><p>{f.text}</p></div>
+    </li>
+  ))}
+</ul>
+<style>
+  .fgrid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 36px 32px; }
+  .fgrid__item { display: flex; gap: 18px; align-items: flex-start; }
+  .fgrid__icon { flex: none; width: 54px; height: 54px; border-radius: var(--radius-sm); background: var(--blue-800); color: #fff; display: grid; place-items: center; }
+  .fgrid__item:nth-child(even) .fgrid__icon { background: var(--blue-400); }
+  .fgrid__title { font-size: 1.15rem; margin-bottom: 6px; }
+  p { margin: 0; line-height: 1.7; }
+  @media (max-width: 900px) { .fgrid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .fgrid { grid-template-columns: 1fr; } }
+</style>

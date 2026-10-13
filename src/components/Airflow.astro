@@ -1,0 +1,252 @@
+---
+// Signature effect: cold air streams in from the left, hot air rises in from the right,
+// and the two currents meet at the seam. A custom Canvas 2D flow field (no dependencies):
+// particles follow a layered sine "noise" field, leave fading trails and glow additively.
+// Soft mist layers are CSS so they cost almost nothing.
+//
+// - Pauses when off-screen or when the tab is hidden.
+// - Particle count scales with area, device pixel ratio is capped, and quality drops
+//   automatically if frames get slow.
+// - prefers-reduced-motion (or Save-Data) draws one still frame of streamlines instead.
+interface Props { density?: number; class?: string }
+const { density = 1, class: className } = Astro.props;
+---
+<div class:list={['airflow', className]} aria-hidden="true">
+  <div class="airflow__mist airflow__mist--cool"></div>
+  <div class="airflow__mist airflow__mist--warm"></div>
+  <canvas class="airflow__canvas" data-airflow data-density={density}></canvas>
+  <div class="airflow__seam"></div>
+</div>
+
+<script>
+  type P = { x: number; y: number; px: number; py: number; vx: number; vy: number; age: number; life: number; side: 0 | 1; tone: number; amb: boolean };
+
+  const COOL = ['111, 195, 255', '150, 225, 255', '70, 140, 255'];
+  const WARM = ['255, 161, 92', '255, 196, 120', '255, 98, 48'];
+
+  function start(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+      || (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    const lowEnd = (navigator.hardwareConcurrency || 4) <= 2;
+    const small = matchMedia('(max-width: 760px), (pointer: coarse)').matches;
+    const density = Number(canvas.dataset.density || 1) * (lowEnd ? 0.5 : 1) * (small ? 0.6 : 1);
+    // Trails are soft by nature, so phones render at 1x: a third of the pixels, no visible loss.
+    const dpr = Math.min(window.devicePixelRatio || 1, small ? 1 : 1.5);
+
+    let w = 0, h = 0, particles: P[] = [], t = 0, raf = 0, running = false, visible = false;
+    let quality = 1, slowFrames = 0, last = performance.now(), ready = false;
+    // Small or touch screens run at 30 fps: the motion still reads as smooth air and costs half.
+    const frameGap = small ? 33 : 0;
+    let lastDraw = 0, frameCount = 0;
+    const pointer = { x: -9999, y: -9999, active: false };
+    // Optional source: when the section contains [data-airflow-emitter] (the AC outlet), most air
+    // leaves from there — cold from the left half, warm from the right — instead of the edges.
+    const emitterEl = canvas.closest('section')?.querySelector<HTMLElement>('[data-airflow-emitter]') ?? null;
+    const em = { x0: 0, x1: 0, y: 0, on: false };
+    const measureEmitter = () => {
+      if (!emitterEl) return;
+      const c = canvas.getBoundingClientRect(), e = emitterEl.getBoundingClientRect();
+      em.x0 = e.left - c.left; em.x1 = e.right - c.left; em.y = e.top - c.top; em.on = e.width > 0;
+    };
+
+    const field = (x: number, y: number, side: 0 | 1) => {
+      // Three octaves of travelling sine waves give a smooth, non-repeating current.
+      const a = Math.sin(x * 0.0016 + t * 0.32) + Math.cos(y * 0.0028 - t * 0.24) * 0.85
+              + Math.sin((x - y) * 0.0042 + t * 0.55) * 0.5;
+      return side === 0 ? a * 0.9 : a * 1.05 + Math.sin(t * 2.4 + y * 0.025) * 0.18; // hot air shimmers
+    };
+
+    const spawn = (p: P, initial: boolean) => {
+      p.side = p.side ?? 0;
+      if (em.on && !p.amb) {
+        const mid = (em.x0 + em.x1) / 2, half = (em.x1 - em.x0) / 2;
+        // Spread along the outlet, denser toward the outer ends where the vane throws air sideways.
+        const u = Math.sqrt(Math.random());
+        p.x = p.side === 0 ? mid - u * half : mid + u * half;
+        p.y = em.y + Math.random() * 4;
+        p.px = p.x; p.py = p.y;
+        p.vx = (p.side === 0 ? -1 : 1) * (0.5 + u * 1.1);
+        p.vy = 0.9 + Math.random() * 0.9;
+        p.age = 0; p.life = 240 + Math.random() * 260;
+        p.tone = Math.floor(Math.random() * 3);
+        return;
+      }
+      const fromEdge = !initial && Math.random() < 0.85;
+      p.x = p.side === 0
+        ? (fromEdge ? -10 - Math.random() * 40 : Math.random() * w * 0.55)
+        : (fromEdge ? w + 10 + Math.random() * 40 : w * 0.45 + Math.random() * w * 0.55);
+      // Cold air enters a little higher and sinks; hot air enters lower and rises.
+      p.y = p.side === 0 ? Math.random() * h * 0.9 : h * 0.1 + Math.random() * h * 0.95;
+      p.px = p.x; p.py = p.y; p.vx = 0; p.vy = 0;
+      p.age = 0; p.life = 260 + Math.random() * 320;
+      p.tone = Math.floor(Math.random() * 3);
+    };
+
+    const resize = () => {
+      const r = canvas.getBoundingClientRect();
+      w = Math.max(1, r.width); h = Math.max(1, r.height);
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      measureEmitter();
+      const target = Math.round(Math.min(1100, Math.max(160, (w * h) / 1700)) * density * quality);
+      particles = [];
+      for (let i = 0; i < target; i++) {
+        const p = { side: (i % 2) as 0 | 1, amb: em.on && i % 6 === 0 } as P;
+        spawn(p, true);
+        p.age = Math.random() * p.life;
+        particles.push(p);
+      }
+      ctx.clearRect(0, 0, w, h);
+    };
+
+    const step = (p: P) => {
+      const angle = field(p.x, p.y, p.side);
+      if (em.on && !p.amb) {
+        // Jet from the outlet: cold air spreads left and keeps sinking; warm air spreads right,
+        // loses its downward push and curls upward as it rises.
+        const prog = p.age / p.life;
+        let ax = p.side === 0 ? -(0.8 + 0.35 * Math.cos(angle)) : 0.75 + 0.3 * Math.cos(angle);
+        let ay = p.side === 0 ? 1.0 * (1 - prog) + 0.12 + Math.sin(angle) * 0.35 : 1.0 - prog * 2.4 + Math.sin(angle) * 0.45;
+        if (pointer.active) {
+          const dx = p.x - pointer.x, dy = p.y - pointer.y, d2 = dx * dx + dy * dy;
+          if (d2 < 140 * 140) { const d = Math.sqrt(d2) + 1, f = (1 - d / 141) * 2.2; ax += (dx / d) * f; ay += (dy / d) * f; }
+        }
+        p.vx = p.vx * 0.94 + ax * 0.06 * 2.2;
+        p.vy = p.vy * 0.94 + ay * 0.06 * 2.2;
+        p.px = p.x; p.py = p.y; p.x += p.vx; p.y += p.vy; p.age++;
+        if (p.age > p.life || p.y < -20 || p.y > h + 20 || p.x < -60 || p.x > w + 60) spawn(p, false);
+        return;
+      }
+      const dir = p.side === 0 ? 1 : -1;
+      // Cold air streams across in long, gently sinking waves; hot air drifts in and rises in plumes.
+      let ax = p.side === 0 ? dir * (0.95 + 0.35 * Math.cos(angle)) : dir * (0.6 + 0.3 * Math.cos(angle));
+      let ay = p.side === 0 ? Math.sin(angle) * 0.75 + 0.06 : Math.sin(angle) * 0.8 - 0.55;
+      if (pointer.active) {
+        const dx = p.x - pointer.x, dy = p.y - pointer.y, d2 = dx * dx + dy * dy;
+        if (d2 < 140 * 140) { const f = (1 - Math.sqrt(d2) / 140) * 2.2; ax += (dx / (Math.sqrt(d2) + 1)) * f; ay += (dy / (Math.sqrt(d2) + 1)) * f; }
+      }
+      p.vx = p.vx * 0.92 + ax * 0.08 * 2.1;
+      p.vy = p.vy * 0.92 + ay * 0.08 * 2.1;
+      p.px = p.x; p.py = p.y;
+      p.x += p.vx; p.y += p.vy;
+      p.age++;
+      // Past the seam the current dissipates quickly.
+      const past = p.side === 0 ? p.x - w * 0.56 : w * 0.44 - p.x;
+      if (past > 0) p.age += 2 + past * 0.05;
+      if (p.age > p.life || p.y < -20 || p.y > h + 20 || p.x < -60 || p.x > w + 60) spawn(p, false);
+    };
+
+    // Strokes are batched by side, tone and 4 alpha levels: 24 paths per frame instead of one per particle.
+    const draw = () => {
+      const buckets = Array.from({ length: 24 }, () => new Path2D());
+      for (const p of particles) {
+        const k = Math.min(1, p.age / p.life);
+        // Emitted air is brightest near the outlet and thins out; ambient air fades in and out.
+        const env = em.on && !p.amb ? Math.min(1, p.age / 12) * Math.pow(1 - k, 0.7) : Math.sin(Math.PI * k);
+        if (env < 0.04) continue;
+        const a = Math.min(3, Math.floor(env * 4));
+        const path = buckets[p.side * 12 + p.tone * 4 + a];
+        path.moveTo(p.px, p.py); path.lineTo(p.x, p.y);
+      }
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.lineCap = 'round';
+      for (let side = 0; side < 2; side++) for (let tone = 0; tone < 3; tone++) for (let a = 0; a < 4; a++) {
+        const rgb = (side === 0 ? COOL : WARM)[tone];
+        ctx.strokeStyle = `rgba(${rgb}, ${0.14 + a * 0.17})`;
+        ctx.lineWidth = side === 0 ? 1.4 : 1.6;
+        ctx.stroke(buckets[side * 12 + tone * 4 + a]);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    };
+
+    const frame = (now: number) => {
+      if (!running) return;
+      if (frameGap && now - lastDraw < frameGap - 2) { raf = requestAnimationFrame(frame); return; }
+      lastDraw = now;
+      if ((++frameCount & 127) === 0) measureEmitter(); // follow the outlet if layout shifts
+      const dt = now - last; last = now;
+      // Adaptive quality: if frames stay slow, halve the particle count once or twice.
+      if (dt > (frameGap || 16) * 2.1) { if (++slowFrames > 60 && quality > 0.3) { quality *= 0.5; slowFrames = 0; resize(); } } else slowFrames = Math.max(0, slowFrames - 1);
+      t += 0.012;
+      // Fade the previous frame toward transparent to leave trails over the CSS background.
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.032)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'source-over';
+      for (const p of particles) step(p);
+      draw();
+      raf = requestAnimationFrame(frame);
+    };
+
+    const play = () => { if (running || reduce || !ready || !visible || document.hidden) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); };
+    const pause = () => { running = false; cancelAnimationFrame(raf); };
+
+    const still = (steps = 160, drawn = steps - 20) => {
+      // Trace streamlines once and keep them as a static image (reduced motion, and first paint).
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < steps; i++) {
+        for (const p of particles) step(p);
+        if (i >= steps - drawn) draw();
+      }
+    };
+
+    resize();
+    if (reduce) { still(); new ResizeObserver(() => { resize(); still(); }).observe(canvas); return; }
+
+    // Paint a still frame right away, then start moving once the page has finished loading
+    // and the browser is idle, so the animation never competes with first render.
+    still(36, 18);
+    const begin = () => { if (ready) return; ready = true; play(); };
+    if (small) {
+      // Phones: keep the still frame while the page loads, start moving on the first touch or
+      // scroll, or after a few seconds, so the animation never slows down the first interaction.
+      const kick = () => begin();
+      ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((ev) => window.addEventListener(ev, kick, { once: true, passive: true }));
+      setTimeout(begin, 6000);
+    } else {
+      const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 1200));
+      if (document.readyState === 'complete') idle(begin); else window.addEventListener('load', () => idle(begin), { once: true });
+    }
+
+    // ResizeObserver also fires once on observe; skip unchanged sizes so the still frame survives.
+    new ResizeObserver(() => {
+      const r = canvas.getBoundingClientRect();
+      if (Math.abs(r.width - w) < 1 && Math.abs(r.height - h) < 1) { measureEmitter(); return; }
+      resize();
+      if (!running) still(36, 18);
+    }).observe(canvas);
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? play() : pause(); }, { rootMargin: '100px' }).observe(canvas);
+    document.addEventListener('visibilitychange', () => (document.hidden ? pause() : play()));
+    if (matchMedia('(pointer: fine)').matches) {
+      const host = canvas.closest('section') ?? canvas;
+      host.addEventListener('pointermove', (e) => {
+        const r = canvas.getBoundingClientRect();
+        pointer.x = (e as PointerEvent).clientX - r.left; pointer.y = (e as PointerEvent).clientY - r.top; pointer.active = true;
+      });
+      host.addEventListener('pointerleave', () => { pointer.active = false; });
+    }
+  }
+
+  document.querySelectorAll<HTMLCanvasElement>('canvas[data-airflow]').forEach(start);
+</script>
+
+<style>
+  .airflow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .airflow__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* Static scrim keeps the headline readable over the airflow (cheaper than masking the canvas). */
+  .airflow::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 36% at 50% 32%, rgba(6, 14, 26, .55), rgba(6, 14, 26, 0) 100%); }
+  .airflow__mist { position: absolute; width: 75%; height: 100%; opacity: .5; will-change: transform; }
+  /* Soft gradients instead of filter: blur — same haze, a fraction of the rendering cost. */
+  .airflow__mist--cool { left: -22%; top: 5%; background: radial-gradient(closest-side, rgba(111,195,255,.5), rgba(111,195,255,.22) 45%, rgba(44,107,224,0)); animation: mist-cool 14s ease-in-out infinite alternate; }
+  .airflow__mist--warm { right: -22%; top: 15%; background: radial-gradient(closest-side, rgba(255,140,70,.5), rgba(255,140,70,.22) 45%, rgba(238,90,36,0)); animation: mist-warm 11s ease-in-out infinite alternate; }
+  @keyframes mist-cool { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(14%, 6%, 0) scale(1.12); } }
+  @keyframes mist-warm { from { transform: translate3d(0, 4%, 0) scale(1); } to { transform: translate3d(-12%, -8%, 0) scale(1.15); } }
+  .airflow__seam {
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-1px);
+    background: linear-gradient(180deg, transparent, rgba(111,195,255,.55) 30%, rgba(255,161,92,.55) 70%, transparent);
+    box-shadow: 0 0 24px 4px rgba(255,255,255,.08);
+  }
+  @media (prefers-reduced-motion: reduce) { .airflow__mist { animation: none; } }
+</style>

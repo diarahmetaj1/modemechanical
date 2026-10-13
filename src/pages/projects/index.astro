@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageBanner from '../../components/PageBanner.astro';
+import ProjectGallery from '../../components/islands/ProjectGallery';
+import { seo } from '../../data/seo';
+// TODO(owner): replace the generic captions with one-line project descriptions.
+const locations = ['Brooklyn', 'Manhattan', 'Brooklyn', 'Brooklyn', 'Manhattan', 'Manhattan', 'Manhattan', 'Brooklyn', 'Brooklyn', 'Brooklyn', 'Brooklyn', 'Brooklyn'];
+const projects = locations.map((loc, i) => {
+  const n = String(i + 1).padStart(2, '0');
+  return { src: `/images/projects/project-${n}.jpg`, caption: `${loc}, New York`, alt: `HVAC installation by Mode Mechanical in ${loc}, New York` };
+});
+---
+<BaseLayout seo={seo.projects} breadcrumb={[{ name: 'Projects', path: '/projects/' }]}>
+  <PageBanner h1={seo.projects.h1} crumb="Projects" lede="Recent heating and cooling installations in Brooklyn and Manhattan." />
+  <section class="section">
+    <div class="container">
+      <p class="intro" data-reveal="fade-up">A selection of recent heating and cooling installations by Mode Mechanical across Brooklyn and Manhattan — ductless mini-splits, condenser units and full system replacements in homes, brownstones and commercial buildings.</p>
+      <ProjectGallery client:visible items={projects} />
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .intro { max-width: 70ch; margin: 0 auto 40px; text-align: center; font-size: 1.05rem; }
+</style>

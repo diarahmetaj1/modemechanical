@@ -1,0 +1,31 @@
+---
+import Icon from './Icon.astro';
+import { business } from '../data/site';
+---
+<div class="topbar">
+  <div class="container topbar__inner">
+    <ul class="topbar__info intro-item">
+      <li><a href={business.phoneHref}><Icon name="phone" size={15} /> {business.phoneTopbar}</a></li>
+      <li><a href={`mailto:${business.email}`}><Icon name="mail" size={15} /> {business.email}</a></li>
+      <li class="topbar__hours"><Icon name="clock" size={15} /> {business.hours}</li>
+    </ul>
+    <ul class="topbar__social intro-item">
+      <li><a href={business.facebook} rel="noopener" target="_blank" aria-label="Mode Mechanical on Facebook"><Icon name="facebook" size={16} /></a></li>
+      <li><a href={business.instagram} rel="noopener" target="_blank" aria-label="Mode Mechanical on Instagram"><Icon name="instagram" size={16} /></a></li>
+    </ul>
+  </div>
+</div>
+<style>
+  .topbar { background: var(--blue-800); color: #fff; font-size: 0.875rem; }
+  .topbar__inner { display: flex; justify-content: space-between; align-items: center; min-height: 40px; }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; }
+  .topbar__info li { display: flex; align-items: center; padding: 8px 16px; border-right: 1px solid rgba(255,255,255,.18); }
+  .topbar__info li:first-child { padding-left: 0; }
+  .topbar__info li:last-child { border-right: 0; }
+  .topbar__info a, .topbar__info li { display: inline-flex; gap: 8px; align-items: center; }
+  .topbar__info a:hover { text-decoration: underline; }
+  .topbar__social { gap: 14px; }
+  .topbar__social a { display: inline-flex; padding: 6px; }
+  @media (max-width: 900px) { .topbar__hours { display: none !important; } }
+  @media (max-width: 640px) { .topbar { display: none; } }
+</style>

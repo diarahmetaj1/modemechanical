@@ -1,0 +1,8 @@
+# Netlify / Cloudflare Pages format. Vercel users: see vercel.json.
+/services            /                 301
+/services/           /                 301
+/cart/               /                 301
+/checkout/           /                 301
+/my-account/         /                 301
+/sitemap_index.xml   /sitemap-index.xml 301
+# TODO: add one line per URL from the old WordPress sitemap that has no page here.

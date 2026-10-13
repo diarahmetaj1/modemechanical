@@ -1,0 +1,128 @@
+---
+import Icon from './Icon.astro';
+import MobileNav from './islands/MobileNav';
+import { nav, business, bookingUrl, bookingIsExternal } from '../data/site';
+interface Props { overlay?: boolean }
+const { overlay = false } = Astro.props;
+const path = Astro.url.pathname;
+const isActive = (href: string, children?: { href: string }[]) =>
+  href === '/' ? path === '/' : path.startsWith(href) || (children ?? []).some((c) => path.startsWith(c.href));
+---
+<header class:list={['header', { 'header--overlay': overlay }]}>
+  <div class="container header__inner">
+    <a href="/" class="header__logo intro-item" style="--intro-delay:.1s" aria-label="Mode Mechanical home">
+      <img class="header__logo-color" src="/images/logo-header.png" alt="Mode Mechanical" width="300" height="305" />
+      {overlay && <img class="header__logo-white" src="/images/logo-header-white.png" alt="" width="300" height="305" />}
+    </a>
+    <nav class="header__nav" aria-label="Main">
+      <ul>
+        {nav.map((item, i) => (
+          <li class:list={['nav-item', 'intro-item', { 'has-children': item.children }]} style={`--intro-delay:${0.2 + i * 0.1}s`}>
+            <a href={item.href} class:list={{ active: isActive(item.href, item.children) }}
+               aria-current={path === item.href ? 'page' : undefined}>
+              {item.label}{item.children && <Icon name="chevron" size={14} />}
+            </a>
+            {item.children && (
+              <ul class="dropdown">
+                {item.children.map((c) => (
+                  <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}>{c.label}</a></li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <a class="header__phone intro-item" style={`--intro-delay:${0.15 + nav.length * 0.1}s`} href={business.phoneHref}>
+      <span class="header__phone-icon"><Icon name="phone" size={16} /></span>
+      <span><small>24/7 emergency</small>{business.phoneDisplay}</span>
+    </a>
+    <a class="btn btn--primary header__cta intro-item" style={`--intro-delay:${0.2 + nav.length * 0.1}s`} href={bookingUrl} data-booking-external={bookingIsExternal ? '' : undefined}>Schedule Now</a>
+    <MobileNav client:idle nav={nav} phoneHref={business.phoneHref} phone={business.phoneDisplay} bookingUrl={bookingUrl} currentPath={path} />
+  </div>
+</header>
+<script>
+  // Live theme: once the page scrolls, the sticky header gets a soft drop shadow.
+  // An overlay header also turns solid white then, or while the mobile menu is open.
+  const header = document.querySelector<HTMLElement>('.header');
+  if (header) {
+    const update = () => {
+      const scrolled = window.scrollY > 10;
+      header.classList.toggle('is-stuck', scrolled);
+      header.classList.toggle('is-solid', scrolled || !!header.querySelector('.mnav__toggle[aria-expanded="true"]'));
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    new MutationObserver(update).observe(header, { subtree: true, attributes: true, attributeFilter: ['aria-expanded'] });
+    update();
+  }
+</script>
+<style>
+  /* The frosted glass lives on a pseudo-element: backdrop-filter on the header itself would make it the
+     containing block for the fixed mobile menu panel and clip it. */
+  .header::before { content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(255,255,255,.96); transition: opacity .3s ease; }
+  /* Blur only once the page has scrolled (no frosted layer over the animated hero at the top). */
+  .header.is-stuck::before { -webkit-backdrop-filter: saturate(160%) blur(14px); backdrop-filter: saturate(160%) blur(14px); background: rgba(255,255,255,.9); }
+  .header { isolation: isolate; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 0 var(--line); transition: box-shadow .3s ease, background-color .3s ease; }
+  .header.is-stuck { box-shadow: 0 10px 30px -18px rgba(14, 34, 56, .35), 0 1px 0 var(--line); }
+  /* The mobile menu button is rendered by a React island, so it joins the intro via CSS only. */
+  :global(.intro) .header :global(.mnav__toggle) { animation: reveal-fade-down .8s ease .2s backwards; }
+  .header__inner { display: flex; align-items: center; gap: 24px; min-height: 88px; }
+  .header__logo { position: relative; display: block; }
+  .header__logo img { width: 58px; height: auto; transition: opacity .3s ease; }
+  .header__logo-white { position: absolute; inset: 0; opacity: 0; }
+
+  /* Overlay: the header sits on top of the hero/banner (which pads by --header-h) and stays
+     transparent with white content until it turns solid. Without JavaScript it stays white. */
+  .header--overlay { margin-bottom: calc(-1 * var(--header-h)); }
+  /* Over the hero: no fill, just a soft shade at the top so links stay legible above the airflow. */
+  :global(.js) .header--overlay:not(.is-solid) { background: linear-gradient(180deg, rgba(5, 12, 22, .55), rgba(5, 12, 22, 0)); box-shadow: none; }
+  :global(.js) .header--overlay:not(.is-solid)::before { opacity: 0; }
+  :global(.js) .header--overlay:not(.is-solid) .header__phone { color: #fff; }
+  :global(.js) .header--overlay:not(.is-solid) .header__phone small { color: rgba(255,255,255,.7); }
+  :global(.js) .header--overlay:not(.is-solid) .header__phone-icon { background: rgba(255,255,255,.14); color: #fff; }
+  :global(.js) .header--overlay:not(.is-solid) .header__logo-color { opacity: 0; }
+  :global(.js) .header--overlay:not(.is-solid) .header__logo-white { opacity: 1; }
+  :global(.js) .header--overlay:not(.is-solid) .nav-item > a { color: #fff; }
+  :global(.js) .header--overlay:not(.is-solid) .nav-item > a:hover,
+  :global(.js) .header--overlay:not(.is-solid) .nav-item > a.active { color: #fff; }
+  :global(.js) .header--overlay:not(.is-solid) .header__cta { background: #fff; color: var(--blue-800); }
+  :global(.js) .header--overlay:not(.is-solid) .header__cta:hover { background: var(--surface); }
+  .header__nav { margin-inline: auto; }
+  .header__nav > ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; }
+  .nav-item { position: relative; }
+  .nav-item > a {
+    position: relative; display: inline-flex; align-items: center; gap: 4px; padding: 30px 14px;
+    color: var(--ink); font-weight: 650; font-size: .98rem; letter-spacing: -0.005em; transition: color .3s ease;
+  }
+  .nav-item > a :global(svg) { transition: transform .25s ease; }
+  .has-children:hover > a :global(svg), .has-children:focus-within > a :global(svg) { transform: rotate(180deg); }
+  /* Underline in the two temperatures: grows from the center on hover, stays on the current page. */
+  .nav-item > a::after {
+    content: ''; position: absolute; left: 14px; right: 14px; bottom: 22px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--cool), var(--warm)); transform: scaleX(0); transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .nav-item > a:hover::after, .nav-item > a.active::after { transform: scaleX(1); }
+  .nav-item > a:hover, .nav-item > a.active { color: var(--ink); }
+
+  .header__phone { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 750; font-size: 1rem; line-height: 1.15; white-space: nowrap; transition: color .3s ease; }
+  .header__phone small { display: block; font-size: .72rem; font-weight: 600; color: var(--text); letter-spacing: .01em; }
+  .header__phone-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--ice); color: var(--cool); transition: background-color .3s ease, transform .3s ease; }
+  .header__phone:hover .header__phone-icon { transform: rotate(-12deg) scale(1.06); }
+  .header__cta { min-height: 46px; padding: 12px 22px; }
+  @media (max-width: 1240px) { .header__phone { display: none; } }
+  .dropdown {
+    /* Floating card (it may open over the transparent header); item text lines up with the parent link. */
+    list-style: none; margin: 0; padding: 8px; position: absolute; top: calc(100% - 10px); left: 2px; min-width: 220px;
+    background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: 0 24px 50px -20px rgba(14,34,56,.35);
+    display: grid; gap: 2px;
+    opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .15s, transform .15s, visibility .15s;
+  }
+  .has-children:hover .dropdown, .has-children:focus-within .dropdown { opacity: 1; visibility: visible; transform: none; }
+  .dropdown a { display: block; padding: 10px 12px; border-radius: 10px; color: var(--ink); font-weight: 600; font-size: 0.95rem; transition: background-color .15s, color .15s, padding .2s ease; }
+  .dropdown a:hover, .dropdown a[aria-current] { color: var(--cool-deep); background: var(--ice); padding-left: 16px; }
+  @media (max-width: 1024px) {
+    .header__nav, .header__cta { display: none; }
+    .header__inner { justify-content: space-between; min-height: 72px; }
+    .header__logo img { width: 48px; }
+  }
+</style>

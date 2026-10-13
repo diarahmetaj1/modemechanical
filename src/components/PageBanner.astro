@@ -1,0 +1,29 @@
+---
+// Inner-page hero: the same two-temperature field as the home page, shorter and calmer.
+import Airflow from './Airflow.astro';
+interface Props { h1: string; crumb: string; image?: string; lede?: string }
+const { h1, crumb, lede } = Astro.props;
+---
+<section class="banner">
+  <div class="banner__bg" aria-hidden="true"><span></span><span></span></div>
+  <Airflow density={0.55} />
+  <div class="container banner__inner">
+    <nav aria-label="Breadcrumb" class="banner__crumbs" data-reveal="fade-up">
+      <a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">{crumb}</span>
+    </nav>
+    <h1>{h1}</h1>
+    {lede && <p class="banner__lede" data-reveal="fade-up" style="--reveal-delay:.3s">{lede}</p>}
+  </div>
+</section>
+<style>
+  .banner { position: relative; isolation: isolate; overflow: hidden; color: #fff; }
+  .banner__bg { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; z-index: -1; }
+  .banner__bg span:first-child { background: radial-gradient(120% 120% at 0% 80%, #12408C 0%, #0A2550 50%, #071a33 100%); }
+  .banner__bg span:last-child { background: radial-gradient(120% 120% at 100% 90%, #8A2A0C 0%, #4A1709 50%, #1E0B06 100%); }
+  .banner :global(.airflow::after) { background: radial-gradient(ellipse 45% 60% at 50% 55%, rgba(6, 14, 26, .6), rgba(6, 14, 26, 0)); }
+  .banner__inner { position: relative; text-align: center; padding-block: calc(var(--header-h) + clamp(56px, 8vw, 104px)) clamp(64px, 8vw, 104px); }
+  .banner__crumbs { display: inline-flex; gap: 8px; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.1); font-size: .9rem; color: rgba(255,255,255,.85); margin-bottom: 20px; }
+  .banner__crumbs a:hover { color: #fff; text-decoration: underline; }
+  h1 { color: #fff; max-width: 18ch; margin: 0 auto; text-wrap: balance; text-shadow: 0 2px 30px rgba(0,0,0,.25); }
+  .banner__lede { max-width: 56ch; margin: 18px auto 0; font-size: 1.1rem; color: rgba(255,255,255,.82); }
+</style>

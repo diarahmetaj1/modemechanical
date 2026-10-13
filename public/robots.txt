@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://modemechanical.com/sitemap-index.xml

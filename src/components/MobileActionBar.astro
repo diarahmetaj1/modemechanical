@@ -1,0 +1,22 @@
+---
+// Phones only: Call and Book stay within thumb reach on every page.
+import Icon from './Icon.astro';
+import { business, bookingUrl, bookingIsExternal } from '../data/site';
+---
+<nav class="mbar" aria-label="Quick contact">
+  <a class="btn btn--ink" href={business.phoneHref}><Icon name="phone" size={18} /> Call</a>
+  <a class="btn btn--primary" href={bookingUrl} data-booking-external={bookingIsExternal ? '' : undefined}>Book a visit</a>
+</nav>
+<style>
+  .mbar { display: none; }
+  @media (max-width: 760px) {
+    .mbar {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+    }
+    :global(body) { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  }
+</style>

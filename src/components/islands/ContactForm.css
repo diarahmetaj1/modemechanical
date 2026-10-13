@@ -1,0 +1,29 @@
+.cform__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.cform__field { display: flex; flex-direction: column; gap: 8px; }
+.cform__field--phone, .cform__field--message { grid-column: 1 / -1; }
+.cform label { color: var(--ink); font-weight: 600; font-size: .95rem; }
+.cform__req { color: var(--blue-500); }
+.cform input, .cform textarea {
+  font: inherit; color: var(--ink); width: 100%;
+  padding: 14px 18px; border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: var(--surface); transition: border-color .2s, background-color .2s, box-shadow .2s;
+}
+.cform textarea { resize: vertical; min-height: 150px; }
+.cform input:hover, .cform textarea:hover { border-color: var(--line); }
+.cform input:focus, .cform textarea:focus { outline: none; background: #fff; border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(74, 112, 191, .18); }
+.cform [aria-invalid="true"] { border-color: #b42318; background: #fff; }
+.cform [aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(180, 35, 24, .15); }
+.cform__error { color: #b42318; font-size: .875rem; line-height: 1.4; margin: 0; }
+.cform__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.cform__banner { margin: 20px 0 0; padding: 14px 18px; border-radius: var(--radius-sm); font-size: .95rem; line-height: 1.55; }
+.cform__banner--error { background: #fef3f2; color: #7a271a; border: 1px solid #fecdca; }
+.cform__banner a, .cform__result a { color: var(--blue-800); font-weight: 600; text-decoration: underline; }
+.cform__submit { margin-top: 24px; min-width: 200px; }
+.cform__submit[disabled] { opacity: .75; cursor: progress; }
+.cform__spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.45); border-top-color: #fff; animation: cform-spin .7s linear infinite; }
+@keyframes cform-spin { to { transform: rotate(360deg); } }
+.cform__note { margin: 12px 0 0; font-size: .85rem; }
+.cform__result { padding: 28px; border-radius: var(--radius-md); background: #ecfdf3; border: 1px solid #abefc6; outline: none; }
+.cform__result-title { color: #054f31; font-weight: 700; font-size: 1.2rem; margin: 0 0 6px; }
+.cform__again { margin-top: 8px; padding: 0; border: 0; background: none; color: var(--blue-800); font-weight: 600; text-decoration: underline; cursor: pointer; }
+@media (max-width: 640px) { .cform__grid { grid-template-columns: 1fr; } .cform__submit { width: 100%; } }

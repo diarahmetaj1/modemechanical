@@ -1,0 +1,44 @@
+---
+import { stats } from '../data/site';
+---
+{stats.length > 0 && (
+  <ul class="stats">
+    {stats.map((s, i) => (
+      <li class:list={{ alt: i % 2 === 1 }} data-reveal={i % 2 ? 'fade-right' : 'fade-left'}>
+        <span class="stats__num">
+          <span class="visually-hidden">{s.value}</span><span aria-hidden="true" data-count={s.value}>{s.value}</span><small>{s.suffix}</small>
+        </span>{s.label}
+      </li>
+    ))}
+  </ul>
+)}
+<script>
+  // Live theme (jQuery CounterUp, 1.5s): numbers count up from 0 the first time they scroll into view.
+  // The final value stays in the markup, so a counter that never starts still shows the right number;
+  // screen readers get the static copy instead of the changing one.
+  const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+  if (counters.length && document.documentElement.classList.contains('reveal-on')) {
+    const run = (el: HTMLElement) => {
+      const target = Number(el.dataset.count);
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min((now - start) / 1500, 1);
+        el.textContent = String(Math.round(target * p));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      el.textContent = '0';
+      requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); run(e.target as HTMLElement); } });
+    });
+    counters.forEach((el) => io.observe(el));
+  }
+</script>
+<style>
+  .stats { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+  li { background: var(--blue-800); color: #fff; border-radius: var(--radius-md); padding: 28px 20px; text-align: center; font-weight: 600; }
+  li.alt { background: var(--blue-500); }
+  .stats__num { display: block; font-size: clamp(2.6rem, 5vw, 3.6rem); line-height: 1.1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  small { font-size: 0.45em; margin-left: 4px; }
+</style>

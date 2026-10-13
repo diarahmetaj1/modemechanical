@@ -1,0 +1,25 @@
+---
+import { business, bookingUrl, bookingIsExternal } from '../data/site';
+---
+<section class="section--tight">
+  <div class="container">
+    <div class="cta">
+      <h2>Ready to Book HVAC Service?</h2>
+      <p>Whether you need <a href="/installation/">AC and furnace installation</a>, a <a href="/repair/">repair</a> or a seasonal <a href="/maintenance/">maintenance</a> visit, Mode Mechanical is a phone call away. Most appointments are confirmed the same day.</p>
+      <div class="cta__actions">
+        <a class="btn btn--light" href={business.phoneHref}>Call {business.phoneDisplay}</a>
+        <a class="btn btn--outline-light" href={bookingUrl} data-booking-external={bookingIsExternal ? '' : undefined}>Schedule Service Online</a>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .cta { position: relative; overflow: hidden; background: linear-gradient(100deg, #0A2550 0%, var(--ink) 48%, var(--ink) 52%, #4A1709 100%); color: #D5DEEA; border-radius: var(--radius-lg); padding: clamp(32px, 6vw, 64px); }
+  .cta::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--cool), var(--cool-glow) 45%, var(--warm-glow) 55%, var(--warm)); }
+  h2 { color: #fff; }
+  p { max-width: 68ch; }
+  a:not(.btn) { color: #9ED6FF; text-decoration: underline; text-underline-offset: 3px; }
+  .cta__actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 24px; }
+  .btn { min-width: 250px; }
+  @media (max-width: 560px) { .btn { width: 100%; min-width: 0; } }
+</style>

@@ -1,0 +1,31 @@
+{
+  "name": "modemechanical",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "assets": "node scripts/fetch-assets.mjs",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "verify": "node scripts/verify-build.mjs"
+  },
+  "dependencies": {
+    "@astrojs/react": "4.4.2",
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource/manrope": "5.3.0",
+    "astro": "5.18.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.4",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "typescript": "5.6.3"
+  },
+  "optionalDependencies": {
+    "sharp": "0.33.5"
+  }
+}

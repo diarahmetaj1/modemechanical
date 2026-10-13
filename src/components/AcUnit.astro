@@ -1,0 +1,82 @@
+---
+// Wall-mounted split AC, drawn in SVG so it stays sharp at any size and weighs ~3 KB.
+// The left half of the outlet breathes cold air, the right half warm air; the airflow canvas
+// reads the position of [data-airflow-emitter] to start its streams exactly at the outlet.
+---
+<div class="ac" aria-hidden="true">
+  <svg class="ac__svg" viewBox="0 0 640 196" xmlns="http://www.w3.org/2000/svg" focusable="false">
+    <defs>
+      <linearGradient id="ac-body" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FBFCFE" />
+        <stop offset=".55" stop-color="#EEF2F7" />
+        <stop offset="1" stop-color="#D5DDE7" />
+      </linearGradient>
+      <!-- Rim light: blue from the cold side, ember from the warm side. -->
+      <linearGradient id="ac-rim" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#6FC3FF" stop-opacity=".55" />
+        <stop offset=".32" stop-color="#6FC3FF" stop-opacity="0" />
+        <stop offset=".68" stop-color="#FF8A4C" stop-opacity="0" />
+        <stop offset="1" stop-color="#FF8A4C" stop-opacity=".55" />
+      </linearGradient>
+      <linearGradient id="ac-gloss" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".9" />
+        <stop offset="1" stop-color="#fff" stop-opacity="0" />
+      </linearGradient>
+      <linearGradient id="ac-slot" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#1C6FD6" />
+        <stop offset=".46" stop-color="#0B1626" />
+        <stop offset=".54" stop-color="#0B1626" />
+        <stop offset="1" stop-color="#D9481A" />
+      </linearGradient>
+      <linearGradient id="ac-vane" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#CFE6FF" />
+        <stop offset=".5" stop-color="#E9EEF4" />
+        <stop offset="1" stop-color="#FFD9C4" />
+      </linearGradient>
+    </defs>
+
+    <!-- body -->
+    <rect x="8" y="8" width="624" height="150" rx="30" fill="url(#ac-body)" />
+    <rect x="8" y="8" width="624" height="150" rx="30" fill="url(#ac-rim)" />
+    <rect x="22" y="14" width="596" height="44" rx="22" fill="url(#ac-gloss)" opacity=".7" />
+    <!-- front panel seam and side trims -->
+    <path d="M30 112 H610" stroke="#C9D3DF" stroke-width="2" stroke-linecap="round" />
+    <rect x="8" y="8" width="624" height="150" rx="30" fill="none" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="2" />
+
+    <!-- display: cooling set point on the left, heating on the right -->
+    <rect x="262" y="52" width="116" height="40" rx="12" fill="#0E2238" />
+    <circle cx="282" cy="72" r="5" fill="#6FC3FF" class="ac__led ac__led--cool" />
+    <text x="296" y="78" font-family="Manrope, system-ui, sans-serif" font-size="17" font-weight="700" fill="#9ED6FF">64°</text>
+    <text x="330" y="78" font-family="Manrope, system-ui, sans-serif" font-size="17" font-weight="700" fill="#FFC199">78°</text>
+    <circle cx="364" cy="72" r="5" fill="#FF8A4C" class="ac__led ac__led--warm" />
+
+    <!-- outlet -->
+    <path d="M40 150 Q320 186 600 150 L600 160 Q320 196 40 160 Z" fill="url(#ac-slot)" />
+    <g class="ac__vane">
+      <path d="M58 154 Q320 186 582 154 L582 158 Q320 190 58 158 Z" fill="url(#ac-vane)" opacity=".92" />
+    </g>
+  </svg>
+  <span class="ac__emitter" data-airflow-emitter></span>
+  <span class="ac__jet ac__jet--cool"></span>
+  <span class="ac__jet ac__jet--warm"></span>
+</div>
+
+<style>
+  .ac { position: relative; width: min(470px, 80vw); margin-inline: auto; }
+  .ac__svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 22px 34px rgba(0, 0, 0, .45)); }
+  /* Emitter marks the outlet: ~78% down the drawing, 6%–94% across. */
+  .ac__emitter { position: absolute; left: 7%; right: 7%; top: 82%; height: 2px; }
+  .ac__vane { transform-origin: 50% 80%; transform-box: fill-box; animation: ac-vane 6s ease-in-out infinite alternate; }
+  @keyframes ac-vane { from { transform: scaleY(.6) translateY(-1px); } to { transform: scaleY(1.25) translateY(1px); } }
+  .ac__led { animation: ac-led 2.4s ease-in-out infinite; }
+  .ac__led--warm { animation-delay: 1.2s; }
+  @keyframes ac-led { 50% { opacity: .45; } }
+
+  /* Visible air right under the outlet: two soft wedges, cold to the left and warm to the right. */
+  .ac__jet { position: absolute; top: 84%; width: 62%; height: 220%; pointer-events: none; opacity: .55; animation: ac-jet 4.5s ease-in-out infinite alternate; }
+  .ac__jet--cool { right: 50%; background: radial-gradient(120% 70% at 100% 0%, rgba(111,195,255,.45), rgba(111,195,255,0) 70%); clip-path: polygon(100% 0, 82% 0, 0 100%, 55% 100%); }
+  .ac__jet--warm { left: 50%; background: radial-gradient(120% 70% at 0% 0%, rgba(255,150,90,.45), rgba(255,150,90,0) 70%); clip-path: polygon(0 0, 18% 0, 100% 100%, 45% 100%); animation-delay: -2.2s; }
+  @keyframes ac-jet { from { opacity: .35; } to { opacity: .65; } }
+
+  @media (prefers-reduced-motion: reduce) { .ac__vane, .ac__led, .ac__jet { animation: none; } }
+</style>

@@ -1,0 +1,106 @@
+---
+import Icon from './Icon.astro';
+import { business, services, bookingUrl, bookingIsExternal } from '../data/site';
+const year = new Date().getFullYear();
+const company = [
+  { label: 'About Us', href: '/about-us/' },
+  { label: 'Projects', href: '/projects/' },
+  { label: 'Services', href: '/installation/' },
+  { label: 'Contact', href: '/contact/' },
+];
+---
+<footer class="footer">
+  <div class="container">
+    <div class="footer__band">
+      <div data-reveal="fade-left">
+        <p class="footer__kicker">Quality heating &amp; air conditioning solutions, 24/7</p>
+        <a class="footer__big" href={business.phoneHref}>{business.phoneDisplay}</a>
+      </div>
+      <div class="footer__actions" data-reveal="fade-right">
+        <a class="btn btn--primary" href={bookingUrl} data-booking-external={bookingIsExternal ? '' : undefined}>Schedule Appointment</a>
+        <a class="btn footer__ghost" href={`mailto:${business.email}`}><Icon name="mail" size={18} /> Email us</a>
+      </div>
+    </div>
+  </div>
+  <div class="container footer__grid">
+    <div class="footer__brand" data-reveal="fade-up">
+      <a href="/" aria-label="Mode Mechanical home"><img src="/images/logo-white.png" alt="Mode Mechanical" width="120" height="120" loading="lazy" /></a>
+      <p>We specialize in providing top-quality heating, ventilation, and air conditioning services tailored to your unique requirements. Our skilled technicians are dedicated to delivering reliable solutions that ensure your comfort and satisfaction.</p>
+      <div class="footer__social">
+        <a href={business.facebook} target="_blank" rel="noopener" aria-label="Mode Mechanical on Facebook"><Icon name="facebook" /></a>
+        <a href={business.instagram} target="_blank" rel="noopener" aria-label="Mode Mechanical on Instagram"><Icon name="instagram" /></a>
+      </div>
+    </div>
+    <nav aria-label="Company" data-reveal="fade-up" style="--reveal-delay:.2s">
+      <h2 class="footer__title">Company</h2>
+      <ul>{company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <nav aria-label="Services" data-reveal="fade-up" style="--reveal-delay:.4s">
+      <h2 class="footer__title">Services</h2>
+      <ul>{services.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <div class="footer__contact" data-reveal="fade-up" style="--reveal-delay:.6s">
+      <h2 class="footer__title">Get in touch</h2>
+      <ul class="footer__cards">
+        <li><span class="footer__ico footer__ico--cool"><Icon name="phone" size={17} /></span><div><span class="footer__label">24/7 Emergency Service</span><a href={business.phoneHref}>{business.phoneTopbar}</a></div></li>
+        <li><span class="footer__ico"><Icon name="pin" size={17} /></span><div><span class="footer__label">Location</span><address>{business.address.street}, {business.address.city}, {business.address.region} {business.address.zip}</address></div></li>
+        <li><span class="footer__ico footer__ico--warm"><Icon name="mail" size={17} /></span><div><span class="footer__label">Email Us</span><a href={`mailto:${business.email}`}>{business.email}</a></div></li>
+        <li><span class="footer__ico"><Icon name="clock" size={17} /></span><div><span class="footer__label">Opening hours</span><span>{business.hours}</span></div></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner" data-reveal="fade-up">
+      <p>Copyright © {year} {business.name}. Licensed HVAC contractor in Brooklyn, NY.</p>
+      <ul>{services.map((l) => <li><a href={l.href}>{l.label}</a></li>)}<li><a class="footer__top" href="#main">Back to top ↑</a></li></ul>
+    </div>
+  </div>
+</footer>
+<style>
+  .footer { position: relative; overflow: hidden; background:
+      radial-gradient(60% 50% at 0% 100%, rgba(44,107,224,.18), transparent 70%),
+      radial-gradient(50% 45% at 100% 0%, rgba(238,90,36,.14), transparent 70%),
+      var(--ink);
+    color: rgba(255,255,255,.72); padding-top: clamp(64px, 9vw, 112px); }
+  .footer__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .footer__ghost { color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
+  .footer__ghost:hover { background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1.5px #fff; }
+  .footer__cards { display: grid; gap: 14px; }
+  .footer__cards li { display: flex; gap: 12px; align-items: flex-start; margin: 0; }
+  .footer__cards a, .footer__cards address, .footer__cards span:not(.footer__label):not(.footer__ico) { color: #fff; font-weight: 600; }
+  .footer__label { display: block; font-size: .8rem; color: rgba(255,255,255,.55); font-weight: 600; margin-bottom: 2px; }
+  .footer__ico { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; }
+  .footer__ico--cool { background: rgba(44,107,224,.35); }
+  .footer__ico--warm { background: rgba(194,65,12,.4); }
+  .footer nav a, .footer__bottom a { display: inline-block; transition: color .2s ease, transform .2s ease; }
+  .footer nav a:hover { transform: translateX(3px); }
+  .footer__top { font-weight: 700; color: #fff; }
+  .footer::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--cool), var(--cool-glow) 45%, var(--warm-glow) 55%, var(--warm)); }
+  .footer__kicker { margin: 0 0 6px; color: rgba(255,255,255,.7); font-size: 1.05rem; }
+  .footer__big { display: block; color: #fff; font-family: var(--display); font-stretch: 80%; font-weight: 750; font-size: clamp(3rem, 9vw, 7.5rem); line-height: .9; letter-spacing: -0.045em; transition: color .3s ease; }
+  .footer__big:hover { background: linear-gradient(90deg, var(--cool-glow), var(--warm-glow)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .footer__band { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; padding-bottom: 40px; margin-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.1); }
+  
+  .footer__grid { display: grid; grid-template-columns: 1.5fr .8fr .8fr 1.4fr; gap: clamp(28px, 4vw, 56px); padding-bottom: 56px; }
+  .footer__brand img { width: 110px; margin-bottom: 18px; }
+  .footer__brand p { max-width: 40ch; }
+  .footer__social { display: flex; gap: 12px; }
+  .footer__social a { display: inline-flex; padding: 10px; border-radius: 12px; background: rgba(255,255,255,.08); color: #fff; transition: background-color .2s ease, transform .2s ease; }
+  .footer__social a:hover { transform: translateY(-2px); }
+  .footer__social a:hover { background: var(--blue-500); }
+  .footer__title { color: #fff; font-family: var(--font); font-stretch: 100%; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; margin-bottom: 18px; }
+  .footer__title--sm { font-size: 1rem; margin: 18px 0 4px; display: flex; align-items: center; gap: 8px; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { margin-bottom: 10px; }
+  a:hover { color: #fff; }
+  address { font-style: normal; }
+  .footer__eyebrow { color: var(--cool-glow); font-size: 1.2rem; margin-bottom: 8px; }
+  .footer__phone { display: inline-flex; align-items: center; gap: 12px; color: #fff; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 600; letter-spacing: -0.02em; }
+  .footer__bottom { border-top: 1px solid rgba(255,255,255,.1); }
+  .footer__bottom-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; flex-wrap: wrap; }
+  .footer__bottom p { margin: 0; }
+  .footer__bottom ul { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+  .footer__bottom li { margin: 0; }
+  @media (max-width: 900px) { .footer__grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .footer__grid { grid-template-columns: 1fr; } }
+</style>

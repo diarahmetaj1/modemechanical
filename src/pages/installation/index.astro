@@ -1,0 +1,45 @@
+---
+import ServiceLayout from '../../layouts/ServiceLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import FeatureGrid from '../../components/FeatureGrid.astro';
+import BrandLogos from '../../components/BrandLogos.astro';
+import FaqAccordion from '../../components/islands/FaqAccordion';
+import { seo } from '../../data/seo';
+import { installSystems, installationFeatures } from '../../data/features';
+import { installationFaq } from '../../data/faq';
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: installationFaq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<ServiceLayout seo={seo.installation} crumb="Installation" path="/installation/" lede="Central AC, ductless mini-splits, furnaces, boilers and heat pumps — sized to your building and installed to code." extraSchema={[faqSchema]}>
+  <section>
+    <SectionHeading title="Worry-Free HVAC Installation by Certified Experts in New York" highlight="Installation">
+      <p>Mode Mechanical installs central air conditioning, furnaces, boilers, heat pumps and ductless mini-split systems across Brooklyn, Queens, Manhattan, the Bronx and Staten Island. Every installation is permitted, code-compliant and backed by a manufacturer warranty.</p>
+      <p>Get reliable comfort and peace of mind with professional HVAC installation services in New York City. Our certified technicians install top-rated heating and cooling systems for residential and commercial properties across the five boroughs — from a single ductless unit in a Brooklyn brownstone to a full rooftop system for a commercial building.</p>
+      <p>Sizing matters more than brand. Before we quote, we assess your square footage, insulation, window exposure and existing ductwork, so you get equipment that matches the building instead of an oversized unit that short-cycles and wears out early.</p>
+    </SectionHeading>
+    <BrandLogos boxed title="Leading HVAC Brands We Install" />
+  </section>
+
+  <section>
+    <h2>HVAC Systems We Install</h2>
+    <ul class="systems">
+      {installSystems.map((s) => <li><strong>{s.title}</strong> — {s.text}</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Why Choose Us for HVAC Installation</h2>
+    <FeatureGrid items={installationFeatures} cols={2} />
+  </section>
+
+  <section>
+    <h2>HVAC Installation Questions</h2>
+    <FaqAccordion client:visible items={installationFaq} />
+  </section>
+</ServiceLayout>
+<style>
+  .systems { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 28px; padding-left: 1.1em; }
+  @media (max-width: 640px) { .systems { grid-template-columns: 1fr; } }
+</style>

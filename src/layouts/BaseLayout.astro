@@ -1,0 +1,189 @@
+---
+import '@fontsource/manrope/400.css';
+import '@fontsource/manrope/500.css';
+import '@fontsource/manrope/600.css';
+import '@fontsource/manrope/700.css';
+import '@fontsource-variable/bricolage-grotesque/standard.css';
+// Headings (including the hero H1, the LCP element) use this file: preload it so text paints sooner.
+import displayFontUrl from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2?url';
+import '../styles/global.css';
+import TopBar from '../components/TopBar.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileActionBar from '../components/MobileActionBar.astro';
+import { business } from '../data/site';
+import type { PageSeo } from '../data/seo';
+
+interface Props {
+  seo: PageSeo;
+  breadcrumb?: { name: string; path: string }[];
+  extraSchema?: Record<string, unknown>[];
+  preloadImage?: string;
+  /** Transparent header over the page's hero or banner; turns white on scroll. */
+  overlayHeader?: boolean;
+}
+const { seo, breadcrumb, extraSchema = [], preloadImage, overlayHeader = true } = Astro.props;
+
+const site = Astro.site ?? new URL(business.url);
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImage = new URL(seo.ogImage, site).href;
+const gtagId = (import.meta.env.PUBLIC_GTAG_ID ?? '').trim();
+const hasGtag = gtagId !== '' && !gtagId.startsWith('YOUR_');
+
+const businessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HVACBusiness',
+  name: business.name,
+  url: business.url + '/',
+  logo: new URL('/images/logo.png', site).href,
+  image: ogImage,
+  telephone: '+1-914-223-3301',
+  email: business.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: business.address.street,
+    addressLocality: business.address.city,
+    addressRegion: business.address.region,
+    postalCode: business.address.zip,
+    addressCountry: 'US',
+  },
+  openingHoursSpecification: [{
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: '08:00', closes: '18:00',
+  }],
+  areaServed: business.areaServed.map((name) => ({ '@type': 'Place', name })),
+  sameAs: [business.facebook, business.instagram],
+};
+
+const breadcrumbSchema = breadcrumb && {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [{ name: 'Home', path: '/' }, ...breadcrumb].map((c, i) => ({
+    '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.path, site).href,
+  })),
+};
+
+const schemas = [businessSchema, breadcrumbSchema, ...extraSchema].filter(Boolean);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="preload" as="font" type="font/woff2" href={displayFontUrl} crossorigin />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="icon" href="/favicon.jpg" />
+    <link rel="apple-touch-icon" href="/favicon.jpg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={business.name} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script is:inline>
+      // Enable scroll reveals only when they can complete; otherwise content stays visible.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        d.classList.add('reveal-on');
+        // Header entrance plays once per visit, not on every page.
+        try {
+          if (!sessionStorage.getItem('mm_intro')) { d.classList.add('intro'); sessionStorage.setItem('mm_intro', '1'); }
+        } catch (e) { /* storage unavailable: skip the intro */ }
+        // Safety net: never leave content hidden if the reveal script fails to load.
+        setTimeout(function () {
+          if (d.classList.contains('reveal-ready')) return;
+          document.querySelectorAll('[data-reveal]').forEach(function (el) { el.classList.add('is-in'); });
+        }, 4000);
+      })();
+    </script>
+    {schemas.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <TopBar />
+    <Header overlay={overlayHeader} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <MobileActionBar />
+
+    <script>
+      // WOW.js replacement: reveal each element once, as soon as it enters the viewport.
+      // Elements already above the viewport (fast scrolling, jump links, restored scroll
+      // position) are revealed too, so nothing stays hidden behind the reader.
+      const root = document.documentElement;
+      if (root.classList.contains('reveal-on')) {
+        const pending = new Set(document.querySelectorAll('[data-reveal]'));
+        const reveal = (el: Element) => { el.classList.add('is-in'); io.unobserve(el); pending.delete(el); };
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => { if (e.isIntersecting || e.boundingClientRect.bottom < 0) reveal(e.target); });
+          pending.forEach((el) => { if (el.getBoundingClientRect().bottom < 0) reveal(el); });
+        }, { threshold: 0 });
+        pending.forEach((el) => io.observe(el));
+        root.classList.add('reveal-ready');
+      }
+    </script>
+
+    <script>
+      // Keep campaign parameters from the landing URL for the whole visit, and carry them
+      // onto external booking links so every lead can be attributed.
+      const KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid'];
+      try {
+        const params = new URLSearchParams(location.search);
+        const found: Record<string, string> = {};
+        KEYS.forEach((k) => { const v = params.get(k); if (v) found[k] = v; });
+        if (Object.keys(found).length && !sessionStorage.getItem('mm_attribution')) {
+          sessionStorage.setItem('mm_attribution', JSON.stringify(found));
+        }
+        const stored = JSON.parse(sessionStorage.getItem('mm_attribution') || '{}');
+        if (Object.keys(stored).length) {
+          document.querySelectorAll<HTMLAnchorElement>('a[data-booking-external]').forEach((a) => {
+            const url = new URL(a.href);
+            Object.entries(stored).forEach(([k, v]) => url.searchParams.set(k, String(v)));
+            a.href = url.toString();
+          });
+        }
+      } catch { /* storage unavailable: links keep their default destination */ }
+    </script>
+
+    {hasGtag && (
+      <script is:inline define:vars={{ gtagId }}>
+        // Analytics loads after the page is interactive so it never blocks rendering.
+        window.addEventListener('load', function () {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gtagId);
+          document.head.appendChild(s);
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { window.dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', gtagId);
+        });
+      </script>
+    )}
+
+    <style>
+      .skip-link {
+        position: absolute; left: 12px; top: -48px; z-index: 100;
+        background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 6px;
+      }
+      .skip-link:focus { top: 12px; }
+    </style>
+  </body>
+</html>

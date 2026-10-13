@@ -1,0 +1,78 @@
+---
+import ServiceLayout from '../../layouts/ServiceLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import FeatureGrid from '../../components/FeatureGrid.astro';
+import Testimonials from '../../components/Testimonials.astro';
+import { seo } from '../../data/seo';
+import { repairFeatures, repairProblems } from '../../data/features';
+const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+// Which side of the system a symptom usually belongs to (drives the color dot).
+const kind = (t: string): 'cool' | 'warm' | 'both' =>
+  /air conditioning|refrigerant|frozen|condensate/i.test(t) ? 'cool' : /heating system/i.test(t) ? 'warm' : 'both';
+const kindLabel = { cool: 'Cooling', warm: 'Heating', both: 'Cooling and heating' } as const;
+---
+<ServiceLayout seo={seo.repair} crumb="Repair" path="/repair/" lede="Pick what’s happening below — we’ll tell you what usually causes it, and fix most problems on the first visit.">
+  <section>
+    <SectionHeading title="Common HVAC Problems We Fix in New York City" highlight="Problems">
+      <p>When the AC quits in August or the furnace dies in January, you need someone today — not next week. Mode Mechanical provides 24/7 emergency AC repair and heating repair across Brooklyn, Queens, Manhattan and the Bronx, with licensed technicians, stocked parts and a written price before the work starts.</p>
+    </SectionHeading>
+    <p class="finder__intro">Here’s what usually causes each of these problems, and what we check first.</p>
+    <div class="finder">
+      {repairProblems.map((p, i) => (
+        <details id={slug(p.title)} class="finder__item" open={i === 0}>
+          <summary>
+            <span class:list={['finder__dot', `finder__dot--${kind(p.title)}`]} aria-hidden="true"></span>
+            <span class="finder__title">{p.title.replace(/^./, (c) => c.toUpperCase())}</span>
+            <span class="finder__kind">{kindLabel[kind(p.title)]}</span>
+          </summary>
+          <div class="finder__body">
+            <p><strong>Usually:</strong> {p.text.replace(/^./, (c) => c.toUpperCase())}</p>
+            <a class="btn btn--ink" href="/contact/">Book this repair</a>
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>Why New Yorkers Call Mode Mechanical for HVAC Repair</h2>
+    <FeatureGrid items={repairFeatures} cols={2} />
+  </section>
+
+  <figure class="repair-photo">
+    <img src="/images/repair.webp" data-reveal="scale-in" alt="HVAC technician repairing an air conditioning unit in Brooklyn, New York"
+      width="1200" height="800" loading="lazy" decoding="async" />
+  </figure>
+  <Testimonials />
+</ServiceLayout>
+<script>
+  // Links like /repair/#heating-system-not-working open that symptom.
+  const openFromHash = () => {
+    const el = location.hash && document.getElementById(location.hash.slice(1));
+    if (el instanceof HTMLDetailsElement) { el.open = true; }
+  };
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+</script>
+<style>
+  .finder__intro { margin-top: 8px; }
+  .finder { border-top: 2px solid var(--ink); margin-top: 8px; }
+  .finder__item { border-bottom: 1px solid var(--line); transition: background-color .3s ease; scroll-margin-top: 120px; }
+  .finder__item[open] { background: var(--paper); border-radius: var(--radius-md); border-bottom-color: transparent; }
+  .finder__item:target { outline: 2px solid var(--cool); outline-offset: -2px; border-radius: var(--radius-md); }
+  summary { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 18px 16px; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; grid-column: 4; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px var(--ink); color: var(--ink); font-size: 18px; transition: transform .25s ease, background-color .25s ease; }
+  .finder__item[open] summary::after { content: '−'; background: var(--ink); color: #fff; }
+  .finder__dot { width: 12px; height: 12px; border-radius: 50%; }
+  .finder__dot--cool { background: var(--cool); }
+  .finder__dot--warm { background: var(--warm); }
+  .finder__dot--both { background: linear-gradient(90deg, var(--cool) 50%, var(--warm) 50%); }
+  .finder__title { font-weight: 700; font-size: 1.1rem; color: var(--ink); }
+  .finder__kind { font-size: .875rem; color: var(--text); }
+  .finder__body { padding: 0 16px 22px 42px; }
+  .finder__body p { margin-bottom: 14px; }
+  @media (max-width: 600px) { .finder__kind { display: none; } summary { grid-template-columns: auto 1fr auto; } summary::after { grid-column: 3; } .finder__body { padding-left: 16px; } }
+  .repair-photo { margin: clamp(40px, 6vw, 64px) 0 0; }
+  .repair-photo img { border-radius: var(--radius-lg); width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+</style>

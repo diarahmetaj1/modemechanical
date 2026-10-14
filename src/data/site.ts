@@ -6,16 +6,16 @@ export const business = {
   phoneTopbar: '914 223 3301',
   phoneHref: 'tel:+19142233301',
   email: 'info@modemechanical.com',
-  // Service-area business: no public street address. Visitors see the area served instead.
-  base: { city: 'Brooklyn', region: 'NY' },
+  // Service-area business: no public street address, only the base city and ZIP code.
+  base: { city: 'Brooklyn', region: 'NY', zip: '11238' },
   serviceArea: 'NYC, Long Island & Westchester',
   hours: 'Mon – Sun 08:00AM – 06:00PM',
   facebook: 'https://www.facebook.com/profile.php?id=61588581779860',
   instagram: 'https://www.instagram.com/modemechanical/',
-  // TODO(owner): paste the Google Maps (Business Profile) and Yelp page links. Each button,
-  // review prompt and schema link for them appears only once its link is filled in.
-  googleMaps: '',
-  yelp: '',
+  // Google Business Profile and Yelp listings. Each review button and schema link appears only
+  // when its link is filled in.
+  googleMaps: 'https://maps.app.goo.gl/AsMpUquF7GXxBty59',
+  yelp: 'https://www.yelp.com/biz/mode-mechanical-brooklyn',
   areaServed: ['Brooklyn', 'Queens', 'Manhattan', 'The Bronx', 'Staten Island', 'Long Island', 'Westchester County'],
 };
 

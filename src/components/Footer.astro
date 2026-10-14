@@ -54,7 +54,7 @@ const company = [
       <ul class="footer__contact">
         <li><Icon name="phone" size={16} /><a href={business.phoneHref}>{business.phoneDisplay}</a></li>
         <li><Icon name="mail" size={16} /><a href={`mailto:${business.email}`}>{business.email}</a></li>
-        <li><Icon name="pin" size={16} /><a href="/areas/">Serving {business.serviceArea}</a></li>
+        <li><Icon name="pin" size={16} /><span><address>{business.base.city}, {business.base.region} {business.base.zip}</address><a class="footer__area-link" href="/areas/">Serving {business.serviceArea}</a></span></li>
         <li><Icon name="clock" size={16} /><span>{business.hours}</span></li>
       </ul>
     </div>
@@ -126,6 +126,8 @@ const company = [
   .footer__contact li > :global(svg) { flex: none; margin-top: 4px; color: var(--cool-glow); }
   .footer__contact li:nth-child(even) > :global(svg) { color: var(--warm-glow); }
   .footer__contact a { transition: color .2s ease; }
+  .footer__contact address { font-style: normal; }
+  .footer__area-link { display: block; color: rgba(255,255,255,.66); font-weight: 500; font-size: .9rem; }
   .footer__contact a:hover { color: var(--cool-glow); }
 
   .footer__areas { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding-block: 24px; border-top: 1px solid rgba(255,255,255,.1); }

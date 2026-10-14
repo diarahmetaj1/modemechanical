@@ -135,7 +135,7 @@ Performance safeguards:
 
 - Home: two-temperature hero with "It's too hot" / "It's too cold" choices that open the matching symptom on the Repair page; services as a bento (Repair largest); service areas as a borough list.
 - Inner pages: dark split banners with the airflow, page-specific intro lines.
-- Repair: symptom finder built on native `<details>` (works without JavaScript; `/repair/#<symptom>` opens it).
+- Repair: symptom finder built on native `<details>` (works without JavaScript; `/hvac-repair/#<symptom>` opens it).
 - Phones: a fixed Call / Book bar on every page.
 - Footer: the phone number as the largest element; temperature gradient rule on footer and CTA.
 - Removed the hero slider (`HeroSlider`), replaced by the new hero.
@@ -173,7 +173,8 @@ src/
   components/    Header, Footer, TopBar, PageBanner, SectionHeading, FeatureGrid, BrandLogos,
                  CtaBox, ServiceAreas, Stats, Testimonials, ServiceSidebar, Icon
   components/islands/  MobileNav, HeroSlider, FaqAccordion, ContactForm (React)
-  pages/         /, /about-us/, /installation/, /maintenance/, /repair/, /projects/, /contact/, 404
+  pages/         /, /about-us/, /hvac-installation/, /hvac-maintenance/, /hvac-repair/, /projects/, /contact/,
+                 /service-areas/, /hvac-<area>-ny/ (from data/areas.ts via [area].astro), 404
 scripts/         fetch-assets.mjs, verify-build.mjs
 ```
 
@@ -198,7 +199,7 @@ Not yet done: a side-by-side visual comparison with the live site, downloading t
 - Demo testimonials from the theme are not migrated; the section is hidden until real reviews are added.
 - Accent blue darkened for text and buttons (`#6a8fd6` → `#4a70bf`) and body text slightly darker, to meet WCAG AA contrast. The original blue is kept for decorative fills.
 - Icon fonts, Roboto/Roboto Slab from the preview host, WooCommerce assets and WOW.js are removed.
-- The footer "Services" link pointed to `/services/` (404); it now goes to `/installation/`, and `/services/` redirects home.
+- The footer "Services" link pointed to `/services/` (404); it now goes to `/hvac-installation/`, and `/services/` redirects home.
 
 ## TODO for the owner
 

@@ -1,4 +1,4 @@
-// Service-area landing pages (/areas/<slug>/). Each page needs its own, genuinely local content:
+// Service-area landing pages (/hvac-<slug>-ny/), rendered by src/pages/[area].astro. Each page needs its own, genuinely local content:
 // the building types, the heating and cooling systems they usually have, and local questions.
 // Keep claims general and true; do not add job counts or response times that are not confirmed.
 import type { Faq } from './faq';
@@ -192,4 +192,4 @@ export const areas: Area[] = [
   },
 ];
 
-export const areaHref = (a: Area) => `/areas/${a.slug}/`;
+export const areaHref = (a: Area) => `/hvac-${a.slug}-ny/`;

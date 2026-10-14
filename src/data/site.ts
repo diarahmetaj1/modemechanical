@@ -25,11 +25,9 @@ export const bookingUrl: string = booking || '/contact/';
 export const bookingIsExternal = Boolean(booking);
 
 export const services = [
-  { label: 'Installation', href: '/installation/', text: 'Central air, furnaces, boilers and heat pumps, sized to the building and installed to code.' },
-  { label: 'Maintenance', href: '/maintenance/', text: 'Annual tune-ups that keep systems efficient and catch problems before they become breakdowns.' },
-  { label: 'Repair', href: '/repair/', text: 'AC and heating repair with a written price before any work starts, and 24/7 emergency service.' },
-  { label: 'Ductless Mini-Splits', href: '/ductless-mini-splits/', text: 'Quiet heating and cooling room by room, with no ductwork needed.' },
-  { label: 'Heat Pumps', href: '/heat-pumps/', text: 'One efficient system for heating and cooling that can replace or back up oil and gas.' },
+  { label: 'Installation', href: '/hvac-installation/', text: 'Central air, furnaces, boilers and heat pumps, sized to the building and installed to code.' },
+  { label: 'Maintenance', href: '/hvac-maintenance/', text: 'Annual tune-ups that keep systems efficient and catch problems before they become breakdowns.' },
+  { label: 'Repair', href: '/hvac-repair/', text: 'AC and heating repair with a written price before any work starts, and 24/7 emergency service.' },
 ];
 
 /** Review and listing profiles that are filled in (Google Maps, Yelp). */
@@ -43,7 +41,7 @@ export interface NavItem { label: string; href: string; children?: { label: stri
 export const nav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'About Us', href: '/about-us/' },
-  { label: 'Services', href: '/installation/', children: services },
+  { label: 'Services', href: '/hvac-installation/', children: services },
   { label: 'Projects', href: '/projects/' },
   { label: 'Contact', href: '/contact/' },
 ];

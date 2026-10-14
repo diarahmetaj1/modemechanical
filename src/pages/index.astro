@@ -16,14 +16,14 @@ import { business, bookingUrl } from '../data/site';
 
 const page = seo.home;
 const serviceCards = [
-  { title: 'Installation', href: '/installation/', image: '/images/service-installation.jpg',
-    alt: 'New HVAC system installation by Mode Mechanical in New York City',
+  { title: 'Installation', href: '/hvac-installation/', image: '/images/service-installation.jpg',
+    alt: 'New HVAC condensers installed by Mode Mechanical on a Brooklyn rooftop',
     text: 'New central AC, furnaces, boilers, heat pumps and ductless mini-splits — sized for your building, permitted and installed to code.' },
-  { title: 'Repair', href: '/repair/', image: '/images/service-repair.jpg',
-    alt: 'Air conditioning repair service by Mode Mechanical technicians',
+  { title: 'Repair', href: '/hvac-repair/', image: '/images/service-repair.jpg',
+    alt: 'HVAC outdoor units opened up for repair on a Manhattan rooftop',
     text: 'AC not cooling or heat not working? Licensed technicians, 24/7 emergency response across the five boroughs, and a price before the work starts.' },
-  { title: 'Maintenance', href: '/maintenance/', image: '/images/service-maintenance.jpg',
-    alt: 'Seasonal HVAC maintenance and tune-up by Mode Mechanical',
+  { title: 'Maintenance', href: '/hvac-maintenance/', image: '/images/service-maintenance.jpg',
+    alt: 'Mitsubishi outdoor units on a New York City rooftop, serviced during a seasonal tune-up',
     text: 'Annual tune-ups that catch problems before they become emergency calls — and keep your manufacturer warranty valid.' },
 ];
 const steps = [
@@ -42,11 +42,11 @@ const faqSchema = {
 
   <section class="section">
     <div class="container split">
-      <img class="split__img" data-reveal="scale-in" src="/images/welcome.jpg" alt="Air conditioning units installed by Mode Mechanical in Brooklyn"
+      <img class="split__img" data-reveal="scale-in" src="/images/welcome.jpg" alt="New LG outdoor condensers on a New York rooftop, with service gauges connected during installation"
         width="1400" height="1050" loading="lazy" decoding="async" />
       <div>
-        <SectionHeading pill="Welcome" title="Air Conditioning and Heating Specialists" highlight="Heating">
-          <p>Mode Mechanical is your trusted HVAC company in New York, offering expert air conditioning and heating services. From AC installations to furnace repairs, we deliver fast, reliable solutions to keep your space comfortable year-round.</p>
+        <SectionHeading pill="Welcome" title="Brooklyn Air Conditioning and Heating Specialists" highlight="Heating">
+          <p>Mode Mechanical is a licensed HVAC company based in Brooklyn, NY, providing air conditioning and heating service across <a href="/service-areas/">New York City, Long Island and Westchester</a>. From <a href="/hvac-installation/">AC and heating installation</a> to <a href="/hvac-repair/">furnace, boiler and AC repair</a> and <a href="/hvac-maintenance/">seasonal maintenance</a>, we deliver fast, reliable solutions to keep your home or business comfortable year-round.</p>
           <p><strong>Choose Mode Mechanical for efficient, affordable HVAC in New York.</strong></p>
         </SectionHeading>
         <a class="btn btn--primary" href="/about-us/">About Company</a>
@@ -57,12 +57,12 @@ const faqSchema = {
   <section class="section section--surface">
     <div class="container">
       <div class="svc-head">
-        <h2 data-reveal="fade-up">One crew for every season</h2>
+        <h2 data-reveal="fade-up">HVAC Services for Every Season</h2>
         <p data-reveal="fade-up" style="--reveal-delay:.1s">At Mode Mechanical, we provide comprehensive HVAC solutions designed to keep your home or business comfortable year-round — repairs, new systems and yearly tune-ups across New York City.</p>
       </div>
       <div class="bento">
-        <a class="tile tile--repair" href="/repair/" data-reveal="fade-up">
-          <img class="tile__img" src="/images/service-repair.jpg" alt="Air conditioning repair service by Mode Mechanical technicians" width="800" height="600" loading="lazy" decoding="async" />
+        <a class="tile tile--repair" href="/hvac-repair/" data-reveal="fade-up">
+          <img class="tile__img" src="/images/service-repair.jpg" alt={serviceCards[1].alt} width="800" height="600" loading="lazy" decoding="async" />
           <span class="tile__body">
             <span class="tile__kicker">24/7 emergency service</span>
             <h3>Repair</h3>
@@ -74,7 +74,7 @@ const faqSchema = {
             <span class="tile__go">Find your problem <Icon name="arrow" size={18} /></span>
           </span>
         </a>
-        <a class="tile tile--install" href="/installation/" data-reveal="fade-up" style="--reveal-delay:.1s">
+        <a class="tile tile--install" href="/hvac-installation/" data-reveal="fade-up" style="--reveal-delay:.1s">
           <span class="tile__body">
             <h3>Installation</h3>
             <span class="tile__text">{serviceCards[0].text}</span>
@@ -82,7 +82,7 @@ const faqSchema = {
           </span>
           <img class="tile__thumb" src="/images/service-installation.jpg" alt={serviceCards[0].alt} width="800" height="600" loading="lazy" decoding="async" />
         </a>
-        <a class="tile tile--maint" href="/maintenance/" data-reveal="fade-up" style="--reveal-delay:.2s">
+        <a class="tile tile--maint" href="/hvac-maintenance/" data-reveal="fade-up" style="--reveal-delay:.2s">
           <span class="tile__body">
             <h3>Maintenance</h3>
             <span class="tile__text">{serviceCards[2].text}</span>
@@ -96,7 +96,7 @@ const faqSchema = {
 
   <section class="section">
     <div class="container">
-      <SectionHeading pill="Top 6 Reasons" title="Why Choose Us" highlight="Choose" center>
+      <SectionHeading pill="Top 6 Reasons" title="Why Choose Mode Mechanical" highlight="Choose" center>
         <p>At Mode Mechanical, we deliver top-rated HVAC services in New York with a focus on reliability, affordability, and expert care. Our licensed technicians provide fast air conditioning repair, heating installation, and energy-efficient HVAC solutions for homes and businesses.</p>
         <p><strong>Quality service. Trusted experts. Local HVAC you can count on.</strong></p>
       </SectionHeading>
@@ -106,7 +106,7 @@ const faqSchema = {
 
   <section class="section section--surface">
     <div class="container">
-      <SectionHeading pill="Services Process" title="How It Works" highlight="Works" center>
+      <SectionHeading pill="Services Process" title="How Our HVAC Service Works" highlight="Works" center>
         <p>Our process is simple and reliable for all your HVAC needs in New York. It starts with a personalized consultation where we assess your space and recommend the best heating and cooling solutions. Once we finalize the details, our licensed HVAC technicians in NYC get to work using top-quality equipment and proven methods. We finish with a complete system inspection and quality check, ensuring your air conditioning or heating system is running efficiently and safely.</p>
       </SectionHeading>
       <ol class="steps">
@@ -118,14 +118,14 @@ const faqSchema = {
   <section class="section">
     <div class="container split split--wide">
       <div>
-        <SectionHeading pill="Our Specialty" title="From Chilling Challenges to Heating Solutions" highlight="Heating">
+        <SectionHeading pill="Our Specialty" title="Heating and Cooling Solutions for New York Homes and Businesses" highlight="Heating">
           <p>Welcome to Mode Mechanical, your trusted partner for all your HVAC needs. With years of industry experience and a commitment to excellence, we specialize in providing top-quality heating and air conditioning services tailored to your unique requirements. From installation and repair to maintenance and upgrades, our skilled technicians are dedicated to delivering reliable solutions that ensure your comfort and satisfaction.</p>
         </SectionHeading>
       </div>
       <div class="mosaic">
-        <img src="/images/specialty-1.jpg" data-reveal="scale-in" alt="Completed HVAC installation project by Mode Mechanical in Brooklyn" width="600" height="450" loading="lazy" decoding="async" />
+        <img src="/images/specialty-1.jpg" data-reveal="scale-in" alt="Two ductless mini-split condensers installed on ground stands beside a New York home" width="600" height="450" loading="lazy" decoding="async" />
         <Stats />
-        <img src="/images/specialty-2.jpg" data-reveal="scale-in" alt="Mode Mechanical technician working on a ductless mini-split system" width="600" height="450" loading="lazy" decoding="async" />
+        <img src="/images/specialty-2.jpg" data-reveal="scale-in" alt="Ductless mini-split outdoor units installed beside a rooftop bulkhead in Manhattan" width="600" height="450" loading="lazy" decoding="async" />
       </div>
     </div>
   </section>
@@ -135,14 +135,14 @@ const faqSchema = {
   <section class="section section--surface">
     <div class="container split">
       <div class="faq-aside">
-        <img src="/images/faq.webp" data-reveal="zoom-in" alt="HVAC maintenance service provided by Mode Mechanical in New York" width="600" height="700" loading="lazy" decoding="async" />
+        <img src="/images/faq-furnace.webp" data-reveal="zoom-in" alt="New Carrier gas furnace installed by Mode Mechanical in a Brooklyn basement" width="800" height="1067" loading="lazy" decoding="async" />
         <a class="faq-aside__phone" href={business.phoneHref}>
           <span>24 Hours &amp; Emergencies</span>
           <strong><Icon name="phone" size={22} /> {business.phoneTopbar}</strong>
         </a>
       </div>
       <div>
-        <SectionHeading pill="Do you have" title="Any Questions" highlight="Questions" />
+        <SectionHeading pill="FAQ" title="HVAC Questions, Answered" highlight="Questions" />
         <div data-reveal="slide-up"><FaqAccordion client:visible items={homeFaq} /></div>
       </div>
     </div>
@@ -219,7 +219,7 @@ const faqSchema = {
   .mosaic :global(.stats) { grid-row: span 2; }
 
   .faq-aside { position: relative; }
-  .faq-aside img { border-radius: var(--radius-lg); width: 100%; aspect-ratio: 6 / 7; object-fit: cover; }
+  .faq-aside img { border-radius: var(--radius-lg); width: 100%; aspect-ratio: 6 / 7; object-fit: cover; object-position: 50% 100%; }
   .faq-aside__phone { position: absolute; left: 24px; right: 24px; bottom: 24px; background: var(--blue-800); color: #fff; border-radius: var(--radius-md); padding: 18px 22px; display: grid; gap: 4px; }
   .faq-aside__phone strong { display: inline-flex; align-items: center; gap: 10px; font-size: 1.5rem; }
 

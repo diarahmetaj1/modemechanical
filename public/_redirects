@@ -6,3 +6,18 @@
 /my-account/         /                 301
 /sitemap_index.xml   /sitemap-index.xml 301
 # TODO: add one line per URL from the old WordPress sitemap that has no page here.
+
+# Renamed to keyword URLs (October 2026), and two retired service pages.
+/installation/              /hvac-installation/     301
+/maintenance/               /hvac-maintenance/      301
+/repair/                    /hvac-repair/           301
+/ductless-mini-splits/      /hvac-installation/     301
+/heat-pumps/                /hvac-installation/     301
+/areas/                     /service-areas/         301
+/areas/brooklyn/            /hvac-brooklyn-ny/      301
+/areas/queens/              /hvac-queens-ny/        301
+/areas/manhattan/           /hvac-manhattan-ny/     301
+/areas/bronx/               /hvac-bronx-ny/         301
+/areas/staten-island/       /hvac-staten-island-ny/ 301
+/areas/long-island/         /hvac-long-island-ny/   301
+/areas/westchester/         /hvac-westchester-ny/   301

@@ -13,7 +13,7 @@ Run `npm run assets` to download them (requires access to modemechanical.com). F
 | `public/images/service-maintenance.jpg` | `2026/10/mitsubishi.jpg` | data/seo.ts, pages/index.astro | confirmed in live HTML |
 | `public/images/specialty-1.jpg` | `2026/10/image_123650291-9-1.jpg` | pages/index.astro | confirmed in live HTML |
 | `public/images/specialty-2.jpg` | `2026/10/image00033-scaled-1.jpeg` | pages/index.astro | confirmed in live HTML |
-| `public/images/faq.webp` | `2026/10/1-3.webp` | pages/index.astro | confirmed in live HTML |
+| `public/images/faq-furnace.webp` | `2025/09/image_6209779-scaled.jpg` | pages/index.astro | same photo as `projects/project-09.jpg` (Carrier furnace); replaced the stock call-center photo `2026/10/1-3.webp` |
 | `public/images/repair.webp` | `2026/10/7-1.webp` | data/seo.ts, pages/repair/index.astro | confirmed in live HTML |
 | `public/images/about-condensers.jpg` | `2025/09/image_123650291-9.jpg` | data/seo.ts, pages/about-us/index.astro | *unconfirmed* — matched from Projects page |
 | `public/images/about-rooftop.jpg` | `2025/09/image_123650291-10.jpg` | pages/about-us/index.astro | *unconfirmed* — matched from Projects page |
@@ -31,12 +31,12 @@ Run `npm run assets` to download them (requires access to modemechanical.com). F
 | `public/images/brands/lg.png` | `2025/05/lg-logo-png-transparent.png` | data/brands.ts | confirmed in live HTML |
 | `public/images/projects/project-01.jpg` | `2026/10/image_123650291-5.jpg` | Projects gallery | 2025/05 original deleted from WordPress; same photo re-uploaded in 2026/10 |
 | `public/images/projects/project-02.jpg` | `2026/10/image00034-scaled-1.jpeg` | Projects gallery | 2025/05 original deleted from WordPress; same photo re-uploaded in 2026/10 |
-| `public/images/projects/project-03.jpg` | `2025/09/image_123650291-9.jpg` | Projects gallery | confirmed in live HTML |
+| ~~`public/images/projects/project-03.jpg`~~ | `2025/09/image_123650291-9.jpg` | — | removed from the gallery at the owner's request (same photo as `about-condensers.jpg`) |
 | `public/images/projects/project-04.jpg` | `2025/05/image00051-scaled.jpeg` | Projects gallery | confirmed in live HTML |
 | `public/images/projects/project-05.jpg` | `2026/10/image00033-scaled-1.jpeg` | Projects gallery | 2025/05 original deleted from WordPress; same photo re-uploaded in 2026/10 |
 | `public/images/projects/project-06.jpg` | `2025/05/image00048-scaled.jpeg` | Projects gallery | *substitute* — original `image00073.jpg` is gone from WordPress; replaced with an unused project photo from the library |
 | `public/images/projects/project-07.jpg` | `2025/09/image_123650291-8.jpg` | Projects gallery | confirmed in live HTML |
-| `public/images/projects/project-08.jpg` | `2025/09/image_123650291-10.jpg` | Projects gallery | confirmed in live HTML |
+| ~~`public/images/projects/project-08.jpg`~~ | `2025/09/image_123650291-10.jpg` | — | removed from the gallery at the owner's request (same photo as `about-rooftop.jpg`) |
 | `public/images/projects/project-09.jpg` | `2025/09/image_6209779-scaled.jpg` | Projects gallery | confirmed in live HTML |
 | `public/images/projects/project-10.jpg` | `2025/09/image_123650291-7.jpg` | Projects gallery | confirmed in live HTML |
 | `public/images/projects/project-11.jpg` | `2025/09/image_123650291-11.jpg` | Projects gallery | confirmed in live HTML |

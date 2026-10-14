@@ -6,9 +6,11 @@ import PageBanner from '../components/PageBanner.astro';
 import ServiceSidebar from '../components/ServiceSidebar.astro';
 import CtaBox from '../components/CtaBox.astro';
 import { business } from '../data/site';
+import { areas, areaHref } from '../data/areas';
 import type { PageSeo } from '../data/seo';
-interface Props { seo: PageSeo; crumb: string; path: string; lede?: string; extraSchema?: Record<string, unknown>[] }
-const { seo, crumb, path, lede, extraSchema } = Astro.props;
+interface Props { seo: PageSeo; crumb: string; path: string; lede?: string; extraSchema?: Record<string, unknown>[]; showAreas?: boolean }
+const { seo, crumb, path, lede, extraSchema, showAreas = true } = Astro.props;
+const service = crumb.replace(/^HVAC /, '').toLowerCase();
 ---
 <BaseLayout seo={seo} breadcrumb={[{ name: crumb, path }]} extraSchema={extraSchema}>
   <PageBanner h1={seo.h1} crumb={crumb} lede={lede} />
@@ -25,6 +27,12 @@ const { seo, crumb, path, lede, extraSchema } = Astro.props;
       </aside>
       <div class="svc__main prose">
         <slot />
+        {showAreas && (
+          <section class="svc__areas">
+            <h2>Where We Provide HVAC {crumb.replace(/^HVAC /, '')}</h2>
+            <p>We provide HVAC {service} {areas.map((a, i) => <>{i > 0 && (i === areas.length - 1 ? ' and ' : ', ')}<a href={areaHref(a)}>{a.inName}</a></>)}.</p>
+          </section>
+        )}
       </div>
     </div>
   </section>
@@ -39,6 +47,7 @@ const { seo, crumb, path, lede, extraSchema } = Astro.props;
   .svc__help-phone { display: block; margin: 6px 0 4px; color: #fff; font-family: var(--display); font-stretch: 86%; font-weight: 720; font-size: 2rem; letter-spacing: -0.02em; }
   .svc__help .btn { width: 100%; margin-top: 8px; }
   .svc__main :global(h2) { max-width: 24ch; }
+  .svc__areas a { color: var(--cool-deep); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
   .svc__main :global(section + section) { margin-top: clamp(48px, 7vw, 80px); }
   @media (max-width: 900px) {
     .svc { grid-template-columns: 1fr; }

@@ -18,5 +18,7 @@ const parts = highlight && title.includes(highlight) ? title.split(highlight) : 
   .shead__title { max-width: 22ch; }
   .shead--center .shead__title { margin-inline: auto; }
   .shead__body :global(p) { max-width: 70ch; }
+  .shead__body :global(a) { color: var(--cool-deep); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(23,63,143,.35); text-underline-offset: 3px; transition: text-decoration-color .2s ease; }
+  .shead__body :global(a:hover) { text-decoration-color: currentColor; }
   .shead--center .shead__body :global(p) { margin-inline: auto; }
 </style>

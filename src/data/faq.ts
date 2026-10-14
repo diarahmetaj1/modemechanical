@@ -14,16 +14,3 @@ export const installationFaq: Faq[] = [
   { q: 'What does a new HVAC system cost in New York?', a: 'Cost depends on system type, size and the condition of the existing ductwork. We provide a written estimate after an on-site assessment, with no obligation.' },
 ];
 
-export const miniSplitFaq: Faq[] = [
-  { q: 'How many rooms can one outdoor unit serve?', a: 'A single-zone system has one indoor unit. Multi-zone outdoor units can run several indoor units — commonly two to five, and more on larger models — each with its own temperature control.' },
-  { q: 'Do mini-splits heat in the winter?', a: 'Yes. Every mini-split we install is a heat pump, and cold-climate models are designed to keep heating efficiently through New York winters. Many customers use them to supplement a boiler or replace electric baseboard heat.' },
-  { q: 'How long does a mini-split installation take?', a: 'A single-zone installation is usually done in one day. Multi-zone systems take longer depending on the number of rooms and how the lines are routed.' },
-  { q: 'What maintenance do ductless systems need?', a: 'Rinse the washable filters every month or two in heavy use, and book a professional cleaning once a year to clean the coils, blower wheel and drain line so the system stays efficient and odor-free.' },
-];
-
-export const heatPumpFaq: Faq[] = [
-  { q: 'Will a heat pump keep my home warm in January?', a: 'A correctly sized cold-climate heat pump will heat most New York homes through the winter. If your home is large or drafty, a hybrid setup that keeps your furnace or boiler as backup for the coldest days is a reliable option.' },
-  { q: 'Do I have to remove my boiler or furnace?', a: 'No. Many homeowners keep the existing system as backup at first. We’ll recommend whether a full replacement or a hybrid setup makes more sense for your home and budget.' },
-  { q: 'Will I need an electrical upgrade?', a: 'Sometimes. A heat pump adds electrical load, so we check your panel and service size during the assessment and tell you up front if an upgrade is needed.' },
-  { q: 'Are there rebates for heat pumps in New York?', a: 'New York offers heat pump incentives through the NYS Clean Heat program, run by utilities such as Con Edison and PSEG Long Island. Amounts and eligibility change, so ask us about current options when you request a quote.' },
-];

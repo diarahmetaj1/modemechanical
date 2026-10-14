@@ -3,8 +3,8 @@
 import { readFile } from 'node:fs/promises';
 
 const pages = [
-  '/', '/about-us/', '/installation/', '/maintenance/', '/repair/', '/ductless-mini-splits/', '/heat-pumps/', '/projects/', '/contact/',
-  '/areas/', '/areas/brooklyn/', '/areas/queens/', '/areas/manhattan/', '/areas/bronx/', '/areas/staten-island/', '/areas/long-island/', '/areas/westchester/',
+  '/', '/about-us/', '/hvac-installation/', '/hvac-maintenance/', '/hvac-repair/', '/projects/', '/contact/',
+  '/service-areas/', '/hvac-brooklyn-ny/', '/hvac-queens-ny/', '/hvac-manhattan-ny/', '/hvac-bronx-ny/', '/hvac-staten-island-ny/', '/hvac-long-island-ny/', '/hvac-westchester-ny/',
 ];
 const dist = new URL('../dist/', import.meta.url);
 let failures = 0;
@@ -28,6 +28,7 @@ for (const page of pages) {
   check(/href="tel:\+19142233301"/.test(html), page, 'no tel:+19142233301 link');
   check(!/themewant\.com|infomaniak\.website/.test(html), page, 'references a third-party demo host');
   check(!/href="#"/.test(html), page, 'link pointing to "#"');
+  check(!/href="\/(installation|maintenance|repair|areas|ductless-mini-splits|heat-pumps)\//.test(html), page, 'link to a retired URL (now redirected)');
   check(!/Satisfication|Maintenace|Testimonail|1,234 ratings/.test(html), page, 'known typo or demo content present');
   check(!/<img(?![^>]*\balt=)[^>]*>/.test(html), page, 'image without alt attribute');
 }

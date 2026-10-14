@@ -3,22 +3,35 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageBanner from '../../components/PageBanner.astro';
 import ProjectGallery from '../../components/islands/ProjectGallery';
 import { seo } from '../../data/seo';
-// TODO(owner): replace the generic captions with one-line project descriptions.
-const locations = ['Brooklyn', 'Manhattan', 'Brooklyn', 'Brooklyn', 'Manhattan', 'Manhattan', 'Manhattan', 'Brooklyn', 'Brooklyn', 'Brooklyn', 'Brooklyn', 'Brooklyn'];
-const projects = locations.map((loc, i) => {
-  const n = String(i + 1).padStart(2, '0');
-  return { src: `/images/projects/project-${n}.jpg`, thumb: `/images/projects/project-${n}-760.webp`, caption: `${loc}, New York`, alt: `HVAC installation by Mode Mechanical in ${loc}, New York` };
-});
+// Photos 03 and 08 are left out on purpose (they appear on the About page instead).
+// Captions describe what each photo shows; the location comes from the job.
+const items = [
+  { n: '01', loc: 'Brooklyn', what: 'Rooftop condenser installation', alt: 'Row of new HVAC outdoor condensers on a flat Brooklyn rooftop with the city skyline behind' },
+  { n: '02', loc: 'Manhattan', what: 'Rooftop outdoor units', alt: 'Two HVAC outdoor units with service panels open beside a rooftop bulkhead in Manhattan' },
+  { n: '04', loc: 'Brooklyn', what: 'Wall-mounted LG condensers', alt: 'Two LG outdoor condensing units mounted on a wall in a Brooklyn building' },
+  { n: '05', loc: 'Manhattan', what: 'Rooftop mini-split install', alt: 'Ductless mini-split outdoor units installed next to a rooftop bulkhead in Manhattan' },
+  { n: '06', loc: 'Manhattan', what: 'Daikin outdoor units', alt: 'Two Daikin outdoor units on wall brackets with a refrigerant cylinder during installation' },
+  { n: '07', loc: 'Manhattan', what: 'Rooftop exhaust fans', alt: 'Four new rooftop exhaust fans installed on a parapet wall in Manhattan' },
+  { n: '09', loc: 'Brooklyn', what: 'Carrier gas furnace', alt: 'New Carrier gas furnace installed in a Brooklyn basement' },
+  { n: '10', loc: 'Brooklyn', what: 'Commercial ductwork', alt: 'New overhead ductwork installed across an open commercial floor in Brooklyn' },
+  { n: '11', loc: 'Brooklyn', what: 'Concealed ducted unit', alt: 'Ceiling-concealed ducted air handler installed in a framed ceiling in Brooklyn' },
+  { n: '12', loc: 'Brooklyn', what: 'Exposed spiral ductwork', alt: 'Exposed spiral ductwork installed in a finished Brooklyn space' },
+];
+const projects = items.map((p) => ({
+  src: `/images/projects/project-${p.n}.jpg`, thumb: `/images/projects/project-${p.n}-760.webp`,
+  caption: `${p.what} · ${p.loc}`, alt: p.alt,
+}));
 ---
 <BaseLayout seo={seo.projects} breadcrumb={[{ name: 'Projects', path: '/projects/' }]}>
   <PageBanner h1={seo.projects.h1} crumb="Projects" lede="Recent heating and cooling installations in Brooklyn and Manhattan." />
   <section class="section">
     <div class="container">
-      <p class="intro" data-reveal="fade-up">A selection of recent heating and cooling installations by Mode Mechanical across Brooklyn and Manhattan — ductless mini-splits, condenser units and full system replacements in homes, brownstones and commercial buildings.</p>
+      <p class="intro" data-reveal="fade-up">A selection of recent HVAC work by Mode Mechanical in Brooklyn and Manhattan — rooftop condensers, ductless mini-splits, a gas furnace, rooftop exhaust fans and commercial ductwork in homes, brownstones and commercial buildings. Planning something similar? See our <a href="/hvac-installation/">HVAC installation</a> service.</p>
       <ProjectGallery client:visible items={projects} />
     </div>
   </section>
 </BaseLayout>
 <style>
   .intro { max-width: 70ch; margin: 0 auto 40px; text-align: center; font-size: 1.05rem; }
+  .intro a { color: var(--cool-deep); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 </style>

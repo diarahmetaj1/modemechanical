@@ -11,7 +11,7 @@ const kind = (t: string): 'cool' | 'warm' | 'both' =>
   /air conditioning|refrigerant|frozen|condensate/i.test(t) ? 'cool' : /heating system/i.test(t) ? 'warm' : 'both';
 const kindLabel = { cool: 'Cooling', warm: 'Heating', both: 'Cooling and heating' } as const;
 ---
-<ServiceLayout seo={seo.repair} crumb="Repair" path="/repair/" lede="Pick what’s happening below — we’ll tell you what usually causes it, and fix most problems on the first visit.">
+<ServiceLayout seo={seo.repair} crumb="HVAC Repair" path="/hvac-repair/" lede="Pick what’s happening below — we’ll tell you what usually causes it, and fix most problems on the first visit.">
   <section>
     <SectionHeading title="Common HVAC Problems We Fix in New York City" highlight="Problems">
       <p>When the AC quits in August or the furnace dies in January, you need someone today — not next week. Mode Mechanical provides 24/7 emergency AC repair and heating repair across Brooklyn, Queens, Manhattan and the Bronx, with licensed technicians, stocked parts and a written price before the work starts.</p>
@@ -40,13 +40,13 @@ const kindLabel = { cool: 'Cooling', warm: 'Heating', both: 'Cooling and heating
   </section>
 
   <figure class="repair-photo">
-    <img src="/images/repair.webp" data-reveal="scale-in" alt="HVAC technician repairing an air conditioning unit in Brooklyn, New York"
+    <img src="/images/repair.webp" data-reveal="scale-in" alt="Customer booking an AC and heating repair online from a laptop"
       width="1200" height="800" loading="lazy" decoding="async" />
   </figure>
   <Testimonials />
 </ServiceLayout>
 <script>
-  // Links like /repair/#heating-system-not-working open that symptom.
+  // Links like /hvac-repair/#heating-system-not-working open that symptom.
   const openFromHash = () => {
     const el = location.hash && document.getElementById(location.hash.slice(1));
     if (el instanceof HTMLDetailsElement) { el.open = true; }

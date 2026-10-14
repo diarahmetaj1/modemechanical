@@ -1,13 +1,13 @@
 ---
-import ServiceLayout from '../../layouts/ServiceLayout.astro';
-import SectionHeading from '../../components/SectionHeading.astro';
-import Icon from '../../components/Icon.astro';
-import FaqAccordion from '../../components/islands/FaqAccordion';
-import { areas, areaHref, type Area } from '../../data/areas';
-import { business, services } from '../../data/site';
+import ServiceLayout from '../layouts/ServiceLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Icon from '../components/Icon.astro';
+import FaqAccordion from '../components/islands/FaqAccordion';
+import { areas, areaHref, type Area } from '../data/areas';
+import { business, services } from '../data/site';
 
 export function getStaticPaths() {
-  return areas.map((area) => ({ params: { slug: area.slug }, props: { area } }));
+  return areas.map((area) => ({ params: { area: areaHref(area).slice(1, -1) }, props: { area } }));
 }
 interface Props { area: Area }
 const { area } = Astro.props;
@@ -27,7 +27,7 @@ const faqSchema = {
   mainEntity: area.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
 };
 ---
-<ServiceLayout seo={seo} crumb={area.name} path={path} lede={area.lede} extraSchema={[serviceSchema, faqSchema]}>
+<ServiceLayout seo={seo} crumb={area.name} path={path} lede={area.lede} extraSchema={[serviceSchema, faqSchema]} showAreas={false}>
   <section>
     <SectionHeading pill={area.home ? 'Our home base' : 'Service area'} title={`Your Local HVAC Contractor ${area.inName}`}>
       {area.intro.map((p) => <p>{p}</p>)}

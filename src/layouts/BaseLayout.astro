@@ -21,8 +21,10 @@ interface Props {
   preloadImage?: string;
   /** Transparent header over the page's hero or banner; turns white on scroll. */
   overlayHeader?: boolean;
+  /** Keep this page out of search results (the 404 page). */
+  noindex?: boolean;
 }
-const { seo, breadcrumb, extraSchema = [], preloadImage, overlayHeader = true } = Astro.props;
+const { seo, breadcrumb, extraSchema = [], preloadImage, overlayHeader = true, noindex = false } = Astro.props;
 
 const site = Astro.site ?? new URL(business.url);
 const canonical = new URL(Astro.url.pathname, site).href;
@@ -74,7 +76,7 @@ const schemas = [businessSchema, breadcrumbSchema, ...extraSchema].filter(Boolea
     <meta name="description" content={seo.description} />
     <link rel="canonical" href={canonical} />
     <link rel="preload" as="font" type="font/woff2" href={displayFontUrl} crossorigin />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
     <link rel="icon" href="/favicon.jpg" />
     <link rel="apple-touch-icon" href="/favicon.jpg" />
     <link rel="sitemap" href="/sitemap-index.xml" />

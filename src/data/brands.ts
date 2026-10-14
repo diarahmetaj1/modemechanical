@@ -9,4 +9,4 @@ export const brands = [
   { name: 'Carrier', src: '/images/brands/brand-unlabeled-1.webp' },
   { name: 'LG', src: '/images/brands/lg.png' },
   { name: 'York', src: '/images/brands/york.png' },
-].map((b) => ({ ...b, alt: `${b.name} HVAC systems installed by Mode Mechanical` }));
+].map((b) => ({ ...b, alt: `${b.name} logo, an HVAC brand Mode Mechanical installs and services` }));

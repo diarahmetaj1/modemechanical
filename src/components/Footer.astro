@@ -6,7 +6,7 @@ const year = new Date().getFullYear();
 const company = [
   { label: 'About Us', href: '/about-us/' },
   { label: 'Projects', href: '/projects/' },
-  { label: 'Service Areas', href: '/areas/' },
+  { label: 'Service Areas', href: '/service-areas/' },
   { label: 'Contact', href: '/contact/' },
 ];
 ---
@@ -28,7 +28,7 @@ const company = [
   <div class="container footer__grid">
     <div class="footer__brand" data-reveal="fade-up">
       <a class="footer__logo" href="/" aria-label="Mode Mechanical home">
-        <img src="/images/logo-header-white.png" alt="Mode Mechanical" width="300" height="305" loading="lazy" />
+        <img src="/images/logo-header-white.png" alt="Mode Mechanical HVAC logo" width="300" height="305" loading="lazy" />
       </a>
       <p>Top-quality heating, ventilation and air conditioning services tailored to your home or business. Reliable work from skilled technicians, built around your comfort.</p>
       <div class="footer__social">
@@ -54,7 +54,7 @@ const company = [
       <ul class="footer__contact">
         <li><Icon name="phone" size={16} /><a href={business.phoneHref}>{business.phoneDisplay}</a></li>
         <li><Icon name="mail" size={16} /><a href={`mailto:${business.email}`}>{business.email}</a></li>
-        <li><Icon name="pin" size={16} /><span><address>{business.base.city}, {business.base.region} {business.base.zip}</address><a class="footer__area-link" href="/areas/">Serving {business.serviceArea}</a></span></li>
+        <li><Icon name="pin" size={16} /><span><address>{business.base.city}, {business.base.region} {business.base.zip}</address><a class="footer__area-link" href="/service-areas/">Serving {business.serviceArea}</a></span></li>
         <li><Icon name="clock" size={16} /><span>{business.hours}</span></li>
       </ul>
     </div>

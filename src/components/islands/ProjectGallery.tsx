@@ -1,7 +1,8 @@
 import './ProjectGallery.css';
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react';
 
-export interface Project { src: string; alt: string; caption: string }
+/** `src` is the full-size photo (lightbox); `thumb`, if given, is the smaller one shown in the slider. */
+export interface Project { src: string; thumb?: string; alt: string; caption: string }
 
 const AUTOPLAY_MS = 4500;
 /** Slides further than this from the front one are hidden. */
@@ -132,7 +133,7 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
                       onClick={(e) => { e.preventDefault(); setLightbox(true); }}
                       onPointerMove={onTilt} onPointerLeave={resetTilt}
                       aria-label={`Open larger image: ${p.alt}`}>
-                      <img src={p.src} alt={p.alt} width={600} height={750} decoding="async" draggable={false} />
+                      <img src={p.thumb ?? p.src} alt={p.alt} width={600} height={750} decoding="async" draggable={false} />
                       <span className="cf__tag">
                         <span className="cf__pin" aria-hidden="true" /><span className="cf__tag-text">{p.caption}</span>
                         <span className="cf__zoom" aria-hidden="true">
@@ -142,7 +143,7 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
                     </a>
                   ) : (
                     <button type="button" className="cf__card" tabIndex={-1} onClick={() => go(i)}>
-                      <img src={p.src} alt="" width={600} height={750} loading="lazy" decoding="async" draggable={false} />
+                      <img src={p.thumb ?? p.src} alt="" width={600} height={750} loading="lazy" decoding="async" draggable={false} />
                     </button>
                   )}
                 </li>

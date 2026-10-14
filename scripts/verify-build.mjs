@@ -2,7 +2,10 @@
 // Run after `npm run build`:  npm run verify
 import { readFile } from 'node:fs/promises';
 
-const pages = ['/', '/about-us/', '/installation/', '/maintenance/', '/repair/', '/projects/', '/contact/'];
+const pages = [
+  '/', '/about-us/', '/installation/', '/maintenance/', '/repair/', '/ductless-mini-splits/', '/heat-pumps/', '/projects/', '/contact/',
+  '/areas/', '/areas/brooklyn/', '/areas/queens/', '/areas/manhattan/', '/areas/bronx/', '/areas/staten-island/', '/areas/long-island/', '/areas/westchester/',
+];
 const dist = new URL('../dist/', import.meta.url);
 let failures = 0;
 const check = (ok, page, msg) => { if (!ok) { failures++; console.log(`✗ ${page}  ${msg}`); } };

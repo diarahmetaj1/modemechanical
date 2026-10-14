@@ -1,0 +1,50 @@
+---
+import ServiceLayout from '../../layouts/ServiceLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import FeatureGrid from '../../components/FeatureGrid.astro';
+import BrandLogos from '../../components/BrandLogos.astro';
+import FaqAccordion from '../../components/islands/FaqAccordion';
+import { seo } from '../../data/seo';
+import { heatPumpOptions } from '../../data/features';
+import { heatPumpFaq } from '../../data/faq';
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: heatPumpFaq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<ServiceLayout seo={seo.heatPumps} crumb="Heat Pumps" path="/heat-pumps/" lede="One system for heating and cooling — efficient enough to replace or back up oil, gas and electric heat." extraSchema={[faqSchema]}>
+  <section>
+    <SectionHeading title="Heat Pump Installation for New York Homes" highlight="Heat Pump">
+      <p>A heat pump moves heat instead of burning fuel to make it: it pulls heat out of the outdoor air in winter and pushes heat out of your home in summer. That makes it both your heating and your air conditioning, and far more efficient than oil, propane or electric baseboard heat.</p>
+      <p>Today’s cold-climate heat pumps are built for New York winters. Mode Mechanical installs ducted, ductless and hybrid heat pump systems across New York City, Long Island and Westchester, sized to your home after a proper assessment of insulation, windows, ductwork and electrical service.</p>
+    </SectionHeading>
+  </section>
+
+  <section>
+    <h2>Heat Pump Options</h2>
+    <FeatureGrid items={heatPumpOptions} cols={2} />
+  </section>
+
+  <section>
+    <h2>Is a Heat Pump Right for Your Home?</h2>
+    <ul class="hp__fit">
+      <li><strong>You heat with oil, propane or electric baseboards.</strong> These are the most expensive ways to heat, and the biggest savings come from switching.</li>
+      <li><strong>Your air conditioner needs replacing anyway.</strong> A heat pump costs little more than a new AC and gives you efficient heat as well.</li>
+      <li><strong>Some rooms are always too hot or too cold.</strong> Ductless heat pumps fix problem rooms without touching the rest of the system.</li>
+      <li><strong>You want to cut fossil fuel use.</strong> A hybrid system can handle most of the year on electricity and keep your boiler or furnace as backup.</li>
+    </ul>
+  </section>
+
+  <section>
+    <BrandLogos boxed title="Heat Pump Brands We Install" />
+  </section>
+
+  <section>
+    <h2>Heat Pump Questions</h2>
+    <FaqAccordion client:visible items={heatPumpFaq} />
+  </section>
+</ServiceLayout>
+<style>
+  .hp__fit { display: grid; gap: 12px; padding-left: 1.1em; }
+  .hp__fit strong { color: var(--ink); }
+</style>

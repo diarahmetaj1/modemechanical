@@ -38,9 +38,27 @@ export const seo: Record<string, PageSeo> = {
     h1: 'HVAC Projects in Brooklyn and Manhattan',
     ogImage: '/images/projects/project-01.jpg',
   },
+  areas: {
+    title: 'HVAC Service Areas in NYC & Nearby | Mode Mechanical',
+    description: 'Mode Mechanical provides HVAC installation, repair and maintenance across all five NYC boroughs, Long Island and Westchester County.',
+    h1: 'HVAC Service Areas',
+    ogImage: '/images/hero-1.webp',
+  },
+  miniSplits: {
+    title: 'Ductless Mini-Split Installation in NYC | Mode Mechanical',
+    description: 'Ductless mini-split installation and repair in Brooklyn and across NYC. Mitsubishi, Daikin, Fujitsu and LG systems for heating and cooling. Call (914) 223-3301.',
+    h1: 'Ductless Mini-Split Installation and Repair in New York City',
+    ogImage: '/images/specialty-2.jpg',
+  },
+  heatPumps: {
+    title: 'Heat Pump Installation in NYC | Mode Mechanical',
+    description: 'Cold-climate heat pump installation for NYC, Long Island and Westchester homes. Heat and cool with one system and cut oil and gas use. Call (914) 223-3301.',
+    h1: 'Heat Pump Installation in New York City',
+    ogImage: '/images/service-installation.jpg',
+  },
   contact: {
     title: 'Contact Mode Mechanical | HVAC in Brooklyn, NY',
-    description: 'Reach Mode Mechanical at 941 Fulton St, Brooklyn. Call (914) 223-3301 or request a free HVAC estimate online. Open Mon–Sun, 8AM–6PM.',
+    description: 'Contact Mode Mechanical for HVAC service across NYC, Long Island and Westchester. Call (914) 223-3301 or request a free estimate. Open Mon–Sun, 8AM–6PM.',
     h1: 'Contact Mode Mechanical',
     ogImage: '/images/hero-1.webp',
   },

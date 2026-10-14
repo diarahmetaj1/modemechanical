@@ -42,6 +42,8 @@ Run `npm run assets` to download them (requires access to modemechanical.com). F
 | `public/images/projects/project-11.jpg` | `2025/09/image_123650291-11.jpg` | Projects gallery | confirmed in live HTML |
 | `public/images/projects/project-12.jpg` | `2025/05/image_123650291-2.jpg` | Projects gallery | confirmed in live HTML |
 
+Each `public/images/projects/project-NN.jpg` also has a `project-NN-760.webp` copy (760px wide, WebP quality 78) used by the Projects slider; the JPEG is shown in the full-size lightbox. Regenerate the WebP copies if a project photo changes.
+
 ## Not migrated
 
 - Theme demo images and fonts hosted on `themewant.com` and `v45sghbrlla.preview.infomaniak.website` (not owned by the business).

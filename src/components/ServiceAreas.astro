@@ -1,16 +1,9 @@
 ---
-// Service areas as a large typographic list: each borough with the neighborhoods served.
-// Borough pages do not exist yet, so rows are not links; when /hvac-brooklyn/ etc. are added,
-// wrap each row in an <a>.
+// Service areas as a large typographic list: each area with some of the neighborhoods served,
+// linking to its landing page.
 import Icon from './Icon.astro';
 import { business } from '../data/site';
-const areas = [
-  { name: 'Brooklyn', note: 'Park Slope, Bed-Stuy, Williamsburg, Fort Greene, Bushwick, Bay Ridge', home: true },
-  { name: 'Queens', note: 'Astoria, Long Island City, Forest Hills, Flushing' },
-  { name: 'Manhattan', note: 'Lower Manhattan, Midtown, Upper West Side, Harlem' },
-  { name: 'The Bronx', note: 'Riverdale, Fordham, Pelham Bay and nearby neighborhoods' },
-  { name: 'Staten Island', note: 'North Shore, Mid-Island and South Shore' },
-];
+import { areas, areaHref } from '../data/areas';
 ---
 <section class="section areas">
   <div class="container">
@@ -23,10 +16,12 @@ const areas = [
     </div>
     <ul class="areas__list">
       {areas.map((a, i) => (
-        <li class:list={['area', { 'area--home': a.home }]} data-reveal="fade-up" style={`--reveal-delay:${i * 0.06}s`}>
-          <span class="area__name">{a.name}</span>
-          <span class="area__note">{a.note}</span>
-          {a.home ? <span class="area__tag"><Icon name="pin" size={15} /> Home base</span> : <span />}
+        <li data-reveal="fade-up" style={`--reveal-delay:${i * 0.06}s`}>
+          <a class:list={['area', { 'area--home': a.home }]} href={areaHref(a)}>
+            <span class="area__name">{a.name}</span>
+            <span class="area__note">{a.neighborhoods.slice(0, 5).join(', ')} and more</span>
+            {a.home ? <span class="area__tag"><Icon name="pin" size={15} /> Home base</span> : <span class="area__go" aria-hidden="true"><Icon name="arrow" size={20} /></span>}
+          </a>
         </li>
       ))}
     </ul>
@@ -40,6 +35,10 @@ const areas = [
   .areas__list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
   .area { display: grid; grid-template-columns: minmax(200px, 1fr) 1.4fr auto; align-items: center; gap: 24px; padding: 22px 4px; border-bottom: 1px solid var(--line); transition: background-color .3s ease, padding .3s ease; }
   .area:hover { background: var(--paper); padding-inline: 16px; }
+  .area:hover .area__name { color: var(--cool); }
+  .area__name { transition: color .2s ease; }
+  .area__go { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--line); color: var(--ink); transition: background-color .2s ease, color .2s ease, transform .2s ease; }
+  .area:hover .area__go { background: var(--ink); color: #fff; transform: translateX(4px); }
   .area__name { font-family: var(--display); font-stretch: 80%; font-weight: 720; font-size: clamp(2rem, 4.6vw, 3.6rem); letter-spacing: -0.035em; line-height: 1; color: var(--ink); }
   .area--home .area__name { color: var(--cool); }
   .area__note { font-size: 1rem; }

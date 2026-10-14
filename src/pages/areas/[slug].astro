@@ -1,0 +1,105 @@
+---
+import ServiceLayout from '../../layouts/ServiceLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Icon from '../../components/Icon.astro';
+import FaqAccordion from '../../components/islands/FaqAccordion';
+import { areas, areaHref, type Area } from '../../data/areas';
+import { business, services } from '../../data/site';
+
+export function getStaticPaths() {
+  return areas.map((area) => ({ params: { slug: area.slug }, props: { area } }));
+}
+interface Props { area: Area }
+const { area } = Astro.props;
+const path = areaHref(area);
+const seo = { title: area.title, description: area.description, h1: area.h1, ogImage: '/images/hero-1.webp' };
+const others = areas.filter((a) => a.slug !== area.slug);
+
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: 'HVAC installation, repair and maintenance',
+  provider: { '@type': 'HVACBusiness', name: business.name, url: business.url + '/', telephone: '+1-914-223-3301' },
+  areaServed: { '@type': 'Place', name: `${area.name}, New York` },
+};
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: area.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<ServiceLayout seo={seo} crumb={area.name} path={path} lede={area.lede} extraSchema={[serviceSchema, faqSchema]}>
+  <section>
+    <SectionHeading pill={area.home ? 'Our home base' : 'Service area'} title={`Your Local HVAC Contractor ${area.inName}`}>
+      {area.intro.map((p) => <p>{p}</p>)}
+    </SectionHeading>
+    <h3 class="hoods__title">Neighborhoods we serve {area.inName}</h3>
+    <ul class="hoods" data-reveal="fade-up">
+      {area.neighborhoods.map((n) => <li><Icon name="pin" size={14} /> {n}</li>)}
+    </ul>
+    <p class="hoods__note">Don’t see yours? Call <a href={business.phoneHref}>{business.phoneDisplay}</a> and we’ll tell you straight away.</p>
+  </section>
+
+  <section>
+    <h2>Homes and Buildings We Work On {area.inName}</h2>
+    <ul class="bld">
+      {area.buildings.map((b, i) => (
+        <li data-reveal="fade-up" style={`--reveal-delay:${(i % 2) * 0.15}s`}>
+          <h3>{b.title}</h3>
+          <p>{b.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <h2>HVAC Services {area.inName}</h2>
+    <ul class="svcs">
+      {services.map((s, i) => (
+        <li data-reveal="fade-up" style={`--reveal-delay:${(i % 3) * 0.1}s`}>
+          <a href={s.href}>
+            <span class="svcs__name">{s.label} <Icon name="arrow" size={18} /></span>
+            <span class="svcs__text">{s.text}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Questions from {area.name} Customers</h2>
+    <FaqAccordion client:visible items={area.faq} />
+  </section>
+
+  <section>
+    <h2>Other Areas We Serve</h2>
+    <ul class="others">
+      {others.map((a) => <li><a href={areaHref(a)}>HVAC {a.inName}</a></li>)}
+    </ul>
+  </section>
+</ServiceLayout>
+<style>
+  .hoods__title { font-size: 1.1rem; margin-top: 8px; }
+  .hoods { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .hoods li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: var(--ice); color: var(--cool-deep); font-weight: 600; font-size: .92rem; }
+  .hoods__note { font-size: .95rem; }
+  .hoods__note a { color: var(--cool-deep); font-weight: 700; }
+
+  .bld { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .bld li { position: relative; padding: 24px 24px 22px; border-radius: var(--radius-md); background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+  .bld li::before { content: ''; position: absolute; left: 24px; top: 0; width: 40px; height: 3px; border-radius: 0 0 3px 3px; background: linear-gradient(90deg, var(--cool), var(--warm)); }
+  .bld h3 { font-size: 1.2rem; margin-bottom: 6px; }
+  .bld p { margin: 0; max-width: none; }
+
+  .svcs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .svcs a { display: grid; gap: 6px; height: 100%; padding: 20px 22px; border-radius: var(--radius-md); box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow .2s ease, transform .2s ease, background-color .2s ease; }
+  .svcs a:hover { background: var(--ice); box-shadow: inset 0 0 0 1px var(--cool); transform: translateY(-2px); }
+  .svcs__name { display: flex; justify-content: space-between; align-items: center; color: var(--ink); font-weight: 750; font-size: 1.05rem; }
+  .svcs__name :global(svg) { color: var(--cool); transition: transform .2s ease; }
+  .svcs a:hover .svcs__name :global(svg) { transform: translateX(3px); }
+  .svcs__text { font-size: .93rem; line-height: 1.6; }
+
+  .others { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .others a { display: inline-block; padding: 10px 18px; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 650; font-size: .95rem; transition: background-color .2s ease; }
+  .others a:hover { background: var(--cool); }
+  @media (max-width: 640px) { .bld { grid-template-columns: 1fr; } }
+</style>

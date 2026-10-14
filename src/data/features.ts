@@ -74,3 +74,24 @@ export const installationFeatures: Feature[] = [
   { title: 'Permits and Inspections', text: 'We pull the required permits and coordinate inspections so every installation is code-compliant.', icon: 'fileCheck' },
   { title: 'Manufacturer Warranty', text: 'Every new system is backed by its manufacturer warranty.', icon: 'award' },
 ];
+
+export const miniSplitTypes: Feature[] = [
+  { title: 'Wall-mounted units', text: 'The most common and affordable indoor unit. Slim, quiet and ideal for bedrooms, living rooms and offices.', icon: 'snowflake' },
+  { title: 'Ceiling cassettes', text: 'Recessed into the ceiling and blowing air in four directions — clean-looking and great for open plans and stores.', icon: 'award' },
+  { title: 'Concealed ducted units', text: 'Hidden above a ceiling or in a closet with short ducts to one or more rooms, so all you see are grilles.', icon: 'clipboardCheck' },
+  { title: 'Floor consoles', text: 'Low units that sit where a radiator or window unit was, perfect under windows and in attic rooms.', icon: 'wrench' },
+];
+
+export const miniSplitBenefits: Feature[] = [
+  { title: 'No ductwork needed', text: 'Only a small hole for the refrigerant line, so brownstones, apartments and additions get central-style comfort without opening walls.', icon: 'hardHat' },
+  { title: 'Room-by-room control', text: 'Every indoor unit has its own temperature setting. Cool the bedroom at night without cooling the whole home.', icon: 'calendarClock' },
+  { title: 'Heating and cooling in one', text: 'Mini-splits are heat pumps: they cool in summer and heat efficiently in winter, easing the load on an old boiler.', icon: 'snowflake' },
+  { title: 'Quiet and efficient', text: 'Inverter compressors speed up and slow down instead of switching on and off, using less power and running far quieter than window units.', icon: 'priceBadge' },
+];
+
+export const heatPumpOptions: Feature[] = [
+  { title: 'Ducted (central) heat pumps', text: 'Replace a central AC and furnace with one system that uses your existing ductwork for both heating and cooling.', icon: 'hardHat' },
+  { title: 'Ductless and multi-zone', text: 'Mini-split heat pumps for homes without ducts, with one outdoor unit serving several rooms.', icon: 'snowflake' },
+  { title: 'Hybrid (dual-fuel) systems', text: 'A heat pump does most of the heating and your existing furnace or boiler takes over on the coldest days.', icon: 'shieldCheck' },
+  { title: 'Cold-climate models', text: 'Designed to keep heating through New York winters, well below freezing, without falling back on expensive resistance heat.', icon: 'award' },
+];

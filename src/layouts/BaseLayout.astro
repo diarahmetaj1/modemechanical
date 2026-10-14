@@ -11,7 +11,7 @@ import TopBar from '../components/TopBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MobileActionBar from '../components/MobileActionBar.astro';
-import { business } from '../data/site';
+import { business, profiles } from '../data/site';
 import type { PageSeo } from '../data/seo';
 
 interface Props {
@@ -41,10 +41,8 @@ const businessSchema = {
   email: business.email,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: business.address.street,
-    addressLocality: business.address.city,
-    addressRegion: business.address.region,
-    postalCode: business.address.zip,
+    addressLocality: business.base.city,
+    addressRegion: business.base.region,
     addressCountry: 'US',
   },
   openingHoursSpecification: [{
@@ -53,7 +51,7 @@ const businessSchema = {
     opens: '08:00', closes: '18:00',
   }],
   areaServed: business.areaServed.map((name) => ({ '@type': 'Place', name })),
-  sameAs: [business.facebook, business.instagram],
+  sameAs: [business.facebook, business.instagram, ...profiles.map((p) => p.href)],
 };
 
 const breadcrumbSchema = breadcrumb && {
@@ -164,19 +162,37 @@ const schemas = [businessSchema, breadcrumbSchema, ...extraSchema].filter(Boolea
 
     {hasGtag && (
       <script is:inline define:vars={{ gtagId }}>
-        // Analytics loads after the page is interactive so it never blocks rendering.
+        // The gtag queue exists immediately so early clicks are recorded; the library itself
+        // loads after the page is interactive so it never blocks rendering.
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', gtagId);
         window.addEventListener('load', function () {
           var s = document.createElement('script');
           s.async = true;
           s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gtagId);
           document.head.appendChild(s);
-          window.dataLayer = window.dataLayer || [];
-          function gtag() { window.dataLayer.push(arguments); }
-          gtag('js', new Date());
-          gtag('config', gtagId);
         });
       </script>
     )}
+
+    <script is:inline>
+      // Lead tracking: phone taps, email clicks, booking clicks and review-profile visits are sent
+      // to Google Analytics as events (mark them as key events in GA4 to count them as leads).
+      document.addEventListener('click', function (e) {
+        if (typeof window.gtag !== 'function') return;
+        var a = e.target instanceof Element ? e.target.closest('a[href]') : null;
+        if (!a) return;
+        var href = a.getAttribute('href') || '';
+        var name = null;
+        if (href.indexOf('tel:') === 0) name = 'click_to_call';
+        else if (href.indexOf('mailto:') === 0) name = 'click_email';
+        else if (a.hasAttribute('data-booking-external') || /schedule|book/i.test(a.textContent || '')) name = 'click_booking';
+        else if (/google\.[a-z.]+\/maps|maps\.app\.goo\.gl|g\.page|yelp\.com/.test(href)) name = 'click_review_profile';
+        if (name) window.gtag('event', name, { link_url: href, link_text: (a.textContent || '').trim().slice(0, 100), page_path: location.pathname });
+      }, { capture: true });
+    </script>
 
     <style>
       .skip-link {

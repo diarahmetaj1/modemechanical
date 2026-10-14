@@ -7,7 +7,7 @@ import { business } from '../data/site';
     <p class="topbar__status intro-item">
       <span class="topbar__dot" aria-hidden="true"></span>
       <strong>24/7 emergency service</strong>
-      <span class="topbar__area"><Icon name="pin" size={14} /> Serving NYC, Long Island &amp; Westchester</span>
+      <a class="topbar__area" href="/areas/"><Icon name="pin" size={14} /> Serving {business.serviceArea}</a>
     </p>
     <ul class="topbar__links intro-item" style="--intro-delay:.05s">
       <li class="topbar__hours"><Icon name="clock" size={14} /> {business.hours}</li>
@@ -32,8 +32,8 @@ import { business } from '../data/site';
   .topbar__area { display: inline-flex; align-items: center; gap: 6px; padding-left: 12px; margin-left: 2px; border-left: 1px solid rgba(255,255,255,.16); }
   ul { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 22px; }
   li, li a { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
-  li a { transition: color .2s ease; }
-  li a:hover { color: #fff; }
+  li a, .topbar__area { transition: color .2s ease; }
+  li a:hover, .topbar__area:hover { color: #fff; }
   .topbar__social { gap: 4px; padding-left: 14px; border-left: 1px solid rgba(255,255,255,.16); }
   .topbar__social a { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; transition: background-color .2s ease, color .2s ease; }
   .topbar__social a:hover { background: rgba(255,255,255,.12); }

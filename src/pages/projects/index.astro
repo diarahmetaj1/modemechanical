@@ -7,7 +7,7 @@ import { seo } from '../../data/seo';
 const locations = ['Brooklyn', 'Manhattan', 'Brooklyn', 'Brooklyn', 'Manhattan', 'Manhattan', 'Manhattan', 'Brooklyn', 'Brooklyn', 'Brooklyn', 'Brooklyn', 'Brooklyn'];
 const projects = locations.map((loc, i) => {
   const n = String(i + 1).padStart(2, '0');
-  return { src: `/images/projects/project-${n}.jpg`, caption: `${loc}, New York`, alt: `HVAC installation by Mode Mechanical in ${loc}, New York` };
+  return { src: `/images/projects/project-${n}.jpg`, thumb: `/images/projects/project-${n}-760.webp`, caption: `${loc}, New York`, alt: `HVAC installation by Mode Mechanical in ${loc}, New York` };
 });
 ---
 <BaseLayout seo={seo.projects} breadcrumb={[{ name: 'Projects', path: '/projects/' }]}>

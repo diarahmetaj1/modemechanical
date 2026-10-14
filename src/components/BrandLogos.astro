@@ -7,15 +7,16 @@ const { title = 'Brands We Work With', boxed = false } = Astro.props;
   {title && <h2 class="brands__title">{title}</h2>}
   <ul>
     {brands.map((b) => (
-      <li><img src={b.src} alt={b.alt} width="180" height="60" loading="lazy" decoding="async" /></li>
+      <li><img src={b.src} alt={b.alt} width="360" height="144" loading="lazy" decoding="async" /></li>
     ))}
   </ul>
 </div>
 <style>
   .brands__title { font-size: 1.25rem; text-align: center; margin-bottom: 24px; }
   ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
-  li { width: 180px; height: 110px; border-radius: var(--radius-md); background: var(--surface); display: grid; place-items: center; padding: 18px; }
-  img { max-height: 60px; width: auto; object-fit: contain; }
+  li { width: 152px; height: 100px; border-radius: var(--radius-md); background: var(--surface); display: grid; place-items: center; padding: 12px 10px; }
+  /* Every logo file shares one 360x144 canvas with its mark already sized, so one box fits all. */
+  img { width: 100%; height: auto; max-width: 160px; }
   .brands--boxed { background: var(--blue-800); border-radius: var(--radius-lg); padding: clamp(28px, 5vw, 48px); }
   .brands--boxed .brands__title { color: #fff; }
   @media (max-width: 560px) {

@@ -20,7 +20,8 @@ const manifest = [
   ['images/specialty-2.jpg', ['2026/10/image00033-scaled-1.jpeg'], 800],
   // FAQ photo: project-09 (Carrier furnace) resized to 800px WebP; replaces the stock photo 2026/10/1-3.webp.
   ['images/faq-furnace.webp', ['2025/09/image_6209779-scaled.jpg'], 800],
-  ['images/repair.webp', ['2026/10/7-1.webp'], 1200],
+  // Repair page photo: project-06 (Daikin units on gauges); replaces the stock photo 2026/10/7-1.webp.
+  ['images/repair-daikin.webp', ['2025/05/image00048-scaled.jpeg'], 1200],
   // TODO: confirm these two match the photos on the live About page.
   ['images/about-condensers.jpg', ['2025/09/image_123650291-9.jpg'], 800],
   ['images/about-rooftop.jpg', ['2025/09/image_123650291-10.jpg'], 800],

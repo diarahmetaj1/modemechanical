@@ -150,7 +150,7 @@ export default function ProjectGallery({ projects }: { projects: GalleryProject[
       >
         <div className="cf__stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp}
           onPointerCancel={() => { drag.current = null; }} onClickCapture={swallowDragClick}>
-          <ul className="cf__track">
+          <div className="cf__track">
             {projects.map((p, i) => {
               const o = offsetOf(i, active, n);
               const abs = Math.abs(o);
@@ -158,7 +158,7 @@ export default function ProjectGallery({ projects }: { projects: GalleryProject[
               const cover = p.photos[0];
               const style = { '--o': o, '--abs': abs, '--s': Math.sign(o), zIndex: 20 - abs } as CSSProperties;
               return (
-                <li key={p.slug} className="cf__slide" data-front={isFront} data-hidden={abs > VISIBLE}
+                <div key={p.slug} className="cf__slide" data-front={isFront} data-hidden={abs > VISIBLE}
                   role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${n}: ${p.title}`} aria-hidden={!isFront} style={style}>
                   {isFront ? (
                     <a className="cf__card" href={cover.src} draggable={false}
@@ -179,10 +179,10 @@ export default function ProjectGallery({ projects }: { projects: GalleryProject[
                       <Pic img={cover} sizes={SLIDE_SIZES} alt="" />
                     </button>
                   )}
-                </li>
+                </div>
               );
             })}
-          </ul>
+          </div>
         </div>
 
         <div className="cf__controls">

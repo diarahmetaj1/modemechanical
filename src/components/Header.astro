@@ -54,9 +54,13 @@ const isActive = (href: string, children?: { href: string }[]) =>
       header.classList.toggle('is-stuck', scrolled);
       header.classList.toggle('is-solid', scrolled || !!header.querySelector('.mnav__toggle[aria-expanded="true"]'));
     };
-    window.addEventListener('scroll', update, { passive: true });
-    new MutationObserver(update).observe(header, { subtree: true, attributes: true, attributeFilter: ['aria-expanded'] });
-    update();
+    // Batch to one check per frame, and run the first one after the browser's own first layout:
+    // reading scrollY during page load forced an extra synchronous layout.
+    let queued = false;
+    const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; update(); }); } };
+    window.addEventListener('scroll', schedule, { passive: true });
+    new MutationObserver(schedule).observe(header, { subtree: true, attributes: true, attributeFilter: ['aria-expanded'] });
+    schedule();
   }
 </script>
 <style>

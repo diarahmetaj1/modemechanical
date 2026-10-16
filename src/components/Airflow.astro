@@ -180,7 +180,7 @@ const { density = 1, class: className } = Astro.props;
       raf = requestAnimationFrame(frame);
     };
 
-    const play = () => { if (running || reduce || !ready || !visible || document.hidden) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); };
+    const play = () => { if (running || reduce || !ready || !visible || document.hidden) return; if (!particles.length) resize(); running = true; last = performance.now(); raf = requestAnimationFrame(frame); };
     const pause = () => { running = false; cancelAnimationFrame(raf); };
 
     const still = (steps = 160, drawn = steps - 20) => {
@@ -192,30 +192,58 @@ const { density = 1, class: className } = Astro.props;
       }
     };
 
-    resize();
-    if (reduce) { still(); new ResizeObserver(() => { resize(); still(); }).observe(canvas); return; }
+    // No measuring here: reading the canvas size during page load forces an early layout of the
+    // whole page. The ResizeObserver below reports the size right after the browser's own layout.
+    if (reduce) { new ResizeObserver(() => { resize(); still(); }).observe(canvas); return; }
 
-    // Paint a still frame right away, then start moving once the page has finished loading
-    // and the browser is idle, so the animation never competes with first render.
-    still(36, 18);
+    // Nothing is traced while the page loads (the CSS mist and gradient already fill the hero):
+    // once it has loaded and the browser is idle, paint a still frame, then start moving.
+    // Tracing the still frame during load used to cost ~300 ms of main-thread time on phones.
     const begin = () => { if (ready) return; ready = true; play(); };
+    const idle = (cb: (deadline?: IdleDeadline) => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 50));
+    const afterLoad = (cb: () => void) => { if (document.readyState === 'complete') idle(cb); else window.addEventListener('load', () => idle(cb), { once: true }); };
+    let painted = false;
+    // Trace the still frame in small slices of idle time so it never becomes a long task.
+    const stillInIdle = (steps: number, drawn: number, done: () => void) => {
+      if (!particles.length) resize();
+      ctx.clearRect(0, 0, w, h);
+      let i = 0;
+      const work = (deadline?: IdleDeadline) => {
+        if (running) return done(); // the live animation took over
+        // At most ~8 ms per slice: short even on a slow phone CPU (Lighthouse assumes 4x slower).
+        const until = performance.now() + 8;
+        do {
+          for (const p of particles) step(p);
+          if (i >= steps - drawn) draw();
+          i++;
+        } while (i < steps && performance.now() < until && (!deadline || deadline.timeRemaining() > 2));
+        if (i < steps) idle(work); else done();
+      };
+      idle(work);
+    };
+    // Phones skip the still frame (and `painted` stays false, so resizes don't trace one either):
+    // drawing it is the costliest part on a phone CPU, and the animation below starts on the first
+    // touch or scroll anyway, building its trails within a second.
+    if (!small) {
+      afterLoad(() => stillInIdle(36, 18, () => { painted = true; begin(); }));
+    }
     if (small) {
-      // Phones: keep the still frame while the page loads, start moving on the first touch or
-      // scroll, or after a few seconds, so the animation never slows down the first interaction.
+      // Phones: start moving on the first touch or scroll, or after a few seconds, so the
+      // animation never competes with page load or the first interaction.
       const kick = () => begin();
       ['touchstart', 'scroll', 'pointerdown', 'keydown'].forEach((ev) => window.addEventListener(ev, kick, { once: true, passive: true }));
       setTimeout(begin, 6000);
-    } else {
-      const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 1200));
-      if (document.readyState === 'complete') idle(begin); else window.addEventListener('load', () => idle(begin), { once: true });
     }
 
     // ResizeObserver also fires once on observe; skip unchanged sizes so the still frame survives.
     new ResizeObserver(() => {
+      // Not set up yet: the canvas is sized when the still frame or the animation first needs it,
+      // so nothing runs here during page load.
+      if (!particles.length) return;
       const r = canvas.getBoundingClientRect();
       if (Math.abs(r.width - w) < 1 && Math.abs(r.height - h) < 1) { measureEmitter(); return; }
       resize();
-      if (!running) still(36, 18);
+      if (!running && painted) still(36, 18);
     }).observe(canvas);
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? play() : pause(); }, { rootMargin: '100px' }).observe(canvas);
     document.addEventListener('visibilitychange', () => (document.hidden ? pause() : play()));
@@ -239,14 +267,20 @@ const { density = 1, class: className } = Astro.props;
   .airflow::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 50% 36% at 50% 32%, rgba(6, 14, 26, .55), rgba(6, 14, 26, 0) 100%); }
   .airflow__mist { position: absolute; width: 75%; height: 100%; opacity: .5; will-change: transform; }
   /* Soft gradients instead of filter: blur — same haze, a fraction of the rendering cost. */
-  .airflow__mist--cool { left: -22%; top: 5%; background: radial-gradient(closest-side, rgba(111,195,255,.5), rgba(111,195,255,.22) 45%, rgba(44,107,224,0)); animation: mist-cool 14s ease-in-out infinite alternate; }
-  .airflow__mist--warm { right: -22%; top: 15%; background: radial-gradient(closest-side, rgba(255,140,70,.5), rgba(255,140,70,.22) 45%, rgba(238,90,36,0)); animation: mist-warm 11s ease-in-out infinite alternate; }
-  @keyframes mist-cool { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(14%, 6%, 0) scale(1.12); } }
-  @keyframes mist-warm { from { transform: translate3d(0, 4%, 0) scale(1); } to { transform: translate3d(-12%, -8%, 0) scale(1.15); } }
+  .airflow__mist--cool { left: -22%; top: 0; background: radial-gradient(closest-side, rgba(111,195,255,.5), rgba(111,195,255,.22) 45%, rgba(44,107,224,0)); animation: mist-cool 14s ease-in-out infinite alternate; }
+  .airflow__mist--warm { right: -22%; top: 0; background: radial-gradient(closest-side, rgba(255,140,70,.5), rgba(255,140,70,.22) 45%, rgba(238,90,36,0)); animation: mist-warm 11s ease-in-out infinite alternate; }
+  /* The base vertical offsets (5% and 15%) live in the transform, not in `top`: when the hero's height
+     changes as the web font loads, a transform doesn't move the layer's layout box, so it isn't a layout shift. */
+  @keyframes mist-cool { from { transform: translate3d(0, 5%, 0) scale(1); } to { transform: translate3d(14%, 11%, 0) scale(1.12); } }
+  @keyframes mist-warm { from { transform: translate3d(0, 19%, 0) scale(1); } to { transform: translate3d(-12%, 7%, 0) scale(1.15); } }
   .airflow__seam {
     position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-1px);
     background: linear-gradient(180deg, transparent, rgba(111,195,255,.55) 30%, rgba(255,161,92,.55) 70%, transparent);
     box-shadow: 0 0 24px 4px rgba(255,255,255,.08);
   }
-  @media (prefers-reduced-motion: reduce) { .airflow__mist { animation: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .airflow__mist { animation: none; }
+    .airflow__mist--cool { transform: translate3d(0, 5%, 0); }
+    .airflow__mist--warm { transform: translate3d(0, 19%, 0); }
+  }
 </style>

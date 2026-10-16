@@ -4,9 +4,9 @@ export interface PageSeo { title: string; description: string; h1: string; ogIma
 // Descriptions: 120–160 characters, service + place + a reason to click.
 export const seo: Record<string, PageSeo> = {
   home: {
-    title: 'HVAC Contractor in Brooklyn & NYC | Mode Mechanical',
-    description: 'Licensed HVAC contractor in Brooklyn, NY. AC and heating repair, installation and maintenance across NYC, Long Island and Westchester. 24/7 emergency service.',
-    h1: 'HVAC Installation, Repair and Maintenance in New York City',
+    title: 'HVAC Installation & Repair in Brooklyn | Mode Mechanical',
+    description: 'HVAC installation, repair and maintenance in Brooklyn, NY. Licensed AC and heating contractor serving all of NYC, Long Island and Westchester. 24/7 service.',
+    h1: 'HVAC Installation, Repair and Maintenance in Brooklyn',
     ogImage: '/images/hero-1.webp',
   },
   about: {

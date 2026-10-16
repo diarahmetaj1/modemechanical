@@ -3,11 +3,12 @@
 // - slider (default): one row that scrolls in a continuous loop; it pauses on hover and stays
 //   still (wrapped into rows) for visitors who ask for reduced motion.
 // - grid (slider={false}): the logos as a wrapped grid of boxes.
+// - slider="mobile": the looping slider on phones, the grid on larger screens.
 import { brands } from '../data/brands';
-interface Props { title?: string; boxed?: boolean; slider?: boolean }
+interface Props { title?: string; boxed?: boolean; slider?: boolean | 'mobile' }
 const { title = 'Brands We Work With', boxed = false, slider = true } = Astro.props;
 ---
-<div class:list={["brands", { "brands--boxed": boxed, "brands--grid": !slider }]} data-reveal="fade-up">
+<div class:list={["brands", { "brands--boxed": boxed, "brands--grid": !slider, "brands--mobile-slider": slider === 'mobile' }]} data-reveal="fade-up">
   {title && <h2 class="brands__title">{title}</h2>}
   {slider ? (
     <div class="marquee" style={`--count:${brands.length}`}>
@@ -45,7 +46,8 @@ const { title = 'Brands We Work With', boxed = false, slider = true } = Astro.pr
   /* Slider: two identical rows side by side move left by exactly one row's width, then repeat. */
   .marquee {
     --item: 160px; --gap: 14px; --duration: calc(var(--count) * 4s);
-    overflow: hidden;
+    /* Size from the parent, never from the long row inside, so the slider can't widen its column. */
+    overflow: hidden; contain: inline-size;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
     mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
   }
@@ -60,6 +62,16 @@ const { title = 'Brands We Work With', boxed = false, slider = true } = Astro.pr
   .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
   .grid li { width: 152px; height: 100px; padding: 12px 10px; }
   .grid img { max-width: 160px; }
+
+  /* slider="mobile": above phone width the slider stands still as the grid. */
+  @media (min-width: 561px) {
+    .brands--mobile-slider .marquee { -webkit-mask-image: none; mask-image: none; overflow: visible; }
+    .brands--mobile-slider .marquee__track { animation: none; width: auto; }
+    .brands--mobile-slider .marquee__copy { display: none; }
+    .brands--mobile-slider .marquee ul { flex-wrap: wrap; justify-content: center; gap: 16px; padding-right: 0; }
+    .brands--mobile-slider .marquee li { width: 152px; height: 100px; padding: 12px 10px; }
+    .brands--mobile-slider .marquee img { max-width: 160px; }
+  }
 
   @media (max-width: 560px) {
     .marquee { --item: 128px; --gap: 12px; }

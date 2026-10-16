@@ -7,6 +7,9 @@ import BrandLogos from '../../components/BrandLogos.astro';
 import Stats from '../../components/Stats.astro';
 import ServiceAreas from '../../components/ServiceAreas.astro';
 import CtaBox from '../../components/CtaBox.astro';
+import Photo from '../../components/Photo.astro';
+import condensersImg from '../../assets/photos/about-condensers.jpg';
+import rooftopImg from '../../assets/photos/about-rooftop.jpg';
 import { seo } from '../../data/seo';
 import { whyChooseAbout } from '../../data/features';
 ---
@@ -23,9 +26,9 @@ import { whyChooseAbout } from '../../data/features';
         </SectionHeading>
       </div>
       <div class="mosaic">
-        <img src="/images/about-condensers.jpg" data-reveal="scale-in" alt="Two Daikin outdoor units on a steel wall platform installed by Mode Mechanical in Brooklyn" width="600" height="450" loading="lazy" decoding="async" />
+        <Photo src={condensersImg} data-reveal="scale-in" alt="Two Daikin outdoor units on a steel wall platform, HVAC installation in Brooklyn" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
         <Stats />
-        <img src="/images/about-rooftop.jpg" data-reveal="scale-in" alt="Daikin outdoor unit mounted on a wall bracket outside a Brooklyn building" width="600" height="450" loading="lazy" decoding="async" />
+        <Photo src={rooftopImg} data-reveal="scale-in" alt="Daikin outdoor unit mounted on a wall bracket outside a Brooklyn building" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
       </div>
     </div>
   </section>

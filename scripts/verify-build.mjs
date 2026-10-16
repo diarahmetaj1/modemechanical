@@ -30,7 +30,8 @@ for (const page of pages) {
   check(!/href="#"/.test(html), page, 'link pointing to "#"');
   check(!/href="\/(installation|maintenance|repair|areas|ductless-mini-splits|heat-pumps)\//.test(html), page, 'link to a retired URL (now redirected)');
   check(!/Satisfication|Maintenace|Testimonail|1,234 ratings/.test(html), page, 'known typo or demo content present');
-  check(!/<img(?![^>]*\balt=)[^>]*>/.test(html), page, 'image without alt attribute');
+  // A bare `alt` (how Astro writes alt="" for decorative images) counts as an alt attribute.
+  check(!/<img(?![^>]*\balt[\s=>])[^>]*>/.test(html), page, 'image without alt attribute');
 }
 const home = await readFile(new URL('./index.html', dist), 'utf8');
 check(home.includes('"@type":"FAQPage"'), '/', 'missing FAQPage JSON-LD');

@@ -1,5 +1,7 @@
 ---
 import Icon from './Icon.astro';
+import Photo from './Photo.astro';
+import logoWhite from '../assets/logos/logo-header-white.png';
 import { business, services, profiles, bookingUrl, bookingIsExternal } from '../data/site';
 import { areas, areaHref } from '../data/areas';
 const year = new Date().getFullYear();
@@ -28,7 +30,7 @@ const company = [
   <div class="container footer__grid">
     <div class="footer__brand" data-reveal="fade-up">
       <a class="footer__logo" href="/" aria-label="Mode Mechanical home">
-        <img src="/images/logo-header-white.png" alt="Mode Mechanical HVAC logo" width="300" height="305" loading="lazy" />
+        <Photo src={logoWhite} alt="Mode Mechanical HVAC logo" widths={[170, 260]} sizes="84px" />
       </a>
       <p>Top-quality heating, ventilation and air conditioning services tailored to your home or business. Reliable work from skilled technicians, built around your comfort.</p>
       <div class="footer__social">

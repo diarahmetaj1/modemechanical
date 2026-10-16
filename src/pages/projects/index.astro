@@ -3,31 +3,32 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageBanner from '../../components/PageBanner.astro';
 import ProjectGallery from '../../components/islands/ProjectGallery';
 import { seo } from '../../data/seo';
-// Photos 03 and 08 are left out on purpose (they appear on the About page instead).
-// Captions describe what each photo shows; the location comes from the job.
-const items = [
-  { n: '01', loc: 'Brooklyn', what: 'Rooftop condenser installation', alt: 'Row of new HVAC outdoor condensers on a flat Brooklyn rooftop with the city skyline behind' },
-  { n: '02', loc: 'Manhattan', what: 'Rooftop outdoor units', alt: 'Two HVAC outdoor units with service panels open beside a rooftop bulkhead in Manhattan' },
-  { n: '04', loc: 'Brooklyn', what: 'Wall-mounted LG condensers', alt: 'Two LG outdoor condensing units mounted on a wall in a Brooklyn building' },
-  { n: '05', loc: 'Manhattan', what: 'Rooftop mini-split install', alt: 'Ductless mini-split outdoor units installed next to a rooftop bulkhead in Manhattan' },
-  { n: '06', loc: 'Manhattan', what: 'Daikin outdoor units', alt: 'Two Daikin outdoor units on wall brackets with a refrigerant cylinder during installation' },
-  { n: '07', loc: 'Manhattan', what: 'Rooftop exhaust fans', alt: 'Four new rooftop exhaust fans installed on a parapet wall in Manhattan' },
-  { n: '09', loc: 'Brooklyn', what: 'Carrier gas furnace', alt: 'New Carrier gas furnace installed in a Brooklyn basement' },
-  { n: '10', loc: 'Brooklyn', what: 'Commercial ductwork', alt: 'New overhead ductwork installed across an open commercial floor in Brooklyn' },
-  { n: '11', loc: 'Brooklyn', what: 'Concealed ducted unit', alt: 'Ceiling-concealed ducted air handler installed in a framed ceiling in Brooklyn' },
-  { n: '12', loc: 'Brooklyn', what: 'Exposed spiral ductwork', alt: 'Exposed spiral ductwork installed in a finished Brooklyn space' },
-];
-const projects = items.map((p) => ({
-  src: `/images/projects/project-${p.n}.jpg`, thumb: `/images/projects/project-${p.n}-760.webp`,
-  caption: `${p.what} · ${p.loc}`, alt: p.alt,
-}));
+import { getImage } from 'astro:assets';
+import { projects } from '../../data/projects';
+import type { GalleryProject } from '../../components/islands/ProjectGallery';
+
+// Each photo is turned into AVIF and WebP at several widths, plus a JPEG fallback, at build time.
+const WIDTHS = [480, 760, 1200, 1600];
+const prepared: GalleryProject[] = await Promise.all(projects.map(async (p) => ({
+  slug: p.slug, title: p.title, location: p.location, description: p.description,
+  photos: await Promise.all(p.photos.map(async ({ src, alt, position }) => {
+    const widths = [...WIDTHS.filter((w) => w < src.width), Math.min(src.width, 1600)];
+    const [avif, webp, jpg] = await Promise.all([
+      getImage({ src, format: 'avif', widths }),
+      getImage({ src, format: 'webp', widths }),
+      getImage({ src, format: 'jpg', width: Math.min(src.width, 1200) }),
+    ]);
+    return { avif: avif.srcSet.attribute, webp: webp.srcSet.attribute, src: jpg.src, width: src.width, height: src.height, alt, position };
+  })),
+})));
+const photoTotal = projects.reduce((n, p) => n + p.photos.length, 0);
 ---
 <BaseLayout seo={seo.projects} breadcrumb={[{ name: 'Projects', path: '/projects/' }]}>
-  <PageBanner h1={seo.projects.h1} crumb="Projects" lede="Recent heating and cooling installations in Brooklyn and Manhattan." />
+  <PageBanner h1={seo.projects.h1} crumb="Projects" lede="Recent HVAC installations, service calls and ductwork across Brooklyn, Manhattan and NYC." />
   <section class="section">
     <div class="container">
-      <p class="intro" data-reveal="fade-up">A selection of recent HVAC work by Mode Mechanical in Brooklyn and Manhattan — rooftop condensers, ductless mini-splits, a gas furnace, rooftop exhaust fans and commercial ductwork in homes, brownstones and commercial buildings. Planning something similar? See our <a href="/hvac-installation/">HVAC installation</a> service.</p>
-      <ProjectGallery client:visible items={projects} />
+      <p class="intro" data-reveal="fade-up">{projects.length} recent HVAC jobs by Mode Mechanical, {photoTotal} photos: rooftop condensers and VRF service, ductless mini-splits and ceiling cassettes, a gas furnace, commercial ductwork and refrigeration service. Planning something similar? See our <a href="/hvac-installation/">HVAC installation</a> and <a href="/hvac-repair/">HVAC repair</a> services.</p>
+      <ProjectGallery client:visible projects={prepared} />
     </div>
   </section>
 </BaseLayout>

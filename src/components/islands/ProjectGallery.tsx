@@ -1,12 +1,15 @@
 import './ProjectGallery.css';
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react';
 
-/** `src` is the full-size photo (lightbox); `thumb`, if given, is the smaller one shown in the slider. */
-export interface Project { src: string; thumb?: string; alt: string; caption: string }
+/** One photo, prepared at build time: AVIF and WebP srcsets plus a JPEG fallback. */
+export interface GalleryImage { avif: string; webp: string; src: string; width: number; height: number; alt: string; position?: string }
+export interface GalleryProject { slug: string; title: string; location?: string; description: string; photos: GalleryImage[] }
 
 const AUTOPLAY_MS = 4500;
 /** Slides further than this from the front one are hidden. */
 const VISIBLE = 3;
+const SLIDE_SIZES = '(max-width: 640px) 64vw, 380px';
+const CARD_SIZES = '(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 400px';
 
 /** Shortest signed distance from the front slide, so the ring loops in both directions. */
 const offsetOf = (i: number, active: number, n: number) => {
@@ -16,22 +19,47 @@ const offsetOf = (i: number, active: number, n: number) => {
   return d;
 };
 
-// 3D coverflow: the front photo faces the viewer, the rest turn away and recede on either side.
-// Click the front photo for the lightbox (a native <dialog>); click a side photo to bring it forward.
-// Without JavaScript the front photo is a plain link to the full image.
-export default function ProjectGallery({ items }: { items: Project[] }) {
-  const n = items.length;
+const photoCount = (n: number) => `${n} photo${n === 1 ? '' : 's'}`;
+
+function Pic({ img, sizes, alt = img.alt, lazy = true }: { img: GalleryImage; sizes: string; alt?: string; lazy?: boolean }) {
+  return (
+    <picture>
+      <source type="image/avif" srcSet={img.avif} sizes={sizes} />
+      <source type="image/webp" srcSet={img.webp} sizes={sizes} />
+      <img src={img.src} alt={alt} width={img.width} height={img.height} style={img.position ? { objectPosition: img.position } : undefined}
+        loading={lazy ? 'lazy' : undefined} decoding="async" draggable={false} />
+    </picture>
+  );
+}
+
+// 3D coverflow of projects (front project faces the viewer, the rest turn away on either side),
+// the front project's details below it, and a grid of every project. Photos open in a lightbox
+// (a native <dialog>) that steps through each project's photos and on to the next project.
+export default function ProjectGallery({ projects }: { projects: GalleryProject[] }) {
+  const n = projects.length;
   const [active, setActive] = useState(0);
-  const [lightbox, setLightbox] = useState(false);
+  const [view, setView] = useState<{ p: number; i: number } | null>(null); // open lightbox photo
   const [playing, setPlaying] = useState(true);
   const [paused, setPaused] = useState(false); // hover, focus, drag or off-screen
   const rootRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const frontRef = useRef<HTMLAnchorElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const drag = useRef<{ x: number; moved: boolean } | null>(null);
 
   const go = useCallback((i: number) => setActive(((i % n) + n) % n), [n]);
   const step = useCallback((d: number) => setActive((a) => (a + d + n) % n), [n]);
+
+  // Lightbox: next/previous photo, crossing into the next/previous project at either end.
+  const stepPhoto = useCallback((d: number) => setView((v) => {
+    if (!v) return v;
+    const i = v.i + d;
+    if (i >= 0 && i < projects[v.p].photos.length) return { p: v.p, i };
+    const p = (v.p + d + n) % n;
+    return { p, i: d > 0 ? 0 : projects[p].photos.length - 1 };
+  }), [projects, n]);
+
+  const open = (p: number, opener: HTMLElement, i = 0) => { openerRef.current = opener; setView({ p, i }); };
+  const close = useCallback(() => setView((v) => { if (v) setActive(v.p); return null; }), []);
 
   // Reduced motion: no autoplay.
   useEffect(() => {
@@ -48,27 +76,28 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
   }, []);
 
   useEffect(() => {
-    if (!playing || paused || lightbox) return;
+    if (!playing || paused || view) return;
     const t = window.setTimeout(() => { if (!document.hidden) step(1); }, AUTOPLAY_MS);
     return () => window.clearTimeout(t);
-  }, [playing, paused, lightbox, active, step]);
+  }, [playing, paused, view, active, step]);
 
+  const isOpen = view !== null;
   useEffect(() => {
     const dlg = dialogRef.current;
     if (!dlg) return;
-    if (lightbox && !dlg.open) dlg.showModal();
-    if (!lightbox && dlg.open) { dlg.close(); frontRef.current?.focus(); }
-  }, [lightbox]);
+    if (isOpen && !dlg.open) dlg.showModal();
+    if (!isOpen && dlg.open) { dlg.close(); openerRef.current?.focus(); }
+  }, [isOpen]);
 
   useEffect(() => {
-    if (!lightbox) return;
+    if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') step(1);
-      if (e.key === 'ArrowLeft') step(-1);
+      if (e.key === 'ArrowRight') stepPhoto(1);
+      if (e.key === 'ArrowLeft') stepPhoto(-1);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [lightbox, step]);
+  }, [isOpen, stepPhoto]);
 
   // Swipe or drag the stage to change slides; a drag never counts as a click.
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
@@ -96,7 +125,9 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
     e.currentTarget.style.setProperty('--ty', '0');
   };
 
-  const current = items[active];
+  const current = projects[active];
+  const shown = view ? projects[view.p] : null;
+  const shownPhoto = view && shown ? shown.photos[view.i] : null;
 
   return (
     <>
@@ -105,7 +136,7 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
         className="cf"
         role="region"
         aria-roledescription="carousel"
-        aria-label="Project photos"
+        aria-label="Featured HVAC projects"
         data-reveal="fade-up"
         suppressHydrationWarning
         onMouseEnter={() => setPaused(true)}
@@ -120,22 +151,24 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
         <div className="cf__stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp}
           onPointerCancel={() => { drag.current = null; }} onClickCapture={swallowDragClick}>
           <ul className="cf__track">
-            {items.map((p, i) => {
+            {projects.map((p, i) => {
               const o = offsetOf(i, active, n);
               const abs = Math.abs(o);
               const isFront = o === 0;
+              const cover = p.photos[0];
               const style = { '--o': o, '--abs': abs, '--s': Math.sign(o), zIndex: 20 - abs } as CSSProperties;
               return (
-                <li key={p.src} className="cf__slide" data-front={isFront} data-hidden={abs > VISIBLE}
-                  role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${n}`} aria-hidden={!isFront} style={style}>
+                <li key={p.slug} className="cf__slide" data-front={isFront} data-hidden={abs > VISIBLE}
+                  role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${n}: ${p.title}`} aria-hidden={!isFront} style={style}>
                   {isFront ? (
-                    <a ref={frontRef} className="cf__card" href={p.src} draggable={false}
-                      onClick={(e) => { e.preventDefault(); setLightbox(true); }}
+                    <a className="cf__card" href={cover.src} draggable={false}
+                      onClick={(e) => { e.preventDefault(); open(i, e.currentTarget); }}
                       onPointerMove={onTilt} onPointerLeave={resetTilt}
-                      aria-label={`Open larger image: ${p.alt}`}>
-                      <img src={p.thumb ?? p.src} alt={p.alt} width={600} height={750} decoding="async" draggable={false} />
+                      aria-label={`View ${photoCount(p.photos.length)}: ${p.title}`}>
+                      <Pic img={cover} sizes={SLIDE_SIZES} lazy={false} />
                       <span className="cf__tag">
-                        <span className="cf__pin" aria-hidden="true" /><span className="cf__tag-text">{p.caption}</span>
+                        <span className="cf__pin" aria-hidden="true" /><span className="cf__tag-text">{p.title}</span>
+                        {p.photos.length > 1 && <span className="cf__badge">{p.photos.length}</span>}
                         <span className="cf__zoom" aria-hidden="true">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
                         </span>
@@ -143,7 +176,7 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
                     </a>
                   ) : (
                     <button type="button" className="cf__card" tabIndex={-1} onClick={() => go(i)}>
-                      <img src={p.thumb ?? p.src} alt="" width={600} height={750} loading="lazy" decoding="async" draggable={false} />
+                      <Pic img={cover} sizes={SLIDE_SIZES} alt="" />
                     </button>
                   )}
                 </li>
@@ -153,18 +186,17 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
         </div>
 
         <div className="cf__controls">
-          <button type="button" className="cf__btn" onClick={() => step(-1)} aria-label="Previous photo">
+          <button type="button" className="cf__btn" onClick={() => step(-1)} aria-label="Previous project">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
           </button>
           <div className="cf__meta">
-            <p className="cf__caption" aria-live={playing ? 'off' : 'polite'}>{current.caption}</p>
             <div className="cf__progress" aria-hidden="true">
               <span className="cf__count">{String(active + 1).padStart(2, '0')}</span>
               <span className="cf__bar"><span style={{ width: `${((active + 1) / n) * 100}%` }} /></span>
               <span className="cf__count">{String(n).padStart(2, '0')}</span>
             </div>
           </div>
-          <button type="button" className="cf__btn" onClick={() => step(1)} aria-label="Next photo">
+          <button type="button" className="cf__btn" onClick={() => step(1)} aria-label="Next project">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
           </button>
           <button type="button" className="cf__btn cf__btn--play" onClick={() => setPlaying((p) => !p)}
@@ -174,19 +206,60 @@ export default function ProjectGallery({ items }: { items: Project[] }) {
               : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z" /></svg>}
           </button>
         </div>
+
+        <div className="cf__info" aria-live={playing ? 'off' : 'polite'}>
+          <p className="cf__caption">{current.title}</p>
+          <p className="cf__sub">{[current.location, photoCount(current.photos.length)].filter(Boolean).join(' · ')}</p>
+          <p className="cf__desc">{current.description}</p>
+        </div>
       </div>
 
-      <dialog ref={dialogRef} className="lightbox" aria-label="Project photo" onClose={() => setLightbox(false)}
-        onClick={(e) => { if (e.target === e.currentTarget) setLightbox(false); }}>
-        {lightbox && (
+      <section className="pgrid" aria-labelledby="all-projects">
+        <h2 id="all-projects" className="pgrid__title">All HVAC Projects</h2>
+        <ul className="pgrid__list">
+          {projects.map((p, i) => (
+            <li key={p.slug} className="pgrid__item" id={p.slug}>
+              <button type="button" className="pgrid__media" onClick={(e) => open(i, e.currentTarget)}
+                aria-label={`View ${photoCount(p.photos.length)}: ${p.title}`}>
+                <Pic img={p.photos[0]} sizes={CARD_SIZES} />
+                {p.photos.length > 1 && <span className="pgrid__badge">{photoCount(p.photos.length)}</span>}
+              </button>
+              {p.photos.length > 1 && (
+                <ul className="pgrid__thumbs">
+                  {p.photos.slice(1).map((ph, k) => (
+                    <li key={ph.src}>
+                      <button type="button" onClick={(e) => open(i, e.currentTarget, k + 1)} aria-label={`View photo ${k + 2} of ${p.photos.length}: ${ph.alt}`}>
+                        <Pic img={ph} sizes="96px" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="pgrid__body">
+                <h3>{p.title}</h3>
+                {p.location && <p className="pgrid__loc">{p.location}, NY</p>}
+                <p>{p.description}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <dialog ref={dialogRef} className="lightbox" aria-label="Project photos" onClose={close}
+        onClick={(e) => { if (e.target === e.currentTarget) close(); }}>
+        {shown && shownPhoto && view && (
           <figure>
-            <img src={current.src} alt={current.alt} />
-            <figcaption>{current.caption} <span>{active + 1} of {n}</span></figcaption>
+            <Pic img={shownPhoto} sizes="100vw" lazy={false} />
+            <figcaption>
+              <strong>{shown.title}</strong>
+              {shown.location && <span>{shown.location}</span>}
+              <span>Photo {view.i + 1} of {shown.photos.length}</span>
+            </figcaption>
           </figure>
         )}
-        <button type="button" className="lightbox__btn lightbox__close" onClick={() => setLightbox(false)} aria-label="Close">×</button>
-        <button type="button" className="lightbox__btn lightbox__prev" onClick={() => step(-1)} aria-label="Previous photo">‹</button>
-        <button type="button" className="lightbox__btn lightbox__next" onClick={() => step(1)} aria-label="Next photo">›</button>
+        <button type="button" className="lightbox__btn lightbox__close" onClick={close} aria-label="Close">×</button>
+        <button type="button" className="lightbox__btn lightbox__prev" onClick={() => stepPhoto(-1)} aria-label="Previous photo">‹</button>
+        <button type="button" className="lightbox__btn lightbox__next" onClick={() => stepPhoto(1)} aria-label="Next photo">›</button>
       </dialog>
     </>
   );

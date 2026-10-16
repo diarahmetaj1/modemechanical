@@ -1,4 +1,5 @@
 // Downloads the images the live WordPress site serves, resizes them and stores them in public/images.
+// Page photos and logos are served from src/assets/ (see ASSETS.md): copy refreshed files there to use them.
 // Run BEFORE switching DNS away from WordPress:  npm run assets
 // Requires network access to modemechanical.com. Uses `sharp` when installed; otherwise saves files as-is.
 import { mkdir, writeFile, copyFile, access } from 'node:fs/promises';

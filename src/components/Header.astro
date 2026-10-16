@@ -1,6 +1,9 @@
 ---
 import Icon from './Icon.astro';
 import MobileNav from './islands/MobileNav';
+import Photo from './Photo.astro';
+import logoColor from '../assets/logos/logo-header.png';
+import logoWhite from '../assets/logos/logo-header-white.png';
 import { nav, business, bookingUrl, bookingIsExternal } from '../data/site';
 interface Props { overlay?: boolean }
 const { overlay = false } = Astro.props;
@@ -11,8 +14,8 @@ const isActive = (href: string, children?: { href: string }[]) =>
 <header class:list={['header', { 'header--overlay': overlay }]}>
   <div class="container header__inner">
     <a href="/" class="header__logo intro-item" style="--intro-delay:.1s" aria-label="Mode Mechanical home">
-      <img class="header__logo-color" src="/images/logo-header.png" alt="Mode Mechanical HVAC logo" width="300" height="305" />
-      {overlay && <img class="header__logo-white" src="/images/logo-header-white.png" alt="" width="300" height="305" />}
+      <Photo class="header__logo-color" src={logoColor} alt="Mode Mechanical HVAC logo" widths={[120, 180]} sizes="58px" loading="eager" />
+      {overlay && <Photo class="header__logo-white" src={logoWhite} alt="" widths={[120, 180]} sizes="58px" loading="eager" />}
     </a>
     <nav class="header__nav" aria-label="Main">
       <ul>

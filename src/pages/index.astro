@@ -9,6 +9,14 @@ import Testimonials from '../components/Testimonials.astro';
 import BrandLogos from '../components/BrandLogos.astro';
 import ServiceAreas from '../components/ServiceAreas.astro';
 import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import welcomeImg from '../assets/photos/welcome.jpg';
+import specialtyImg from '../assets/photos/specialty-1.jpg';
+import maintenanceImg from '../assets/photos/service-maintenance.jpg';
+import installImg from '../assets/projects/project-01.jpg';
+import repairImg from '../assets/projects/project-02.jpg';
+import bulkheadImg from '../assets/projects/project-05.jpg';
+import furnaceImg from '../assets/projects/project-09.jpg';
 import { seo } from '../data/seo';
 import { whyChooseHome } from '../data/features';
 import { homeFaq } from '../data/faq';
@@ -16,14 +24,14 @@ import { business, bookingUrl } from '../data/site';
 
 const page = seo.home;
 const serviceCards = [
-  { title: 'Installation', href: '/hvac-installation/', image: '/images/service-installation.jpg',
-    alt: 'New HVAC condensers installed by Mode Mechanical on a Brooklyn rooftop',
+  { title: 'Installation', href: '/hvac-installation/', image: installImg,
+    alt: 'HVAC installation in Brooklyn: new outdoor condensers on a flat rooftop',
     text: 'New central AC, furnaces, boilers, heat pumps and ductless mini-splits — sized for your building, permitted and installed to code.' },
-  { title: 'Repair', href: '/hvac-repair/', image: '/images/service-repair.jpg',
-    alt: 'HVAC outdoor units opened up for repair on a Manhattan rooftop',
+  { title: 'Repair', href: '/hvac-repair/', image: repairImg,
+    alt: 'HVAC repair on a Manhattan rooftop, two outdoor units with service panels open',
     text: 'AC not cooling or heat not working? Licensed technicians, 24/7 emergency response across the five boroughs, and a price before the work starts.' },
-  { title: 'Maintenance', href: '/hvac-maintenance/', image: '/images/service-maintenance.jpg',
-    alt: 'Mitsubishi outdoor units on a New York City rooftop, serviced during a seasonal tune-up',
+  { title: 'Maintenance', href: '/hvac-maintenance/', image: maintenanceImg,
+    alt: 'Mitsubishi outdoor units on a city rooftop, ready for seasonal HVAC maintenance',
     text: 'Annual tune-ups that catch problems before they become emergency calls — and keep your manufacturer warranty valid.' },
 ];
 const steps = [
@@ -42,8 +50,8 @@ const faqSchema = {
 
   <section class="section">
     <div class="container split">
-      <img class="split__img" data-reveal="scale-in" src="/images/welcome.jpg" alt="New LG outdoor condensers on a New York rooftop, with service gauges connected during installation"
-        width="1400" height="1050" loading="lazy" decoding="async" />
+      <Photo class="split__img" data-reveal="scale-in" src={welcomeImg} alt="Row of new LG outdoor condensers on a rooftop, gauges connected during AC installation"
+        sizes="(max-width: 900px) 100vw, 600px" />
       <div>
         <SectionHeading pill="Welcome" title="Brooklyn Air Conditioning and Heating Specialists" highlight="Heating">
           <p>Mode Mechanical is a licensed HVAC company based in Brooklyn, NY, providing air conditioning and heating service across <a href="/service-areas/">New York City, Long Island and Westchester</a>. From <a href="/hvac-installation/">AC and heating installation</a> to <a href="/hvac-repair/">furnace, boiler and AC repair</a> and <a href="/hvac-maintenance/">seasonal maintenance</a>, we deliver fast, reliable solutions to keep your home or business comfortable year-round.</p>
@@ -62,7 +70,7 @@ const faqSchema = {
       </div>
       <div class="bento">
         <a class="tile tile--repair" href="/hvac-repair/" data-reveal="fade-up">
-          <img class="tile__img" src="/images/service-repair.jpg" alt={serviceCards[1].alt} width="800" height="600" loading="lazy" decoding="async" />
+          <Photo class="tile__img" src={serviceCards[1].image} alt={serviceCards[1].alt} sizes="(max-width: 900px) 100vw, 600px" />
           <span class="tile__body">
             <span class="tile__kicker">24/7 emergency service</span>
             <h3>Repair</h3>
@@ -80,7 +88,7 @@ const faqSchema = {
             <span class="tile__text">{serviceCards[0].text}</span>
             <span class="tile__go">Plan a new system <Icon name="arrow" size={18} /></span>
           </span>
-          <img class="tile__thumb" src="/images/service-installation.jpg" alt={serviceCards[0].alt} width="800" height="600" loading="lazy" decoding="async" />
+          <Photo class="tile__thumb" src={serviceCards[0].image} alt={serviceCards[0].alt} widths={[400, 800]} sizes="(max-width: 900px) 100vw, 400px" />
         </a>
         <a class="tile tile--maint" href="/hvac-maintenance/" data-reveal="fade-up" style="--reveal-delay:.2s">
           <span class="tile__body">
@@ -88,7 +96,7 @@ const faqSchema = {
             <span class="tile__text">{serviceCards[2].text}</span>
             <span class="tile__go">Book a tune-up <Icon name="arrow" size={18} /></span>
           </span>
-          <img class="tile__thumb" src="/images/service-maintenance.jpg" alt={serviceCards[2].alt} width="800" height="600" loading="lazy" decoding="async" />
+          <Photo class="tile__thumb" src={serviceCards[2].image} alt={serviceCards[2].alt} widths={[400, 800]} sizes="(max-width: 900px) 100vw, 400px" />
         </a>
       </div>
     </div>
@@ -123,9 +131,9 @@ const faqSchema = {
         </SectionHeading>
       </div>
       <div class="mosaic">
-        <img src="/images/specialty-1.jpg" data-reveal="scale-in" alt="Two ductless mini-split condensers installed on ground stands beside a New York home" width="600" height="450" loading="lazy" decoding="async" />
+        <Photo src={specialtyImg} data-reveal="scale-in" alt="Two mini-split heat pump condensers on ground stands beside a house" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
         <Stats />
-        <img src="/images/specialty-2.jpg" data-reveal="scale-in" alt="Ductless mini-split outdoor units installed beside a rooftop bulkhead in Manhattan" width="600" height="450" loading="lazy" decoding="async" />
+        <Photo src={bulkheadImg} data-reveal="scale-in" alt="Ductless mini-split outdoor units installed beside a Manhattan rooftop bulkhead" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
       </div>
     </div>
   </section>
@@ -135,7 +143,7 @@ const faqSchema = {
   <section class="section section--surface">
     <div class="container split">
       <div class="faq-aside">
-        <img src="/images/faq-furnace.webp" data-reveal="zoom-in" alt="New Carrier gas furnace installed by Mode Mechanical in a Brooklyn basement" width="800" height="1067" loading="lazy" decoding="async" />
+        <Photo src={furnaceImg} data-reveal="zoom-in" alt="New Carrier gas furnace installed in a Brooklyn basement by Mode Mechanical" widths={[400, 800, 1200]} sizes="(max-width: 900px) 100vw, 550px" />
         <a class="faq-aside__phone" href={business.phoneHref}>
           <span>24 Hours &amp; Emergencies</span>
           <strong><Icon name="phone" size={22} /> {business.phoneTopbar}</strong>

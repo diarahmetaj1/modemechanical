@@ -3,6 +3,8 @@ import ServiceLayout from '../../layouts/ServiceLayout.astro';
 import SectionHeading from '../../components/SectionHeading.astro';
 import FeatureGrid from '../../components/FeatureGrid.astro';
 import Testimonials from '../../components/Testimonials.astro';
+import Photo from '../../components/Photo.astro';
+import repairPhoto from '../../assets/projects/project-06.jpg';
 import { seo } from '../../data/seo';
 import { repairFeatures, repairProblems } from '../../data/features';
 const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -40,8 +42,8 @@ const kindLabel = { cool: 'Cooling', warm: 'Heating', both: 'Cooling and heating
   </section>
 
   <figure class="repair-photo">
-    <img src="/images/repair-daikin.webp" data-reveal="scale-in" alt="Service gauges and R-410A refrigerant connected to two Daikin outdoor units during an AC repair"
-      width="1200" height="900" loading="lazy" decoding="async" />
+    <Photo src={repairPhoto} data-reveal="scale-in" alt="AC repair in Manhattan: gauges and R-410A refrigerant connected to two Daikin outdoor units"
+      sizes="(max-width: 900px) 100vw, 860px" />
   </figure>
   <Testimonials />
 </ServiceLayout>

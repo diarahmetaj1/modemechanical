@@ -35,7 +35,7 @@ export const seo: Record<string, PageSeo> = {
   },
   projects: {
     title: 'HVAC Projects in Brooklyn & Manhattan | Mode Mechanical',
-    description: 'Photos of recent HVAC work by Mode Mechanical in Brooklyn and Manhattan: rooftop condensers, mini-splits, a gas furnace, exhaust fans and ductwork.',
+    description: 'Recent HVAC projects by Mode Mechanical in Brooklyn and NYC: rooftop condensers, VRF service, mini-splits, ceiling cassettes, a gas furnace and ductwork.',
     h1: 'HVAC Installation Projects in Brooklyn and Manhattan',
     ogImage: '/images/projects/project-01.jpg',
   },

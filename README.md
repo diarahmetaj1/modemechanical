@@ -92,7 +92,7 @@ Build command `npm run build`, output directory `dist`.
 
 Before switching DNS:
 
-1. Run `npm run assets` and commit the images in `public/images`.
+1. Run `npm run assets` and commit the images in `public/images` (page photos and logos are then copied into `src/assets/`; see `ASSETS.md`).
 2. Open the old `https://modemechanical.com/sitemap_index.xml`, list every URL, and add a redirect for any URL that has no page here.
 3. After launch, submit `https://modemechanical.com/sitemap-index.xml` in Google Search Console.
 

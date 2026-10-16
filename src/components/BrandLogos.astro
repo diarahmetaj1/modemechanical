@@ -4,6 +4,7 @@
 //   still (wrapped into rows) for visitors who ask for reduced motion.
 // - grid (slider={false}): the logos as a wrapped grid of boxes.
 // - slider="mobile": the looping slider on phones, the grid on larger screens.
+import Photo from './Photo.astro';
 import { brands } from '../data/brands';
 interface Props { title?: string; boxed?: boolean; slider?: boolean | 'mobile' }
 const { title = 'Brands We Work With', boxed = false, slider = true } = Astro.props;
@@ -15,13 +16,13 @@ const { title = 'Brands We Work With', boxed = false, slider = true } = Astro.pr
       <div class="marquee__track">
         <ul aria-label="HVAC brands we install and service">
           {brands.map((b) => (
-            <li><img src={b.src} alt={b.alt} width="360" height="144" loading="lazy" decoding="async" draggable="false" /></li>
+            <li><Photo src={b.src} alt={b.alt} widths={[180, 360]} sizes="150px" draggable="false" /></li>
           ))}
         </ul>
         {/* Second copy makes the loop seamless; it is hidden from screen readers. */}
         <ul class="marquee__copy" aria-hidden="true">
           {brands.map((b) => (
-            <li><img src={b.src} alt="" width="360" height="144" loading="lazy" decoding="async" draggable="false" /></li>
+            <li><Photo src={b.src} alt="" widths={[180, 360]} sizes="150px" draggable="false" /></li>
           ))}
         </ul>
       </div>
@@ -29,7 +30,7 @@ const { title = 'Brands We Work With', boxed = false, slider = true } = Astro.pr
   ) : (
     <ul class="grid">
       {brands.map((b) => (
-        <li><img src={b.src} alt={b.alt} width="360" height="144" loading="lazy" decoding="async" /></li>
+        <li><Photo src={b.src} alt={b.alt} widths={[180, 360]} sizes="160px" /></li>
       ))}
     </ul>
   )}

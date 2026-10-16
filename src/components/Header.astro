@@ -14,8 +14,8 @@ const isActive = (href: string, children?: { href: string }[]) =>
 <header class:list={['header', { 'header--overlay': overlay }]}>
   <div class="container header__inner">
     <a href="/" class="header__logo intro-item" style="--intro-delay:.1s" aria-label="Mode Mechanical home">
-      <Photo class="header__logo-color" src={logoColor} alt="Mode Mechanical HVAC logo" widths={[120, 180]} sizes="58px" loading="eager" />
-      {overlay && <Photo class="header__logo-white" src={logoWhite} alt="" widths={[120, 180]} sizes="58px" loading="eager" />}
+      <Photo class="header__logo-color" src={logoColor} alt="Mode Mechanical HVAC logo" widths={[60, 120, 180]} sizes="(max-width: 1024px) 48px, 56px" loading="eager" />
+      {overlay && <Photo class="header__logo-white" src={logoWhite} alt="" widths={[60, 120, 180]} sizes="(max-width: 1024px) 48px, 56px" loading="eager" />}
     </a>
     <nav class="header__nav" aria-label="Main">
       <ul>

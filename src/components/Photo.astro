@@ -1,8 +1,10 @@
 ---
-// Responsive photo: AVIF first, then WebP, then the original format, at several widths, built at
-// compile time by Astro's image service (sharp). Lazy by default; pass loading="eager" for
-// images at the top of the page. Other attributes (class, data-reveal, …) go to the <img>.
-import { Picture } from 'astro:assets';
+// Responsive photo: AVIF first, then WebP, then the original format (JPEG for photos, PNG for
+// logos so transparency survives), at several widths, built at compile time by Astro's image
+// service (sharp). Each format gets its own quality: AVIF 42 is visually the same as 50 on these
+// photos but ~25% smaller. Lazy by default; pass loading="eager" for images at the top of the page.
+// Other attributes (class, data-reveal, …) go to the <img>.
+import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -14,17 +16,18 @@ interface Props {
   loading?: 'lazy' | 'eager';
   [attr: string]: unknown;
 }
-const { src, alt, widths = [400, 800, 1200], sizes = '100vw', loading = 'lazy', ...attrs } = Astro.props;
-const usable = widths.filter((w) => w < src.width);
-const finalWidths = [...usable, Math.min(src.width, Math.max(...widths))];
+const { src, alt, widths = [400, 640, 720, 800, 1200], sizes = '100vw', loading = 'lazy', ...attrs } = Astro.props;
+const finalWidths = [...widths.filter((w) => w < src.width), Math.min(src.width, Math.max(...widths))];
+const fallbackFormat = src.format === 'jpg' || src.format === 'jpeg' ? 'jpg' : 'png';
+const [avif, webp, fallback] = await Promise.all([
+  getImage({ src, format: 'avif', widths: finalWidths, quality: 42 }),
+  getImage({ src, format: 'webp', widths: finalWidths, quality: 72 }),
+  getImage({ src, format: fallbackFormat, widths: finalWidths, quality: 78 }),
+]);
 ---
-<Picture
-  src={src}
-  alt={alt}
-  formats={['avif', 'webp']}
-  widths={finalWidths}
-  sizes={sizes}
-  loading={loading}
-  decoding="async"
-  {...attrs}
-/>
+<picture>
+  <source type="image/avif" srcset={avif.srcSet.attribute} sizes={sizes} />
+  <source type="image/webp" srcset={webp.srcSet.attribute} sizes={sizes} />
+  <img src={fallback.src} srcset={fallback.srcSet.attribute} sizes={sizes} alt={alt}
+    width={src.width} height={src.height} loading={loading} decoding="async" {...attrs} />
+</picture>

@@ -8,15 +8,17 @@ import { projects } from '../../data/projects';
 import type { GalleryProject } from '../../components/islands/ProjectGallery';
 
 // Each photo is turned into AVIF and WebP at several widths, plus a JPEG fallback, at build time.
-const WIDTHS = [480, 760, 1200, 1600];
+// In-between sizes let high-density phones pick a file close to what the slot needs.
+const WIDTHS = [400, 480, 600, 720, 800, 1200, 1600];
 const prepared: GalleryProject[] = await Promise.all(projects.map(async (p) => ({
   slug: p.slug, title: p.title, location: p.location, description: p.description,
   photos: await Promise.all(p.photos.map(async ({ src, alt, position }) => {
     const widths = [...WIDTHS.filter((w) => w < src.width), Math.min(src.width, 1600)];
     const [avif, webp, jpg] = await Promise.all([
-      getImage({ src, format: 'avif', widths }),
-      getImage({ src, format: 'webp', widths }),
-      getImage({ src, format: 'jpg', width: Math.min(src.width, 1200) }),
+      // Per-format quality, matching Photo.astro: AVIF 42 looks the same as 50 here and is ~25% smaller.
+      getImage({ src, format: 'avif', widths, quality: 42 }),
+      getImage({ src, format: 'webp', widths, quality: 72 }),
+      getImage({ src, format: 'jpg', width: Math.min(src.width, 1200), quality: 78 }),
     ]);
     return { avif: avif.srcSet.attribute, webp: webp.srcSet.attribute, src: jpg.src, width: src.width, height: src.height, alt, position };
   })),

@@ -9,16 +9,16 @@ export const heroFeatures: Feature[] = [
 ];
 
 export const whyChooseHome: Feature[] = [
-  { title: 'Expert HVAC Technicians', text: 'Our certified HVAC professionals in New York have the skills and experience to handle any heating or cooling issue with precision and care.', icon: 'hardHat' },
+  { title: 'Expert HVAC Technicians', text: 'Our certified HVAC professionals in Brooklyn have the skills and experience to handle any heating or cooling issue with precision and care.', icon: 'hardHat' },
   { title: 'Flexible Scheduling', text: 'We work around your schedule—offering convenient HVAC appointments, including evenings and weekends, to fit your lifestyle.', icon: 'calendarClock' },
   { title: 'Transparent Pricing', text: 'No hidden fees. We offer clear, upfront pricing on all air conditioning and heating services so you know exactly what to expect.', icon: 'priceBadge' },
   { title: 'High-Quality HVAC Parts', text: 'We use only premium, energy-efficient HVAC components to ensure long-lasting performance and lower utility bills.', icon: 'wrench' },
-  { title: '24/7 Emergency HVAC Services', text: 'HVAC problems don’t wait—and neither do we. Mode Mechanical offers fast, 24/7 emergency heating and AC repair in New York.', icon: 'siren' },
+  { title: '24/7 Emergency HVAC Services', text: 'HVAC problems don’t wait—and neither do we. Mode Mechanical offers fast, 24/7 emergency heating and AC repair in Brooklyn and across New York City.', icon: 'siren' },
   { title: '100% Satisfaction Guaranteed', text: 'Your comfort is our priority. We back every HVAC service with a satisfaction guarantee for total peace of mind.', icon: 'shieldCheck' },
 ];
 
 export const whyChooseAbout: Feature[] = [
-  { title: 'Licensed HVAC Technicians in New York', text: 'Every technician on our team is licensed, background-checked and trained across central air conditioners, furnaces, boilers and heat pumps, so your repair or installation is done right the first time.', icon: 'hardHat' },
+  { title: 'Licensed HVAC Technicians in Brooklyn', text: 'Every technician on our team is licensed, background-checked and trained across central air conditioners, furnaces, boilers and heat pumps, so your repair or installation is done right the first time.', icon: 'hardHat' },
   { title: 'Flexible Scheduling, Including Evenings and Weekends', text: 'Book AC repair, furnace service or seasonal HVAC maintenance at a time that works around your schedule — including evenings and weekends.', icon: 'calendarClock' },
   { title: 'Transparent, Upfront Pricing', text: 'No hidden fees and no surprise charges. You get a clear written estimate before any heating or cooling work begins.', icon: 'priceBadge' },
   { title: 'Premium Parts and Equipment', text: 'We install high-quality, energy-efficient components from Carrier, Trane, Daikin and other trusted manufacturers — fewer breakdowns and lower energy bills.', icon: 'wrench' },

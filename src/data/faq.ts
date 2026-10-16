@@ -11,6 +11,6 @@ export const homeFaq: Faq[] = [
 export const installationFaq: Faq[] = [
   { q: 'How long does an HVAC installation take?', a: 'Most residential installations are completed in one to two days. A ductless mini-split is often a single day; a full system replacement with new ductwork can take longer.' },
   { q: 'Do you handle permits and inspections?', a: 'Yes. We pull the required permits and coordinate inspections so the installation is fully code-compliant.' },
-  { q: 'What does a new HVAC system cost in New York?', a: 'Cost depends on system type, size and the condition of the existing ductwork. We provide a written estimate after an on-site assessment, with no obligation.' },
+  { q: 'What does a new HVAC system cost in Brooklyn?', a: 'Cost depends on system type, size and the condition of the existing ductwork. We provide a written estimate after an on-site assessment, with no obligation.' },
 ];
 

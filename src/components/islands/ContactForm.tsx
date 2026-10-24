@@ -1,9 +1,10 @@
 import './ContactForm.css';
-import { useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } from 'react';
 import {
   LIMITS, buildPayload, emptyContact, submitContact, validateContact, validateField,
   ContactNotConfiguredError, type ContactErrors, type ContactField, type ContactValues,
 } from '../../lib/contact';
+import { takeContactPrefill } from '../../lib/assistant-prefill';
 
 interface Props { phone: string; phoneHref: string; email: string }
 type Status = 'idle' | 'sending' | 'sent' | 'failed' | 'not-configured';
@@ -20,6 +21,17 @@ export default function ContactForm({ phone, phoneHref, email }: Props) {
   const [touched, setTouched] = useState<Partial<Record<ContactField, boolean>>>({});
   const [status, setStatus] = useState<Status>('idle');
   const formRef = useRef<HTMLFormElement>(null);
+
+  // A service request prepared with the website assistant fills in the message.
+  useEffect(() => {
+    const fill = () => {
+      const text = takeContactPrefill();
+      if (text) setValues((x) => ({ ...x, message: text.slice(0, LIMITS.message) }));
+    };
+    fill();
+    window.addEventListener('mm-assistant-prefill', fill);
+    return () => window.removeEventListener('mm-assistant-prefill', fill);
+  }, []);
 
   const onChange = (f: ContactField) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const v = e.target.value;

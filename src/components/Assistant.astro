@@ -1,0 +1,100 @@
+---
+// Website assistant launcher. Ships only a button and a few lines of script: the chat panel
+// (React, ~10 KB) loads the first time the visitor opens it, and is fetched early when they
+// hover or focus the button. Rendered only when PUBLIC_ASSISTANT_ENABLED=true (see BaseLayout).
+import Icon from './Icon.astro';
+import { business, profiles } from '../data/site';
+import { areas, areaHref } from '../data/areas';
+import { knownPages } from '../server/assistant/prompt';
+import type { AssistantConfig } from '../lib/assistant';
+
+const path = Astro.url.pathname;
+const area = areas.find((a) => areaHref(a) === path);
+
+/** Starter questions that fit the page the visitor is on. */
+const suggestions =
+  area ? [`Which parts of ${area.name} do you cover?`, 'My heating isn’t working', 'Can I get an estimate?']
+  : path === '/hvac-repair/' ? ['My AC is blowing warm air', 'My furnace won’t turn on', 'Do you do emergency repairs?']
+  : path === '/hvac-installation/' ? ['Mini-split or central air?', 'How long does an installation take?', 'Can I get an installation estimate?']
+  : path === '/hvac-maintenance/' ? ['How often should I get a tune-up?', 'How often should I change filters?', 'Book a maintenance visit']
+  : ['My AC isn’t cooling', 'Do you service my area?', 'What does a new system cost?'];
+
+const config: AssistantConfig = {
+  endpoint: (import.meta.env.PUBLIC_ASSISTANT_ENDPOINT ?? '').trim() || '/api/assistant/',
+  page: path,
+  phoneDisplay: business.phoneDisplay,
+  phoneHref: business.phoneHref,
+  email: business.email,
+  pages: knownPages.map((p) => p.url),
+  profiles: [business.facebook, business.instagram, ...profiles.map((p) => p.href)],
+  suggestions,
+};
+---
+<div class="mma" data-assistant={JSON.stringify(config)}>
+  <button type="button" class="mma-launcher" aria-expanded="false" aria-controls="mm-assistant-panel" aria-haspopup="dialog">
+    <Icon name="chat" size={20} />
+    <span class="mma-launcher__label">Ask a question</span>
+  </button>
+  <div class="mma-root"></div>
+</div>
+<style is:inline>
+  /* Inline (not bundled) so pages carry these rules only when the assistant is switched on. */
+  .mma-launcher {
+    position: fixed; right: 24px; bottom: 24px; z-index: 46;
+    display: inline-flex; align-items: center; gap: 10px;
+    min-height: 52px; padding: 0 20px 0 16px;
+    border: 0; border-radius: 999px; background: var(--ink); color: var(--white);
+    font: inherit; font-weight: 700; font-size: .95rem; cursor: pointer;
+    box-shadow: 0 14px 34px -12px rgba(14, 34, 56, .55);
+    transition: background-color .2s ease, transform .2s ease;
+  }
+  .mma-launcher:hover { background: var(--ink-2); transform: translateY(-1px); }
+  .mma-launcher:focus-visible { outline: 3px solid var(--cool-glow); outline-offset: 3px; }
+  .mma-launcher[aria-expanded='true'] { background: var(--cool-deep); }
+  .mma-launcher[aria-busy='true'] { cursor: progress; }
+  /* Phones: an icon button above the Call / Book bar; hidden behind the full-screen panel. */
+  @media (max-width: 760px) {
+    .mma-launcher { right: 14px; bottom: calc(88px + env(safe-area-inset-bottom)); width: 52px; padding: 0; justify-content: center; }
+    .mma-launcher__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  }
+  @media (max-width: 560px) {
+    html.mma-open { overflow: hidden; }
+    html.mma-open .mma-launcher { visibility: hidden; }
+  }
+  @media (prefers-reduced-motion: reduce) { .mma-launcher, .mma-launcher:hover { transition: none; transform: none; } }
+</style>
+
+<script>
+  import type { AssistantConfig } from '../lib/assistant';
+
+  const host = document.querySelector<HTMLElement>('.mma');
+  const launcher = host?.querySelector<HTMLButtonElement>('.mma-launcher');
+  const root = host?.querySelector<HTMLElement>('.mma-root');
+  if (host && launcher && root) {
+    const config = JSON.parse(host.dataset.assistant ?? '{}') as AssistantConfig;
+    let loading: Promise<void> | null = null;
+    const load = (open: boolean) => {
+      loading ??= import('./islands/assistant/mount').then(({ mount }) => mount(root, launcher, config, open));
+      return loading;
+    };
+    const onFirstClick = () => {
+      launcher.removeEventListener('click', onFirstClick);
+      launcher.setAttribute('aria-busy', 'true');
+      load(true).finally(() => launcher.removeAttribute('aria-busy'));
+    };
+    launcher.addEventListener('click', onFirstClick);
+    // Fetch the panel code as soon as the visitor shows intent.
+    const warm = () => { import('./islands/assistant/mount'); };
+    launcher.addEventListener('pointerenter', warm, { once: true });
+    launcher.addEventListener('focus', warm, { once: true });
+    // Reopen on the next page if the conversation was open when the visitor followed a link
+    // (larger screens only; on phones the panel covers the page they wanted to see).
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('mm_assistant_v1') || 'null');
+      if (saved?.open && !matchMedia('(max-width: 560px)').matches) {
+        launcher.removeEventListener('click', onFirstClick);
+        load(true);
+      }
+    } catch { /* storage unavailable */ }
+  }
+</script>

@@ -1,5 +1,10 @@
 {
   "trailingSlash": true,
+  "functions": {
+    "api/assistant.ts": {
+      "maxDuration": 30
+    }
+  },
   "redirects": [
     {
       "source": "/services",

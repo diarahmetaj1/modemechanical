@@ -2,6 +2,8 @@
 
 Migration of https://modemechanical.com from WordPress/Elementor to a statically generated site.
 Every page is pre-rendered HTML; React runs only for the mobile menu, hero slider, FAQ and contact form.
+An optional AI assistant (one serverless function) answers visitors' questions from the site's own
+content and turns conversations into service requests. See [`ASSISTANT.md`](ASSISTANT.md).
 
 ## Quick start
 
@@ -10,8 +12,10 @@ npm install
 npm run assets      # download images from the live WordPress site (run BEFORE switching DNS)
 cp .env.example .env  # then fill in the values
 npm run dev         # http://localhost:4321
-npm run build       # type check + production build into dist/
-npm run verify      # checks titles, H1s, canonicals, phone links, schema in dist/
+npm run build       # type check + production build into dist/ + assistant knowledge file
+npm run verify      # checks titles, H1s, canonicals, phone links, schema in dist/; knowledge file is current
+npm test            # unit and integration tests (Vitest)
+npm run test:e2e    # browser tests of the assistant (Playwright, no API key needed)
 npm run preview
 ```
 
@@ -24,6 +28,8 @@ Requires Node 18.17+ (tested on Node 22).
 | `PUBLIC_FORM_ENDPOINT` | yes, for the form | URL that receives contact form submissions as JSON POST. Without it, the Contact page shows phone and email instead of a form. |
 | `PUBLIC_BOOKING_URL` | no | External booking page. Empty = "Schedule Now" buttons go to `/contact/`, as on the live site. UTM parameters are appended automatically. |
 | `PUBLIC_GTAG_ID` | no | Google tag ID from the current site's HTML. Loaded after the page is interactive. |
+| `PUBLIC_ASSISTANT_ENABLED` | no | `true` shows the AI assistant. Needs `ANTHROPIC_API_KEY` on the server. |
+| `ANTHROPIC_API_KEY` | for the assistant | Server-side only (never `PUBLIC_`). Other assistant settings: [`ASSISTANT.md`](ASSISTANT.md#setup). |
 
 Never commit `.env`. Set the same variables in your host's dashboard.
 
@@ -88,7 +94,10 @@ Not reproduced because the exact behavior could not be inspected: the theme's `w
 Build command `npm run build`, output directory `dist`.
 
 - **Netlify / Cloudflare Pages:** `public/_redirects` and `public/_headers` are picked up automatically.
-- **Vercel:** `vercel.json` holds the same redirects, trailing-slash rule and cache headers.
+- **Vercel:** `vercel.json` holds the same redirects, trailing-slash rule and cache headers, and the
+  settings of the assistant's function (`api/assistant.ts`, deployed automatically).
+- The AI assistant needs a server function. It ships ready for Vercel; on other hosts, see
+  [`ASSISTANT.md`](ASSISTANT.md#setup). With the assistant switched off, the site is fully static.
 
 Before switching DNS:
 
@@ -173,9 +182,16 @@ src/
   components/    Header, Footer, TopBar, PageBanner, SectionHeading, FeatureGrid, BrandLogos,
                  CtaBox, ServiceAreas, Stats, Testimonials, ServiceSidebar, Icon
   components/islands/  MobileNav, HeroSlider, FaqAccordion, ContactForm (React)
+  components/islands/assistant/  AI assistant panel (loaded on first open), Markdown renderer
+  components/    Assistant.astro: assistant launcher button
+  lib/           contact.ts (form logic), assistant.ts (assistant client), icons.ts
+  server/assistant/  AI assistant backend: handler, prompt, validation, rate limits, provider,
+                 knowledge.generated.ts (built from dist/ by scripts/build-knowledge.mjs)
   pages/         /, /about-us/, /hvac-installation/, /hvac-maintenance/, /hvac-repair/, /projects/, /contact/,
                  /service-areas/, /hvac-<area>-ny/ (from data/areas.ts via [area].astro), 404
-scripts/         fetch-assets.mjs, verify-build.mjs
+api/             assistant.ts (Vercel Function)
+scripts/         fetch-assets.mjs, verify-build.mjs, build-knowledge.mjs, assistant-dev-server.mjs
+tests/           unit/ (Vitest), e2e/ (Playwright)
 ```
 
 Text lives in `src/data/` and the page files. Business details are in one place: `src/data/site.ts`.
@@ -209,3 +225,4 @@ Not yet done: a side-by-side visual comparison with the live site, downloading t
 - [ ] `scripts/fetch-assets.mjs` — add the URLs of the inner-page banner image and the white footer logo (see `MISSING_ASSETS.md` after running `npm run assets`).
 - [ ] `src/pages/projects/index.astro` — replace generic captions with one-line project descriptions.
 - [ ] `public/_redirects` / `vercel.json` — add redirects for any old URLs from the WordPress sitemap.
+- [ ] AI assistant: add an Anthropic API key and a spend limit, then set `PUBLIC_ASSISTANT_ENABLED=true` and mention the assistant in the privacy policy (see `ASSISTANT.md`).

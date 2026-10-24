@@ -11,6 +11,7 @@ import TopBar from '../components/TopBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MobileActionBar from '../components/MobileActionBar.astro';
+import Assistant from '../components/Assistant.astro';
 import { business, profiles } from '../data/site';
 import type { PageSeo } from '../data/seo';
 
@@ -31,6 +32,8 @@ const canonical = new URL(Astro.url.pathname, site).href;
 const ogImage = new URL(seo.ogImage, site).href;
 const gtagId = (import.meta.env.PUBLIC_GTAG_ID ?? '').trim();
 const hasGtag = gtagId !== '' && !gtagId.startsWith('YOUR_');
+// The website assistant needs its server function and API key; switch it on once both are set up.
+const assistantEnabled = (import.meta.env.PUBLIC_ASSISTANT_ENABLED ?? '').trim() === 'true';
 
 const businessSchema = {
   '@context': 'https://schema.org',
@@ -123,6 +126,7 @@ const schemas = [businessSchema, breadcrumbSchema, ...extraSchema].filter(Boolea
     </main>
     <Footer />
     <MobileActionBar />
+    {assistantEnabled && <Assistant />}
 
     <script>
       // WOW.js replacement: reveal each element once, as soon as it enters the viewport.

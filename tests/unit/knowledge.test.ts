@@ -24,7 +24,7 @@ describe('knowledge pack (what the assistant can ground answers in)', () => {
   it.each([
     ['How often should I change filters?', 'every 1 to 3 months'],
     ['When should I schedule maintenance?', 'once a year'],
-    ['Is there a warranty on repairs?', 'warranty on all HVAC repairs'],
+    ['Is there a warranty on new systems?', 'backed by its manufacturer warranty'],
     ['How long does an installation take?', 'one to two days'],
     ['Do you handle permits?', 'pull the required permits'],
     ['Why is my AC not cooling?', 'Low refrigerant, a dirty condenser coil'],
@@ -33,6 +33,10 @@ describe('knowledge pack (what the assistant can ground answers in)', () => {
     ['How much does a new system cost?', 'written estimate'],
   ])('%s', (_, passage) => {
     expect(all).toContain(passage);
+  });
+
+  it('makes no repair warranty claim (the company does not offer one)', () => {
+    expect(all).not.toMatch(/warranty on all HVAC repairs|parts and labor/i);
   });
 
   it('keeps shared blocks once and drops page chrome', () => {

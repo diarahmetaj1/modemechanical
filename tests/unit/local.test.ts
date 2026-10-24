@@ -27,7 +27,7 @@ describe('answers from the site', () => {
     ['What does a new system cost?', ['written estimate'], '/hvac-installation/'],
     ['How long does an installation take?', ['one to two days'], '/hvac-installation/'],
     ['Do you handle permits', ['pull the required permits'], '/hvac-installation/'],
-    ['is there a warranty', ['warranty on all HVAC repairs'], '/'],
+    ['is there a warranty on a new system', ['manufacturer warranty'], null],
     ['Mini-split or central air?', ['ductless'], null],
   ])('%s', (q, phrases, url) => {
     const r = ask(q);

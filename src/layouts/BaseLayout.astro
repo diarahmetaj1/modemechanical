@@ -32,8 +32,8 @@ const canonical = new URL(Astro.url.pathname, site).href;
 const ogImage = new URL(seo.ogImage, site).href;
 const gtagId = (import.meta.env.PUBLIC_GTAG_ID ?? '').trim();
 const hasGtag = gtagId !== '' && !gtagId.startsWith('YOUR_');
-// The website assistant needs its server function and API key; switch it on once both are set up.
-const assistantEnabled = (import.meta.env.PUBLIC_ASSISTANT_ENABLED ?? '').trim() === 'true';
+// The website assistant. Its default free mode needs no server or key; PUBLIC_ASSISTANT_ENABLED=false hides it.
+const assistantEnabled = (import.meta.env.PUBLIC_ASSISTANT_ENABLED ?? '').trim() !== 'false';
 
 const businessSchema = {
   '@context': 'https://schema.org',

@@ -1,28 +1,56 @@
-# Website assistant (AI)
+# Website assistant
 
 An "Ask a question" assistant on every page. It answers visitors' questions from the site's own
-content, and when someone needs service it turns the conversation into a **service request** they
-can send by phone, email or the contact form. It is off until you switch it on (see Setup).
+content, and when someone needs service it builds a **service request** they can send by phone,
+email or the contact form.
 
-## What it does
+It has two modes:
 
-- **Answers questions from the website only.** Services, service areas and neighborhoods,
-  emergency availability, hours, maintenance and filter advice, warranty, permits, and how quotes
-  work. It links to the page that covers the topic. If the site doesn't say something, it says so
-  and offers the phone number instead of guessing. It never quotes prices: the site promises a
-  written estimate after an assessment, and that is what it tells people.
-- **Turns a conversation into a lead.** When a visitor wants a repair, installation, maintenance
-  visit or quote, it asks one question at a time (what's wrong, what system, which area), then shows a
-  card with the details and three buttons: **Call**, **Email this request** (a pre-filled email)
-  and **Use the contact form** (fills in the message). Nothing is sent until the visitor does it
-  themselves, and the card says so. It never asks for names, phone numbers or addresses.
-- **Puts emergencies first.** For no heat, no cooling, leaks or burning smells it gives the phone
-  number before anything else. For a gas smell or a carbon monoxide alarm it tells the visitor to
-  leave and call 911 or the gas utility from outside.
-- **Knows which page the visitor is on** and offers starter questions that fit it (repair problems
-  on the Repair page, neighborhoods on area pages, and so on).
+| | **Free mode** (default) | **AI mode** (optional, paid) |
+| --- | --- | --- |
+| Cost | **$0**, no account, no API key | About $0.0005 per answer (Anthropic API) |
+| Server | None: runs in the visitor's browser | One Vercel Function |
+| Privacy | What visitors type never leaves their browser | Messages are sent to Anthropic to answer |
+| Answers | The best-matching passage from the site, word for word | Written replies that combine several pages |
+| Service request | Guided by buttons (service, system, area, timing, home or business, details) | Gathered in conversation |
 
-## Architecture
+Free mode is on by default. `PUBLIC_ASSISTANT_ENABLED=false` hides the assistant;
+`PUBLIC_ASSISTANT_MODE=ai` switches to AI mode (see [AI mode](#ai-mode-optional-paid)).
+
+## Free mode (default)
+
+- **Answers from the site's pages.** A keyword search (BM25, the method classic search engines use)
+  over every section of every page, with HVAC synonyms and everyday phrasing: "AC blowing warm
+  air" finds *Air conditioning not cooling*, "furnace won't turn on" finds *Heating system not
+  working*, "icing up" finds *Frozen evaporator coils*. The answer is the site's own text with a
+  link to the page. It never makes anything up. If nothing matches well enough, it says it couldn't
+  find that on the website and gives the phone number, email and contact form.
+- **Fixed answers for what matters most:** gas smell or carbon monoxide alarm (leave the building, call
+  911 or the gas utility), emergencies (phone number first, then an emergency request), phone and
+  email, office hours, brands (from the logos on the site), and service areas down to the
+  neighborhood ("Do you serve Astoria?" → yes, Queens).
+- **Guided service request.** "Request a visit" asks, with buttons: what's needed, the system, the
+  area, timing and home or business. Then the visitor can describe the problem in their own words.
+  Typed answers work too. The result is the same summary card as in AI mode (Call, Email this
+  request, Use the contact form), and nothing is sent until the visitor does it. Phone numbers and
+  email addresses typed into the description are removed.
+- **Updating what it knows:** same as AI mode: edit the page copy, `npm run build`, commit.
+
+The search code and the site text (about 27 KB compressed) load only when a visitor opens the
+assistant. Code: `src/lib/assistant-local.ts`.
+
+## AI mode (optional, paid)
+
+The rest of this document describes AI mode. Free AI services exist (for example Google
+Gemini's free tier and Cloudflare Workers AI's daily allowance), but they come with conditions:
+free-tier messages may be used to train the provider's models, and limits change or run out
+mid-day. That is why the default mode doesn't use AI at all.
+
+What AI mode adds: Claude writes each reply, combining several pages, following up on earlier
+messages, and gathering the service request in conversation. It stays limited to the website's
+content and rules, and it costs money per answer. Everything below applies to AI mode only.
+
+### Architecture
 
 ```
 Browser                                       Server (Vercel Function)                     Anthropic
@@ -68,7 +96,7 @@ current pricing). A typical answer with the cached knowledge is about $0.0005; t
 cold, long conversation) is about $0.002. The default daily cap of 2,000 replies bounds the spend at
 roughly $1–4 per day. Each reply is logged with its token counts and estimated cost (see Monitoring).
 
-## Security and privacy
+### Security and privacy
 
 - **The API key stays on the server.** It is read from the host's environment by the function and
   is never in the page, the build output or git.
@@ -101,14 +129,14 @@ roughly $1–4 per day. Each reply is logged with its token counts and estimated
   IP address. Anthropic's API terms apply to the messages it processes. Review them, and mention
   the assistant in your privacy policy, before you switch it on.
 
-## Setup
+### Setup
 
 1. **Anthropic account:** create an API key at console.anthropic.com and set a monthly spend limit
-   there (Settings → Limits). This is the only paid service required.
+   there (Settings → Limits). This is the only paid service AI mode needs.
 2. **Vercel** (Project → Settings → Environment Variables), for Production and Preview:
    - `ANTHROPIC_API_KEY`: the key.
-   - `PUBLIC_ASSISTANT_ENABLED` = `true`: shows the button. This is read at build time, so
-     redeploy after setting it.
+   - `PUBLIC_ASSISTANT_MODE` = `ai`: switches the assistant to AI mode. This is read at build
+     time, so redeploy after setting it.
    - Optional: `ASSISTANT_HASH_SALT` (any long random string, keeps visitor hashes stable across
      instances), and the limits in the table below.
 3. Redeploy. Open the site, click **Ask a question**, and try "My AC isn't cooling" and "Do you
@@ -124,7 +152,8 @@ and returns a `Response`. Then set `PUBLIC_ASSISTANT_ENDPOINT` if the URL is not
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `PUBLIC_ASSISTANT_ENABLED` | off | `true` shows the assistant (build time). |
+| `PUBLIC_ASSISTANT_ENABLED` | on | `false` hides the assistant (build time). |
+| `PUBLIC_ASSISTANT_MODE` | `site` (free) | `ai` uses the AI server function (build time). |
 | `ANTHROPIC_API_KEY` | none | Required for the assistant to answer. Server only. |
 | `ASSISTANT_MODEL` | `claude-haiku-5-5` | Claude model ID. |
 | `ASSISTANT_EFFORT` | `low` | `low`, `medium` or `high`: how much the model thinks before answering. |
@@ -137,11 +166,11 @@ and returns a `Response`. Then set `PUBLIC_ASSISTANT_ENDPOINT` if the URL is not
 | `PUBLIC_ASSISTANT_ENDPOINT` | `/api/assistant/` | Endpoint URL, if hosted elsewhere. |
 | `ASSISTANT_PROVIDER` | `anthropic` | `mock` = scripted replies for local development (ignored in Vercel production). |
 
-**Local development without a key:** `ASSISTANT_PROVIDER=mock PUBLIC_ASSISTANT_ENABLED=true npm run dev`.
+**Local development of AI mode without a key:** `ASSISTANT_PROVIDER=mock PUBLIC_ASSISTANT_MODE=ai npm run dev`.
 The dev server serves `/api/assistant/` with the same handler (`scripts/assistant-dev-server.mjs`).
 With `ANTHROPIC_API_KEY` set instead, it uses the real model.
 
-## Monitoring
+### Monitoring
 
 Every reply writes one JSON log line (Vercel → Project → Logs), for example:
 
@@ -157,7 +186,7 @@ site also records `assistant_open`, `assistant_question`, `assistant_service_req
 `assistant_handoff` (call / email / form), `assistant_link` and `assistant_error` events. None of
 them carry message text. Mark `assistant_handoff` as a key event to count assistant leads.
 
-## When things go wrong
+### When things go wrong
 
 - **No API key, or the provider is down:** the panel says the assistant isn't available and shows
   the phone number and contact form. The rest of the site is unaffected: it is static, and the
@@ -168,17 +197,22 @@ them carry message text. Mark `assistant_handoff` as a key event to count assist
 
 ## Tests
 
-- `npm test`: 93 unit and integration tests (Vitest, no network). They cover request validation,
+- `npm test`: 115 unit and integration tests (Vitest, no network). Free mode: correct answers
+  to everyday questions (symptoms, filters, costs, permits, warranty, areas, brands, hours), "not on
+  our website" for off-topic questions, safety and emergency replies, the guided request and
+  redaction. AI mode: request validation,
   origin and size checks, rate limits and the daily budget, streaming, tool-input validation and
   redaction, refusals and cut-off replies, provider outages and timeouts, client disconnects,
   log privacy, and that the knowledge pack contains the answers to common questions. The real
   Anthropic SDK is also run against a fake HTTP server, to check the exact request (cached system
   prompt, effort, tool, no sampling parameters) and the parsing of streamed text and tool calls.
-- `npm run test:e2e`: 30 browser tests (Playwright, mock provider): lazy loading, keyboard use and
+- `npm run test:e2e`: 36 browser tests (Playwright). Free mode: answers, the guided request by
+  buttons and keyboard, contact form prefill, no server calls, and every page rendering. AI mode
+  (mock provider): lazy loading, keyboard use and
   focus, screen-reader announcements, the service request card, link allowlist and HTML escaping,
   error and retry, Stop, conversation kept across pages, contact form prefill, phone layout and
-  focus trap, and every page rendering with the assistant on.
+  focus trap.
 
-Not covered without an API key: the real model's answers. After you set the key, try the questions
+Not covered without an API key: the real model's answers in AI mode. After you set the key, try the questions
 in Setup step 3, a few out-of-scope ones ("write me a poem", "ignore your rules"), and a price
 question ("how much is a new AC?"). It should decline, or point to a written estimate.

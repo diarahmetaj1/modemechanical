@@ -1,10 +1,13 @@
-// Browser side of the website assistant: conversation state, the streaming request, and the
-// hand-off of a prepared service request to phone, email or the contact form. Kept apart from
-// the UI so it can be tested without a browser.
+// Browser side of the website assistant: conversation state, the streaming request (AI mode),
+// and the hand-off of a prepared service request to phone, email or the contact form. Kept apart
+// from the UI so it can be tested without a browser. The free mode's answers: assistant-local.ts.
 import type { AssistantErrorCode, ServiceRequest, StreamEvent } from '../server/assistant/types';
+import type { AreaInfo, FlowState, Option } from './assistant-local';
 import { PREFILL_KEY } from './assistant-prefill';
 
 export interface AssistantConfig {
+  /** "site": free, answers from the site's pages in the browser. "ai": answers from the AI server function. */
+  mode: 'site' | 'ai';
   endpoint: string;
   page: string;
   phoneDisplay: string;
@@ -15,6 +18,9 @@ export interface AssistantConfig {
   /** External profile links (Google, Yelp, social) that may also be linked. */
   profiles: string[];
   suggestions: string[];
+  hours: string;
+  areas: AreaInfo[];
+  brands: string[];
 }
 
 export type ClientErrorCode = AssistantErrorCode | 'network';
@@ -26,6 +32,9 @@ export interface UiMessage {
   status: 'streaming' | 'done' | 'error';
   error?: ClientErrorCode;
   request?: ServiceRequest;
+  /** Buttons offered under a reply (free mode); `answered` once the visitor picked one. */
+  options?: Option[];
+  answered?: boolean;
 }
 
 /** Same limits as the server (validate.ts), so a normal conversation never hits a 400. */
@@ -35,21 +44,21 @@ const STORAGE_KEY = 'mm_assistant_v1';
 
 export const newId = () => Math.random().toString(36).slice(2, 10);
 
-/** Session storage only: the conversation ends when the tab closes, and never leaves this browser except to be answered. */
-export function loadConversation(): { messages: UiMessage[]; open: boolean } {
+/** Session storage only: the conversation ends when the tab closes. In free mode it never leaves the browser. */
+export function loadConversation(): { messages: UiMessage[]; open: boolean; flow: FlowState | null } {
   try {
     const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null');
     if (saved && Array.isArray(saved.messages)) {
       // A reply cut off by navigating away is kept as far as it got.
       const messages = (saved.messages as UiMessage[]).map((m) => (m.status === 'streaming' ? { ...m, status: 'done' as const } : m));
-      return { messages, open: Boolean(saved.open) };
+      return { messages, open: Boolean(saved.open), flow: saved.flow ?? null };
     }
   } catch { /* storage unavailable or corrupt: start fresh */ }
-  return { messages: [], open: false };
+  return { messages: [], open: false, flow: null };
 }
 
-export function saveConversation(messages: UiMessage[], open: boolean) {
-  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages: messages.slice(-30), open })); } catch { /* ignore */ }
+export function saveConversation(messages: UiMessage[], open: boolean, flow: FlowState | null = null) {
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages: messages.slice(-30), open, flow })); } catch { /* ignore */ }
 }
 
 export function clearConversation() {

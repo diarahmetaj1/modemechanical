@@ -58,7 +58,9 @@ function extractBlocks(html) {
         const el = popped[i];
         if (!el.block || el.skip || popped.slice(0, i).some((e) => e.skip) || skipping()) continue;
         const t = clean(el.buf.join(' '));
-        if (t) blocks.push({ kind: /^h[1-4]$/.test(el.tag) ? el.tag : 'text', text: el.tag === 'li' ? `- ${t}` : t });
+        // A <summary> titles the <details> it opens (repair problems), so it is kept as a small heading.
+        const kind = /^h[1-4]$/.test(el.tag) ? el.tag : el.tag === 'summary' ? 'h4' : 'text';
+        if (t) blocks.push({ kind, text: el.tag === 'li' ? `- ${t}` : t });
       }
       continue;
     }

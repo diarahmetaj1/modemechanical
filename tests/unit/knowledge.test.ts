@@ -27,7 +27,7 @@ describe('knowledge pack (what the assistant can ground answers in)', () => {
     ['Is there a warranty on repairs?', 'warranty on all HVAC repairs'],
     ['How long does an installation take?', 'one to two days'],
     ['Do you handle permits?', 'pull the required permits'],
-    ['Why is my AC not cooling?', 'low refrigerant, a dirty condenser coil'],
+    ['Why is my AC not cooling?', 'Low refrigerant, a dirty condenser coil'],
     ['Do you serve Astoria?', 'Astoria'],
     ['Do you serve Yonkers?', 'Yonkers'],
     ['How much does a new system cost?', 'written estimate'],

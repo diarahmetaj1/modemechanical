@@ -2,8 +2,9 @@
 
 Migration of https://modemechanical.com from WordPress/Elementor to a statically generated site.
 Every page is pre-rendered HTML; React runs only for the mobile menu, hero slider, FAQ and contact form.
-An optional AI assistant (one serverless function) answers visitors' questions from the site's own
-content and turns conversations into service requests. See [`ASSISTANT.md`](ASSISTANT.md).
+An "Ask a question" assistant answers visitors from the site's own content and turns conversations
+into service requests. By default it is free: it runs in the browser, with no AI and no server. An
+optional paid AI mode uses one serverless function. See [`ASSISTANT.md`](ASSISTANT.md).
 
 ## Quick start
 
@@ -28,8 +29,8 @@ Requires Node 18.17+ (tested on Node 22).
 | `PUBLIC_FORM_ENDPOINT` | yes, for the form | URL that receives contact form submissions as JSON POST. Without it, the Contact page shows phone and email instead of a form. |
 | `PUBLIC_BOOKING_URL` | no | External booking page. Empty = "Schedule Now" buttons go to `/contact/`, as on the live site. UTM parameters are appended automatically. |
 | `PUBLIC_GTAG_ID` | no | Google tag ID from the current site's HTML. Loaded after the page is interactive. |
-| `PUBLIC_ASSISTANT_ENABLED` | no | `true` shows the AI assistant. Needs `ANTHROPIC_API_KEY` on the server. |
-| `ANTHROPIC_API_KEY` | for the assistant | Server-side only (never `PUBLIC_`). Other assistant settings: [`ASSISTANT.md`](ASSISTANT.md#setup). |
+| `PUBLIC_ASSISTANT_ENABLED` | no | Assistant is on by default (free mode); `false` hides it. |
+| `PUBLIC_ASSISTANT_MODE` | no | `ai` switches to paid AI answers; needs `ANTHROPIC_API_KEY` (server-side only, never `PUBLIC_`). See [`ASSISTANT.md`](ASSISTANT.md#setup). |
 
 Never commit `.env`. Set the same variables in your host's dashboard.
 
@@ -96,8 +97,8 @@ Build command `npm run build`, output directory `dist`.
 - **Netlify / Cloudflare Pages:** `public/_redirects` and `public/_headers` are picked up automatically.
 - **Vercel:** `vercel.json` holds the same redirects, trailing-slash rule and cache headers, and the
   settings of the assistant's function (`api/assistant.ts`, deployed automatically).
-- The AI assistant needs a server function. It ships ready for Vercel; on other hosts, see
-  [`ASSISTANT.md`](ASSISTANT.md#setup). With the assistant switched off, the site is fully static.
+- The assistant's default free mode needs nothing from the host. Only the optional AI mode needs a
+  server function (ready for Vercel; other hosts: [`ASSISTANT.md`](ASSISTANT.md#setup)).
 
 Before switching DNS:
 
@@ -184,7 +185,7 @@ src/
   components/islands/  MobileNav, HeroSlider, FaqAccordion, ContactForm (React)
   components/islands/assistant/  AI assistant panel (loaded on first open), Markdown renderer
   components/    Assistant.astro: assistant launcher button
-  lib/           contact.ts (form logic), assistant.ts (assistant client), icons.ts
+  lib/           contact.ts (form logic), assistant.ts (assistant client), assistant-local.ts (free mode), icons.ts
   server/assistant/  AI assistant backend: handler, prompt, validation, rate limits, provider,
                  knowledge.generated.ts (built from dist/ by scripts/build-knowledge.mjs)
   pages/         /, /about-us/, /hvac-installation/, /hvac-maintenance/, /hvac-repair/, /projects/, /contact/,
@@ -225,4 +226,4 @@ Not yet done: a side-by-side visual comparison with the live site, downloading t
 - [ ] `scripts/fetch-assets.mjs` — add the URLs of the inner-page banner image and the white footer logo (see `MISSING_ASSETS.md` after running `npm run assets`).
 - [ ] `src/pages/projects/index.astro` — replace generic captions with one-line project descriptions.
 - [ ] `public/_redirects` / `vercel.json` — add redirects for any old URLs from the WordPress sitemap.
-- [ ] AI assistant: add an Anthropic API key and a spend limit, then set `PUBLIC_ASSISTANT_ENABLED=true` and mention the assistant in the privacy policy (see `ASSISTANT.md`).
+- [ ] Assistant: try it on the live site. It is free and needs no setup. AI mode is optional and paid (see `ASSISTANT.md`).

@@ -45,7 +45,7 @@ export const repairFeatures: Feature[] = [
 ];
 
 export const repairProblems: Feature[] = [
-  { title: 'Air conditioning not cooling', text: 'usually low refrigerant, a dirty condenser coil or a failing compressor. We diagnose before replacing parts.' },
+  { title: 'Air conditioning not cooling', text: 'low refrigerant, a dirty condenser coil or a failing compressor. We diagnose before replacing parts.' },
   { title: 'Heating system not working', text: 'a failed ignitor, bad thermocouple or tripped safety control. Most furnace repairs are finished on the same visit.' },
   { title: 'Poor airflow', text: 'clogged filters, blocked ducts or a weak blower motor restricting air through the system.' },
   { title: 'Strange noises', text: 'grinding, squealing or banging usually means a failing motor bearing, loose blower wheel or ductwork expansion.' },

@@ -1,12 +1,14 @@
 // Assistant settings, read from server environment variables (never exposed to the browser).
-// Every value has a safe default except the provider API key. Placeholder values that start with
+// Every value has a safe default except the provider API key: GEMINI_API_KEY (Google Gemini, free
+// tier) or ANTHROPIC_API_KEY (Claude, paid). With both set, Gemini is used unless
+// ASSISTANT_PROVIDER says otherwise. Placeholder values that start with
 // "YOUR_" (as in .env.example) count as unset.
 
 export type Env = Record<string, string | undefined>;
 export type Effort = 'low' | 'medium' | 'high';
 
 export interface AssistantConfig {
-  provider: 'anthropic' | 'mock';
+  provider: 'gemini' | 'anthropic' | 'mock';
   apiKey: string;
   model: string;
   effort: Effort;
@@ -38,14 +40,20 @@ const SITE_ORIGINS = ['https://modemechanical.com', 'https://www.modemechanical.
 export function loadConfig(env: Env): AssistantConfig {
   const effort = value(env, 'ASSISTANT_EFFORT');
   // The mock provider exists for local development and tests; production always uses the real one.
-  const wantsMock = value(env, 'ASSISTANT_PROVIDER') === 'mock' && value(env, 'VERCEL_ENV') !== 'production';
+  const wanted = value(env, 'ASSISTANT_PROVIDER');
+  const wantsMock = wanted === 'mock' && value(env, 'VERCEL_ENV') !== 'production';
+  const geminiKey = value(env, 'GEMINI_API_KEY');
+  const provider = wantsMock ? 'mock'
+    : wanted === 'anthropic' || wanted === 'gemini' ? wanted
+    : geminiKey ? 'gemini' : 'anthropic';
   const upstashUrl = value(env, 'UPSTASH_REDIS_REST_URL');
   const upstashToken = value(env, 'UPSTASH_REDIS_REST_TOKEN');
   return {
-    provider: wantsMock ? 'mock' : 'anthropic',
-    apiKey: value(env, 'ANTHROPIC_API_KEY'),
-    // Claude Haiku 5.5: fast and low-cost, and ample for answering from a small, given set of pages.
-    model: value(env, 'ASSISTANT_MODEL') || 'claude-haiku-5-5',
+    provider,
+    apiKey: provider === 'gemini' ? geminiKey : value(env, 'ANTHROPIC_API_KEY'),
+    // Gemini: Google's auto-updating Flash-Lite name, the free-tier model with the most generous
+    // limits. Claude Haiku 5.5: fast and low-cost. Both are ample for answering from the site's pages.
+    model: value(env, 'ASSISTANT_MODEL') || (provider === 'gemini' ? 'gemini-flash-lite-latest' : 'claude-haiku-5-5'),
     effort: effort === 'medium' || effort === 'high' ? effort : 'low',
     maxOutputTokens: 1500,
     timeoutMs: 20_000,

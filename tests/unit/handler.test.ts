@@ -21,14 +21,14 @@ describe('availability and configuration', () => {
   it('reports availability on GET without calling the model', async () => {
     const { handle, calls } = setup();
     const res = await handle(new Request('https://modemechanical.com/api/assistant/'));
-    expect(await res.json()).toEqual({ available: true });
+    expect(await res.json()).toEqual({ available: true, provider: 'fake' });
     expect(res.headers.get('cache-control')).toBe('no-store');
     expect(calls).toHaveLength(0);
   });
 
   it('answers 503 not_configured when no API key is set', async () => {
     const handle = createAssistantHandler({ ANTHROPIC_API_KEY: 'YOUR_API_KEY' }, { log: () => {} });
-    expect(await (await handle(new Request('https://x.test/api/assistant/'))).json()).toEqual({ available: false });
+    expect(await (await handle(new Request('https://x.test/api/assistant/'))).json()).toEqual({ available: false, provider: null });
     const res = await handle(post(ask('hi')));
     expect(res.status).toBe(503);
     expect(await res.json()).toEqual({ error: 'not_configured' });

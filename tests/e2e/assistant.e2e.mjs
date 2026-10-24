@@ -18,7 +18,8 @@ const PAGES = [
 const servers = [];
 let serverLog = '';
 async function startServer(port, env) {
-  const server = spawn('npx', ['astro', 'dev', '--port', String(port)], { env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
+  // Run Astro's CLI directly (not through npx) so stopping this process stops the server.
+  const server = spawn(process.execPath, ['node_modules/astro/astro.js', 'dev', '--port', String(port)], { env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'] });
   servers.push(server);
   server.stdout.on('data', (d) => { serverLog += d; });
   server.stderr.on('data', (d) => { serverLog += d; });
@@ -120,9 +121,10 @@ async function freeSuite(browser) {
     const errs = [];
     p.on('pageerror', (e) => errs.push(e.message));
     await test(`page ${path} renders with one h1, the launcher, and no errors`, async () => {
-      const res = await p.goto(BASE + path, { waitUntil: 'load' });
+      const res = await p.goto(BASE + path, { waitUntil: 'networkidle' });
       assert(res.status() === 200, `status ${res.status()}`);
-      assert(await p.$$eval('h1', (h) => h.length) === 1, 'h1 count');
+      // document.querySelectorAll stays out of the dev toolbar's shadow DOM, which has headings of its own.
+      assert(await p.evaluate(() => document.querySelectorAll('h1').length) === 1, 'h1 count');
       assert(await p.$$eval('.mma-launcher', (b) => b.length) === 1, 'launcher missing');
       assert(errs.length === 0, errs.join(' | '));
     });
@@ -196,13 +198,20 @@ async function aiSuite(browser) {
     assert(await page.$$eval('.mma-log img', (x) => x.length) === 0, 'an <img> was injected');
   });
 
-  await test('ai: an outage shows a helpful message with a retry button', async () => {
-    await page.fill('#mma-input', 'mock:overloaded');
+  await test('ai: when the AI can\'t answer (quota, outage), the site answers instead', async () => {
+    const before = await page.$$eval('.mma-msg--assistant', (m) => m.length);
+    await page.fill('#mma-input', 'mock:overloaded how often should I change my filter');
     await page.keyboard.press('Enter');
-    await page.waitForSelector('.mma-error');
-    const text = await page.textContent('.mma-error');
-    assert(text.includes('busy') && text.includes('(914) 223-3301'), `unexpected error text: ${text}`);
-    assert(await page.isVisible('.mma-error button'), 'no Try again button');
+    await page.waitForFunction((n) => document.querySelectorAll('.mma-msg--assistant').length > n, before);
+    await replyDone(page);
+    const text = await lastReply(page);
+    assert(text.includes('every 1 to 3 months'), `fallback answer: ${text}`);
+    assert(!(await page.$('.mma-msg--assistant:last-child .mma-error')), 'showed an error instead of answering');
+  });
+
+  await test('ai: the panel names the AI service in its privacy note', async () => {
+    const note = await page.textContent('#mma-note');
+    assert(note.includes('Messages are sent to mock'), `note: ${note}`);
   });
 
   await test('ai: the visitor can stop a slow reply', async () => {

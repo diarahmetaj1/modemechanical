@@ -10,6 +10,7 @@
 import { loadConfig, PRICES, type AssistantConfig, type Env } from './config.js';
 import { buildContext, buildSystemPrompt, knownPages, serviceRequestTool, SERVICE_REQUEST_TOOL } from './prompt.js';
 import { createAnthropicProvider } from './provider-anthropic.js';
+import { createGeminiProvider } from './provider-gemini.js';
 import { createMockProvider } from './provider-mock.js';
 import { clientId, ConcurrencyGate, FallbackStore, MemoryStore, UpstashStore, type RateLimitStore } from './rate-limit.js';
 import { LIMITS, parseAssistantRequest, parseServiceRequest, trimHistory } from './validate.js';
@@ -25,6 +26,8 @@ export interface HandlerOverrides {
   now?: () => Date;
   log?: (record: LogRecord) => void;
 }
+
+const PROVIDER_LABEL: Record<string, string> = { gemini: 'Google Gemini', anthropic: 'Anthropic Claude' };
 
 const BASE_HEADERS = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 
@@ -57,6 +60,8 @@ async function readLimited(request: Request, max: number): Promise<string> {
 function makeProvider(config: AssistantConfig): AssistantProvider | null {
   if (config.provider === 'mock') return createMockProvider();
   if (!config.apiKey) return null;
+  // No retries on Gemini: when the free quota runs out, the browser answers from the site at once.
+  if (config.provider === 'gemini') return createGeminiProvider({ apiKey: config.apiKey, model: config.model, timeoutMs: config.timeoutMs, maxRetries: 0 });
   return createAnthropicProvider({
     apiKey: config.apiKey, model: config.model, effort: config.effort, timeoutMs: config.timeoutMs, maxRetries: config.maxRetries,
   });
@@ -86,7 +91,9 @@ export function createAssistantHandler(env: Env, overrides: HandlerOverrides = {
   const available = Boolean(provider);
 
   return async function handle(request: Request): Promise<Response> {
-    if (request.method === 'GET' || request.method === 'HEAD') return json(200, { available });
+    // The panel asks first: without an AI provider it answers from the site instead, and it names
+    // the provider in its privacy note.
+    if (request.method === 'GET' || request.method === 'HEAD') return json(200, { available, provider: available ? PROVIDER_LABEL[provider!.name] ?? provider!.name : null });
     if (request.method !== 'POST') return fail(405, 'bad_request', { Allow: 'GET, POST' });
     if (!provider || !available) return fail(503, 'not_configured');
 

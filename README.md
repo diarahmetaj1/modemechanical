@@ -4,7 +4,7 @@ Migration of https://modemechanical.com from WordPress/Elementor to a statically
 Every page is pre-rendered HTML; React runs only for the mobile menu, hero slider, FAQ and contact form.
 An "Ask a question" assistant answers visitors from the site's own content and turns conversations
 into service requests. By default it is free: it runs in the browser, with no AI and no server. An
-optional paid AI mode uses one serverless function. See [`ASSISTANT.md`](ASSISTANT.md).
+optional AI mode (free with Google Gemini, or paid with Claude) uses one serverless function. See [`ASSISTANT.md`](ASSISTANT.md).
 
 ## Quick start
 
@@ -30,7 +30,7 @@ Requires Node 18.17+ (tested on Node 22).
 | `PUBLIC_BOOKING_URL` | no | External booking page. Empty = "Schedule Now" buttons go to `/contact/`, as on the live site. UTM parameters are appended automatically. |
 | `PUBLIC_GTAG_ID` | no | Google tag ID from the current site's HTML. Loaded after the page is interactive. |
 | `PUBLIC_ASSISTANT_ENABLED` | no | Assistant is on by default (free mode); `false` hides it. |
-| `PUBLIC_ASSISTANT_MODE` | no | `ai` switches to paid AI answers; needs `ANTHROPIC_API_KEY` (server-side only, never `PUBLIC_`). See [`ASSISTANT.md`](ASSISTANT.md#setup). |
+| `PUBLIC_ASSISTANT_MODE` | no | `ai` switches to AI answers. Needs `GEMINI_API_KEY` (Google, free tier) or `ANTHROPIC_API_KEY` (paid), server-side only, never `PUBLIC_`. See [`ASSISTANT.md`](ASSISTANT.md#free-ai-with-google-gemini). |
 
 Never commit `.env`. Set the same variables in your host's dashboard.
 

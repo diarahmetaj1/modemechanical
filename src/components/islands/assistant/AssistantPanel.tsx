@@ -96,9 +96,20 @@ export default function AssistantPanel({ config, launcher, initiallyOpen }: Prop
     phoneDisplay: config.phoneDisplay, phoneHref: config.phoneHref, email: config.email, hours: config.hours, areas: config.areas, brands: config.brands,
   };
   const site = config.mode !== 'ai';
+  // AI mode: which AI the server has, if any (null while asking). Without one, answers come from the site.
+  const [ai, setAi] = useState<{ available: boolean | null; provider: string | null }>({ available: site ? false : null, provider: null });
+  const aiOn = !site && ai.available !== false;
 
   // Free mode: fetch the engine as the panel opens, so the first answer is instant.
   useEffect(() => { if (site) loadLocal(); }, [site]);
+
+  useEffect(() => {
+    if (site) return;
+    fetch(config.endpoint, { headers: { Accept: 'application/json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { available?: boolean; provider?: string | null } | null) => setAi({ available: Boolean(d?.available), provider: d?.provider ?? null }))
+      .catch(() => setAi({ available: false, provider: null }));
+  }, [site, config.endpoint]);
 
   // The launcher button lives in the page's HTML; keep its state in sync with the panel.
   useEffect(() => {
@@ -200,7 +211,8 @@ export default function AssistantPanel({ config, launcher, initiallyOpen }: Prop
   async function send(question: string, base: UiMessage[] = messages) {
     const q = question.trim().slice(0, CLIENT_LIMITS.userChars);
     if (!q || busy) return;
-    if (site) { await sendLocal(q, base); return; }
+    // Site answers when there is no AI, and for the steps of a button-guided request.
+    if (!aiOn || flow) { await sendLocal(q, base); return; }
     const history = buildHistory(base, q);
     const user: UiMessage = { id: newId(), role: 'user', content: q, status: 'done' };
     const reply: UiMessage = { id: newId(), role: 'assistant', content: '', status: 'streaming' };
@@ -234,6 +246,14 @@ export default function AssistantPanel({ config, launcher, initiallyOpen }: Prop
     if (outcome === null || outcome === 'truncated' || (outcome === 'stopped' && text)) {
       update(reply.id, () => ({ status: 'done', error: outcome === 'truncated' ? 'truncated' : undefined }));
       setAnnouncement(text ? `Assistant: ${text.replace(/\*\*|\[|\]\([^)]*\)/g, '')}` : 'The assistant prepared a service request.');
+    } else if (!text && outcome !== 'stopped' && outcome !== 'refused') {
+      // The AI couldn't answer (free quota used up, outage, not set up): answer from the site instead.
+      if (outcome === 'not_configured') setAi({ available: false, provider: null });
+      track('assistant_fallback', { code: outcome });
+      const local = await loadLocal();
+      const r = local.mod.reply(q, ctx, local.index);
+      update(reply.id, () => ({ status: 'done', content: r.text, options: r.options }));
+      setAnnouncement(`Assistant: ${plain(r.text)}`);
     } else {
       update(reply.id, () => ({ status: 'error', error: outcome === 'stopped' ? undefined : outcome as ClientErrorCode }));
       const msg = errorText(outcome, config.phoneDisplay);
@@ -296,7 +316,7 @@ export default function AssistantPanel({ config, launcher, initiallyOpen }: Prop
       <div className="mma-head">
         <div>
           <h2 id="mma-title">Ask Mode Mechanical</h2>
-          <p>{site ? 'Answers from our website' : 'AI assistant · answers from our website'}</p>
+          <p>{aiOn ? `AI assistant${ai.provider ? ` (${ai.provider})` : ''} · answers from our website` : 'Answers from our website'}</p>
         </div>
         <button type="button" className="mma-icon" onClick={newChat} aria-label="Start a new conversation" title="New conversation"
           disabled={messages.length === 0}><Svg name="refresh" /></button>
@@ -368,9 +388,9 @@ export default function AssistantPanel({ config, launcher, initiallyOpen }: Prop
         )}
       </form>
       <p id="mma-note" className="mma-note">
-        {site
+        {!aiOn
           ? 'Answers come from our website, and what you type stays in your browser. Our team confirms every job.'
-          : 'AI answers can be wrong; our team confirms every job. Please don’t share personal details here.'}
+          : `AI answers can be wrong; our team confirms every job. Messages are sent to ${ai.provider ?? 'an AI service'} to answer, so please don’t share personal details.`}
       </p>
       <div className="visually-hidden" aria-live="polite" aria-atomic="true">{announcement}</div>
     </div>

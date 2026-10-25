@@ -7,7 +7,7 @@ import { areas, areaHref } from '../../src/data/areas';
 import { brands } from '../../src/data/brands';
 
 const ctx: LocalContext = {
-  phoneDisplay: '(914) 223-3301', phoneHref: 'tel:+19142233301', email: 'info@modemechanical.com', hours: 'Mon – Sun 08:00AM – 06:00PM',
+  phoneDisplay: '(914) 223-3301', phoneHref: 'tel:+19142233301', email: 'info@modemechanical.com', hours: 'Mon – Sun 08:00 – 20:00',
   areas: areas.map((a) => ({ name: a.name, url: areaHref(a), neighborhoods: a.neighborhoods, key: a.slug.replace(/-/g, '_') as LocalContext['areas'][number]['key'] })),
   brands: brands.map((b) => b.name),
 };
@@ -52,7 +52,7 @@ describe('answers from the site', () => {
 
   it('answers contact, hours and brand questions from the site details', () => {
     expect(ask('what is your phone number').text).toContain('[(914) 223-3301](tel:+19142233301)');
-    expect(ask('what are your hours').text).toContain('Mon – Sun 08:00AM – 06:00PM');
+    expect(ask('what are your hours').text).toContain('Mon – Sun 08:00 – 20:00');
     expect(ask('Do you install Daikin?').text).toMatch(/^Yes, Daikin/);
     expect(ask('what brands do you work with').text).toContain('Trane');
     expect(ask('do you install Lennox').text).toMatch(/^Lennox isn’t on our website’s brand list/);

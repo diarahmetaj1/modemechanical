@@ -9,7 +9,7 @@ export const knowledge: KnowledgePack = {
     "phone": "+1-914-223-3301",
     "email": "info@modemechanical.com",
     "baseLocation": "Brooklyn NY 11238",
-    "hours": "Monday to Sunday, 08:00 to 18:00",
+    "hours": "Monday to Sunday, 08:00 to 20:00",
     "areaServed": [
       "Brooklyn",
       "Queens",
@@ -67,7 +67,7 @@ export const knowledge: KnowledgePack = {
       "url": "/contact/",
       "title": "Contact Mode Mechanical | HVAC Service in Brooklyn, NY",
       "description": "Call (914) 223-3301 or send a message for HVAC repair, installation or maintenance in Brooklyn, NYC, Long Island and Westchester. 24/7 emergency service.",
-      "content": "# Contact Mode Mechanical — Brooklyn HVAC Contractor\nCall, email or send a message — emergencies are answered 24/7.\n## Contact details\nHave a question or need HVAC services? We’re here to help! Fill out the form, and one of our expert technicians will get back to you as soon as possible. Whether it’s a quick inquiry, service request, or free estimate, we’re ready to assist with all your heating and cooling needs.\n### Opening Hours\nMon – Sun 08:00AM – 06:00PM\n### Service Area\nBased in Brooklyn, NY 11238\nWe come to you across Brooklyn, Queens, Manhattan, The Bronx, Staten Island, Long Island and Westchester County.\n### Email Us\n- info@modemechanical.com\n### Call Us Directly\n- 914 223 3301"
+      "content": "# Contact Mode Mechanical — Brooklyn HVAC Contractor\nCall, email or send a message — emergencies are answered 24/7.\n## Contact details\nHave a question or need HVAC services? We’re here to help! Fill out the form, and one of our expert technicians will get back to you as soon as possible. Whether it’s a quick inquiry, service request, or free estimate, we’re ready to assist with all your heating and cooling needs.\n### Opening Hours\nMon – Sun 08:00 – 20:00\n### Service Area\nBased in Brooklyn, NY 11238\nWe come to you across Brooklyn, Queens, Manhattan, The Bronx, Staten Island, Long Island and Westchester County.\n### Email Us\n- info@modemechanical.com\n### Call Us Directly\n- 914 223 3301"
     },
     {
       "url": "/service-areas/",

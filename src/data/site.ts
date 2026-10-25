@@ -9,7 +9,7 @@ export const business = {
   // Service-area business: no public street address, only the base city and ZIP code.
   base: { city: 'Brooklyn', region: 'NY', zip: '11238' },
   serviceArea: 'NYC, Long Island & Westchester',
-  hours: 'Mon – Sun 08:00AM – 06:00PM',
+  hours: 'Mon – Sun 08:00 – 20:00',
   facebook: 'https://www.facebook.com/profile.php?id=61588581779860',
   instagram: 'https://www.instagram.com/modemechanical/',
   // Google Business Profile and Yelp listings. Each review button and schema link appears only

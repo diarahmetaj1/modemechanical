@@ -2,9 +2,9 @@
 
 Migration of https://modemechanical.com from WordPress/Elementor to a statically generated site.
 Every page is pre-rendered HTML; React runs only for the mobile menu, hero slider, FAQ and contact form.
-An "Ask a question" assistant answers visitors from the site's own content and turns conversations
-into service requests. By default it is free: it runs in the browser, with no AI and no server. An
-optional AI mode (free with Google Gemini, or paid with Claude) uses one serverless function. See [`ASSISTANT.md`](ASSISTANT.md).
+The site is prepared for AI search (ChatGPT, Gemini, Claude, Perplexity, Grok): see
+[Getting found by AI assistants](#getting-found-by-ai-assistants). An optional "Ask a question" chat
+assistant is built but switched off; see [`ASSISTANT.md`](ASSISTANT.md).
 
 ## Quick start
 
@@ -29,7 +29,7 @@ Requires Node 18.17+ (tested on Node 22).
 | `PUBLIC_FORM_ENDPOINT` | yes, for the form | URL that receives contact form submissions as JSON POST. Without it, the Contact page shows phone and email instead of a form. |
 | `PUBLIC_BOOKING_URL` | no | External booking page. Empty = "Schedule Now" buttons go to `/contact/`, as on the live site. UTM parameters are appended automatically. |
 | `PUBLIC_GTAG_ID` | no | Google tag ID from the current site's HTML. Loaded after the page is interactive. |
-| `PUBLIC_ASSISTANT_ENABLED` | no | Assistant is on by default (free mode); `false` hides it. |
+| `PUBLIC_ASSISTANT_ENABLED` | no | `true` shows the chat assistant (off by default). |
 | `PUBLIC_ASSISTANT_MODE` | no | `ai` switches to AI answers. Needs `GEMINI_API_KEY` (Google, free tier) or `ANTHROPIC_API_KEY` (paid), server-side only, never `PUBLIC_`. See [`ASSISTANT.md`](ASSISTANT.md#free-ai-with-google-gemini). |
 
 Never commit `.env`. Set the same variables in your host's dashboard.
@@ -105,6 +105,41 @@ Before switching DNS:
 1. Run `npm run assets` and commit the images in `public/images` (page photos and logos are then copied into `src/assets/`; see `ASSETS.md`).
 2. Open the old `https://modemechanical.com/sitemap_index.xml`, list every URL, and add a redirect for any URL that has no page here.
 3. After launch, submit `https://modemechanical.com/sitemap-index.xml` in Google Search Console.
+
+## Getting found by AI assistants
+
+When someone asks ChatGPT, Gemini, Claude, Perplexity, Copilot or Grok for an HVAC company in
+Brooklyn or NYC, those tools search the web and recommend the businesses they can find and trust.
+The site gives them clear facts:
+
+- `/llms.txt`: a plain summary for AI tools (who, where, services, areas, hours, phone, links to
+  every page), and `/llms-full.txt` with the readable text of every page. Both are generated from the
+  built pages on every `npm run build` (`scripts/build-knowledge.mjs`), so they never go stale.
+- `robots.txt` welcomes every crawler and names the AI search crawlers explicitly.
+- Structured data on every page: business type, base location and ZIP, areas served, hours, 24/7
+  emergency line, services and specialties, and links to the Google, Yelp, Facebook and Instagram
+  profiles. The home page also carries its FAQ.
+- `npm run verify` checks all of the above.
+
+What counts most happens off the site. AI assistants lean on search engines and listings, and on
+reviews:
+
+1. **Google Business Profile** (Gemini, Google AI Overviews): complete it with the services, the
+   areas, hours (08:00–20:00), photos and the website link, and ask happy customers for reviews.
+2. **Bing Places** and **Bing Webmaster Tools** (ChatGPT search and Copilot use Bing): claim the
+   listing, then add the site and submit `https://modemechanical.com/sitemap-index.xml`. Bing can
+   import the site from Google Search Console in one step.
+3. **Google Search Console**: submit the same sitemap.
+4. **Yelp** and **Apple Business Connect** (Siri and Apple Maps): same name, phone and hours everywhere.
+5. **Directories**: Angi, Thumbtack, HomeAdvisor, Nextdoor and BBB, with the same name, phone and
+   website. Consistent details across many sites are what make an AI trust a business.
+6. **X (Twitter)**: Grok reads X, so an account that posts finished jobs ("New heat pump in Park Slope")
+   helps there.
+7. **Reviews that name the service and area** ("fixed our boiler in Astoria") are what AI tools
+   quote when they recommend a company.
+
+None of this can be guaranteed or bought: each AI decides whom to recommend. Expect it to take weeks
+after launch, as the site gets crawled and reviews build up.
 
 ## Design system — "two temperatures" (October 2026 redesign)
 

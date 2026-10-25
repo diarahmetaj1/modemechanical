@@ -1,8 +1,10 @@
-// Builds the assistant's knowledge pack from the built site in dist/, so the assistant answers
-// from exactly what visitors read on the pages. Run after `astro build` (npm run build does it):
+// Builds the site's text for AI from the built site in dist/, so AI tools read exactly what
+// visitors read on the pages. Run after `astro build` (npm run build does it):
 //
-//   node scripts/build-knowledge.mjs          write src/server/assistant/knowledge.generated.ts
-//   node scripts/build-knowledge.mjs --check  exit 1 if the committed file is out of date
+//   node scripts/build-knowledge.mjs          write the assistant's knowledge pack
+//                                             (src/server/assistant/knowledge.generated.ts) and
+//                                             dist/llms.txt + dist/llms-full.txt for AI search tools
+//   node scripts/build-knowledge.mjs --check  exit 1 if the committed knowledge pack is out of date
 //
 // Per page it keeps the readable copy inside <main> (headings, paragraphs, list items, FAQ
 // questions) and drops navigation, images, scripts, forms and anything aria-hidden. A block of
@@ -161,4 +163,76 @@ if (process.argv.includes('--check')) {
 } else {
   await writeFile(outFile, next);
   console.log(`Wrote assistant knowledge pack: ${pack.pages.length} pages, ${size} characters.`);
+  const home = await readFile(new URL('./index.html', dist), 'utf8');
+  const brands = [...home.matchAll(/alt="([^"]+?) logo, an HVAC brand/g)].map((m) => decode(m[1])).filter((b, i, all) => all.indexOf(b) === i);
+  const { short, full } = renderLlms(pack, brands);
+  await writeFile(new URL('./llms.txt', dist), short);
+  await writeFile(new URL('./llms-full.txt', dist), full);
+  console.log(`Wrote dist/llms.txt (${short.length} characters) and dist/llms-full.txt (${full.length} characters).`);
+}
+
+/**
+ * llms.txt (https://llmstxt.org): a plain summary of the business for AI assistants and AI search
+ * crawlers, with links to every page; llms-full.txt adds the readable text of every page.
+ */
+function renderLlms({ business: b, pages }, brands) {
+  const site = b.url.replace(/\/$/, '');
+  const phone = b.phone.replace(/^\+1-(\d{3})-(\d{3})-(\d{4})$/, '($1) $2-$3');
+  const home = pages.find((p) => p.url === '/');
+  const page = (url) => pages.find((p) => p.url === url);
+  const link = (p) => `- [${p.title.split('|')[0].trim()}](${site}${p.url}): ${p.description}`;
+  const group = (urls) => urls.map(page).filter(Boolean).map(link).join('\n');
+  const areaPages = pages.filter((p) => /^\/hvac-[a-z-]+-ny\/$/.test(p.url));
+  const profiles = b.profiles.map((u) => `- ${u}`).join('\n');
+  const facts = [
+    `- Business: ${b.name}, heating, ventilation and air conditioning (HVAC) contractor`,
+    `- Based in: ${b.baseLocation} (service-area business: technicians come to the customer)`,
+    `- Serves: ${b.areaServed.join(', ')}`,
+    `- Services: AC and heating installation, repair and maintenance for homes and businesses: central air, ductless mini-splits, heat pumps, furnaces, boilers, rooftop units, ductwork and ventilation`,
+    `- Emergency service: 24/7`,
+    `- Office hours: ${b.hours}`,
+    `- Phone: ${phone}`,
+    `- Email: ${b.email}`,
+    `- Website: ${site}/`,
+    brands.length ? `- Brands installed and serviced: ${brands.join(', ')}` : '',
+    `- Quotes: written estimate after an on-site assessment`,
+  ].filter(Boolean).join('\n');
+
+  const short = `# ${b.name}
+
+> ${home.description}
+
+${facts}
+
+## Services
+
+${group(['/hvac-repair/', '/hvac-installation/', '/hvac-maintenance/'])}
+
+## Service areas
+
+${group(['/service-areas/'])}
+${areaPages.map(link).join('\n')}
+
+## Company
+
+${group(['/', '/about-us/', '/projects/', '/contact/'])}
+
+## Profiles and reviews
+
+${profiles}
+
+## Optional
+
+- [Full text of every page](${site}/llms-full.txt): the readable content of the whole site in one file
+`;
+
+  const full = `# ${b.name}: full site text
+
+> ${home.description}
+
+${facts}
+
+${pages.map((p) => `---\n\nSource: ${site}${p.url}\n\n${p.content.replace(/^# /, '## ').replace(/\n# /g, '\n## ')}`).join('\n\n')}
+`;
+  return { short, full };
 }

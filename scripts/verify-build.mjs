@@ -37,5 +37,14 @@ const home = await readFile(new URL('./index.html', dist), 'utf8');
 check(home.includes('"@type":"FAQPage"'), '/', 'missing FAQPage JSON-LD');
 check(/data-airflow/.test(home), '/', 'two-temperature hero (airflow canvas) missing');
 
-console.log(failures ? `\n${failures} check(s) failed.` : `All checks passed for ${pages.length} pages.`);
+// AI search: the summary file for AI tools exists and no AI search crawler is shut out.
+const llms = await readFile(new URL('./llms.txt', dist), 'utf8').catch(() => '');
+check(llms.startsWith('# Mode Mechanical') && llms.includes('(914) 223-3301') && llms.includes('https://modemechanical.com/hvac-repair/'), '/llms.txt', 'missing or incomplete');
+check((await readFile(new URL('./llms-full.txt', dist), 'utf8').catch(() => '')).length > 10_000, '/llms-full.txt', 'missing or too short');
+const robots = await readFile(new URL('./robots.txt', dist), 'utf8');
+check(!/^Disallow:\s*\/\s*$/m.test(robots), '/robots.txt', 'blocks crawlers');
+for (const bot of ['OAI-SearchBot', 'Claude-SearchBot', 'PerplexityBot', 'Googlebot', 'Bingbot']) check(robots.includes(bot), '/robots.txt', `does not name ${bot}`);
+check(home.includes('"hasOfferCatalog"') && home.includes('"knowsAbout"'), '/', 'business schema lacks services');
+
+console.log(failures ? `\n${failures} check(s) failed.` : `All checks passed for ${pages.length} pages, llms.txt and robots.txt.`);
 process.exitCode = failures ? 1 : 0;

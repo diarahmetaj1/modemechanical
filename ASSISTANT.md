@@ -18,7 +18,8 @@ It has three setups:
 In both AI setups the free mode is the safety net. When the AI can't answer (the free quota is used up,
 Google or Anthropic is down, no key is set), the visitor gets the site answer instead of an error.
 
-`PUBLIC_ASSISTANT_ENABLED=false` hides the assistant. `PUBLIC_ASSISTANT_MODE=ai` switches to AI
+**The assistant is switched off** (the owner chose AI search visibility instead; see the README).
+`PUBLIC_ASSISTANT_ENABLED=true` shows it, and `PUBLIC_ASSISTANT_MODE=ai` switches it to AI
 answers (see [Free AI with Google Gemini](#free-ai-with-google-gemini)).
 
 ## Free mode (default)

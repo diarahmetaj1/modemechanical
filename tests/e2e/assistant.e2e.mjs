@@ -50,7 +50,7 @@ const pickOption = (page, label) => page.click(`.mma-msg:last-child .mma-options
 
 /* ---------------- Free mode (default): no AI, no server calls ---------------- */
 async function freeSuite(browser) {
-  const BASE = await startServer(FREE_PORT, { PUBLIC_ASSISTANT_MODE: '', ASSISTANT_PROVIDER: '' });
+  const BASE = await startServer(FREE_PORT, { PUBLIC_ASSISTANT_ENABLED: 'true', PUBLIC_ASSISTANT_MODE: '', ASSISTANT_PROVIDER: '' });
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 860 } });
   const page = await ctx.newPage();
   const errors = [];
@@ -136,7 +136,7 @@ async function freeSuite(browser) {
 /* ---------------- AI mode, with the mock provider ---------------- */
 async function aiSuite(browser) {
   const BASE = await startServer(AI_PORT, {
-    PUBLIC_ASSISTANT_MODE: 'ai', ASSISTANT_PROVIDER: 'mock', ASSISTANT_LIMIT_PER_CLIENT_10MIN: '500', ASSISTANT_LIMIT_PER_CLIENT_DAY: '500',
+    PUBLIC_ASSISTANT_ENABLED: 'true', PUBLIC_ASSISTANT_MODE: 'ai', ASSISTANT_PROVIDER: 'mock', ASSISTANT_LIMIT_PER_CLIENT_10MIN: '500', ASSISTANT_LIMIT_PER_CLIENT_DAY: '500',
   });
 
   /* ---------------- Desktop ---------------- */

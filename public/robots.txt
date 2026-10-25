@@ -1,4 +1,25 @@
+# Every crawler is welcome, including the AI assistants' search crawlers, so ChatGPT, Gemini,
+# Claude, Perplexity, Copilot and Grok can find and recommend Mode Mechanical.
+# A plain-text summary for AI tools: https://modemechanical.com/llms.txt
+
 User-agent: *
+Allow: /
+
+# Named explicitly so the welcome is unambiguous.
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: Googlebot
+User-agent: Google-Extended
+User-agent: Bingbot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: DuckAssistBot
 Allow: /
 
 Sitemap: https://modemechanical.com/sitemap-index.xml

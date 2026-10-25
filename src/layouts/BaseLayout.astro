@@ -12,7 +12,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MobileActionBar from '../components/MobileActionBar.astro';
 import Assistant from '../components/Assistant.astro';
-import { business, profiles } from '../data/site';
+import { business, profiles, services } from '../data/site';
 import type { PageSeo } from '../data/seo';
 
 interface Props {
@@ -32,13 +32,15 @@ const canonical = new URL(Astro.url.pathname, site).href;
 const ogImage = new URL(seo.ogImage, site).href;
 const gtagId = (import.meta.env.PUBLIC_GTAG_ID ?? '').trim();
 const hasGtag = gtagId !== '' && !gtagId.startsWith('YOUR_');
-// The website assistant. Its default free mode needs no server or key; PUBLIC_ASSISTANT_ENABLED=false hides it.
-const assistantEnabled = (import.meta.env.PUBLIC_ASSISTANT_ENABLED ?? '').trim() !== 'false';
+// The "Ask a question" chat assistant is off unless PUBLIC_ASSISTANT_ENABLED=true (see ASSISTANT.md).
+const assistantEnabled = (import.meta.env.PUBLIC_ASSISTANT_ENABLED ?? '').trim() === 'true';
 
 const businessSchema = {
   '@context': 'https://schema.org',
   '@type': 'HVACBusiness',
   name: business.name,
+  // Plain facts for search engines and AI assistants that describe and recommend local businesses.
+  description: `HVAC contractor based in ${business.base.city}, ${business.base.region}: AC and heating installation, repair and maintenance for homes and businesses across ${business.serviceArea}. 24/7 emergency service.`,
   url: business.url + '/',
   logo: new URL('/images/logo.png', site).href,
   image: ogImage,
@@ -57,6 +59,19 @@ const businessSchema = {
     opens: '08:00', closes: '20:00',
   }],
   areaServed: business.areaServed.map((name) => ({ '@type': 'Place', name })),
+  contactPoint: [{
+    '@type': 'ContactPoint', contactType: 'emergency service', telephone: '+1-914-223-3301', areaServed: 'US-NY',
+    hoursAvailable: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '00:00', closes: '23:59' },
+  }],
+  knowsAbout: ['Air conditioning repair', 'Heating repair', 'HVAC installation', 'HVAC maintenance', 'Central air conditioning',
+    'Ductless mini-split systems', 'Heat pumps', 'Furnaces', 'Boilers', 'Rooftop units', 'VRF systems', 'Ductwork and ventilation'],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog', name: 'HVAC services',
+    itemListElement: services.map((sv) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: `HVAC ${sv.label}`, description: sv.text, url: new URL(sv.href, site).href },
+    })),
+  },
   sameAs: [business.facebook, business.instagram, ...profiles.map((p) => p.href)],
 };
 

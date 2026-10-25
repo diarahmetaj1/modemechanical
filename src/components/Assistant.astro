@@ -1,8 +1,8 @@
 ---
 // Website assistant launcher. Ships only a button and a few lines of script: the chat panel
 // (React) and, in free mode, the site's text for answering, load the first time the visitor
-// opens it, and are fetched early when they hover or focus the button. Shown unless
-// PUBLIC_ASSISTANT_ENABLED=false (see BaseLayout).
+// opens it, and are fetched early when they hover or focus the button. Shown only when
+// PUBLIC_ASSISTANT_ENABLED=true (see BaseLayout).
 import Icon from './Icon.astro';
 import { business, profiles } from '../data/site';
 import { brands } from '../data/brands';

@@ -26,7 +26,8 @@ Requires Node 18.17+ (tested on Node 22).
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `PUBLIC_FORM_ENDPOINT` | yes, for the form | URL that receives contact form submissions as JSON POST. Without it, the Contact page shows phone and email instead of a form. |
+| `PUBLIC_EMAILJS_SERVICE_ID`, `PUBLIC_EMAILJS_TEMPLATE_ID`, `PUBLIC_EMAILJS_PUBLIC_KEY` | yes, for the form | EmailJS: each contact form message is emailed to you. See [Contact form](#contact-form--connected-with-emailjs). |
+| `PUBLIC_FORM_ENDPOINT` | no | Alternative to EmailJS: a URL that receives submissions as JSON POST. Without either, the form says messages aren't connected and shows phone and email. |
 | `PUBLIC_BOOKING_URL` | no | External booking page. Empty = "Schedule Now" buttons go to `/contact/`, as on the live site. UTM parameters are appended automatically. |
 | `PUBLIC_GTAG_ID` | no | Google tag ID from the current site's HTML. Loaded after the page is interactive. |
 | `PUBLIC_ASSISTANT_ENABLED` | no | `true` shows the chat assistant (off by default). |
@@ -34,15 +35,47 @@ Requires Node 18.17+ (tested on Node 22).
 
 Never commit `.env`. Set the same variables in your host's dashboard.
 
-## Contact form — ready for the backend
+## Contact form — connected with EmailJS
 
-The form is fully built (design, validation, loading, success and error states) and only needs an endpoint.
-All logic lives in `src/lib/contact.ts`; the UI is `src/components/islands/ContactForm.tsx`.
+The form sends each message to your email through [EmailJS](https://www.emailjs.com) (free plan:
+a limited number of emails per month; check their current plan). No server is needed. All logic lives
+in `src/lib/contact.ts`; the UI is `src/components/islands/ContactForm.tsx`.
 
-**To connect it:** set `PUBLIC_FORM_ENDPOINT` to a URL that accepts a JSON `POST` and returns any `2xx` on success.
-To use another transport (FormData, an SDK), change only `submitContact()` in `src/lib/contact.ts`.
+**Set it up (about 10 minutes):**
 
-Payload sent to the backend:
+1. Create a free account at emailjs.com.
+2. **Email Services → Add New Service**: connect the mailbox that should *send* the emails (Gmail,
+   Outlook, or your domain's email). Copy the **Service ID**.
+3. **Email Templates → Create New Template**. Set **To Email** to the address that should *receive*
+   the requests (for example info@modemechanical.com), and **Reply To** to `{{reply_to}}`, so pressing
+   Reply answers the customer. Subject, for example: `New website request from {{name}}`. Body:
+
+   ```
+   Name: {{name}}
+   Phone: {{phone}}
+   Email: {{email}}
+
+   {{message}}
+
+   Sent from {{page}} on {{submitted_at}}. Source: {{source}}
+   ```
+
+   Copy the **Template ID**.
+4. **Account → General**: copy the **Public Key**. Under **Account → Security**, allow only
+   `modemechanical.com` (and the Vercel preview domain while testing) so other sites can't use your
+   key.
+5. In Vercel (Settings → Environment Variables) set `PUBLIC_EMAILJS_SERVICE_ID`,
+   `PUBLIC_EMAILJS_TEMPLATE_ID` and `PUBLIC_EMAILJS_PUBLIC_KEY`, then redeploy. They are read at
+   build time.
+6. Send a test message from the Contact page and check the inbox (and spam folder).
+
+These three IDs are public by design: EmailJS runs in the browser, and the domain allowlist in step 4
+is what protects them. The form also drops bot submissions (hidden honeypot field, headless browsers
+blocked) and allows one message per 10 seconds per visitor. The EmailJS code loads only when someone
+presses Send.
+
+**Alternative:** set `PUBLIC_FORM_ENDPOINT` to a URL that accepts a JSON `POST` and returns any `2xx`
+(used only when EmailJS isn't configured). Payload:
 
 ```json
 {

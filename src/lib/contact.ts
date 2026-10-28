@@ -2,9 +2,12 @@
 //
 // BACKEND INTEGRATION POINT
 // -------------------------
-// Set PUBLIC_FORM_ENDPOINT in .env to a URL that accepts a JSON POST of `ContactPayload`
-// and returns any 2xx status on success. Nothing else needs to change.
-// To use a different transport (FormData, an SDK, a server action), edit `submitContact` only.
+// EmailJS (emails each message to the business, no server needed): set PUBLIC_EMAILJS_SERVICE_ID,
+// PUBLIC_EMAILJS_TEMPLATE_ID and PUBLIC_EMAILJS_PUBLIC_KEY. These three are public by design (EmailJS
+// runs in the browser); restrict the domain in the EmailJS dashboard. Template variables: see
+// `emailTemplateParams`.
+// Or set PUBLIC_FORM_ENDPOINT to a URL that accepts a JSON POST of `ContactPayload` and returns any
+// 2xx. EmailJS is used when both are set. To change the transport, edit `submitContact` only.
 
 export type ContactField = 'name' | 'email' | 'phone' | 'message';
 export type ContactValues = Record<ContactField, string>;
@@ -88,13 +91,67 @@ export class ContactNotConfiguredError extends Error {
   constructor() { super('Contact form endpoint is not configured'); this.name = 'ContactNotConfiguredError'; }
 }
 
-export function getEndpoint(): string {
-  const raw = (import.meta.env.PUBLIC_FORM_ENDPOINT ?? '').trim();
+const env = (v: string | undefined) => {
+  const raw = (v ?? '').trim();
   return raw && !raw.startsWith('YOUR_') ? raw : '';
+};
+
+export function getEndpoint(): string {
+  return env(import.meta.env.PUBLIC_FORM_ENDPOINT);
+}
+
+export interface EmailJsConfig { serviceId: string; templateId: string; publicKey: string }
+
+/** EmailJS settings, or null unless all three are set. */
+export function getEmailJsConfig(): EmailJsConfig | null {
+  const c = {
+    serviceId: env(import.meta.env.PUBLIC_EMAILJS_SERVICE_ID),
+    templateId: env(import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID),
+    publicKey: env(import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY),
+  };
+  return c.serviceId && c.templateId && c.publicKey ? c : null;
+}
+
+const ATTRIBUTION_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid'] as const;
+
+/**
+ * Variables available in the EmailJS template: {{name}}, {{email}}, {{phone}}, {{message}},
+ * {{page}}, {{submitted_at}}, {{source}}, and {{reply_to}} (use it as the template's Reply-To so
+ * answering the email writes back to the customer).
+ */
+export function emailTemplateParams(p: ContactPayload): Record<string, string> {
+  const source = ATTRIBUTION_KEYS.filter((k) => p[k]).map((k) => `${k}=${p[k]}`).join(', ');
+  const submitted = new Date(p.submittedAt);
+  return {
+    name: p.name,
+    email: p.email,
+    reply_to: p.email,
+    phone: p.phone.length === 10 ? `(${p.phone.slice(0, 3)}) ${p.phone.slice(3, 6)}-${p.phone.slice(6)}` : p.phone,
+    message: p.message,
+    page: p.page || '/',
+    submitted_at: Number.isNaN(submitted.getTime()) ? p.submittedAt
+      : submitted.toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' }) + ' (New York time)',
+    source: source || 'direct',
+  };
 }
 
 /** Resolves only when the backend confirms receipt (2xx). Throws otherwise. */
-export async function submitContact(payload: ContactPayload, endpoint = getEndpoint()): Promise<void> {
+export async function submitContact(payload: ContactPayload, endpoint = getEndpoint(), emailjs = getEmailJsConfig()): Promise<void> {
+  if (emailjs) {
+    // Loaded only when a message is sent, so the page doesn't carry the SDK.
+    const { send } = await import('@emailjs/browser');
+    try {
+      await send(emailjs.serviceId, emailjs.templateId, emailTemplateParams(payload), {
+        publicKey: emailjs.publicKey,
+        blockHeadless: true, // drops most bots
+        limitRate: { id: 'contact-form', throttle: 10_000 }, // one message per 10 seconds per browser
+      });
+    } catch (err) {
+      const status = (err as { status?: number })?.status;
+      throw new Error(`EmailJS rejected the message${status ? ` (${status})` : ''}`);
+    }
+    return;
+  }
   if (!endpoint) throw new ContactNotConfiguredError();
   const res = await fetch(endpoint, {
     method: 'POST',

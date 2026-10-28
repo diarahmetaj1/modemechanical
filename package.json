@@ -16,6 +16,7 @@
     "@anthropic-ai/sdk": "0.133.0",
     "@astrojs/react": "4.4.2",
     "@astrojs/sitemap": "3.7.4",
+    "@emailjs/browser": "5.0.3",
     "@fontsource-variable/bricolage-grotesque": "5.3.0",
     "@fontsource/manrope": "5.3.0",
     "@google/genai": "2.28.0",

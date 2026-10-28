@@ -26,7 +26,8 @@ Requires Node 18.17+ (tested on Node 22).
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `PUBLIC_FORM_ENDPOINT` | yes, for the form | URL that receives contact form submissions as JSON POST. Without it, the Contact page shows phone and email instead of a form. |
+| `PUBLIC_EMAILJS_SERVICE_ID`, `PUBLIC_EMAILJS_TEMPLATE_ID`, `PUBLIC_EMAILJS_PUBLIC_KEY` | one form option is required | Send the contact form through [EmailJS](https://www.emailjs.com/). All three are needed. They are public ids, not secrets; restrict them to your domain in EmailJS under Account → Security. Never put the EmailJS **private** key in a `PUBLIC_` variable. |
+| `PUBLIC_FORM_ENDPOINT` | one form option is required | URL that receives contact form submissions as JSON POST. Used when EmailJS is not set. With neither set, the form says the message was not sent and shows phone and email. |
 | `PUBLIC_BOOKING_URL` | no | External booking page. Empty = "Schedule Now" buttons go to `/contact/`, as on the live site. UTM parameters are appended automatically. |
 | `PUBLIC_GTAG_ID` | no | Google tag ID from the current site's HTML. Loaded after the page is interactive. |
 | `PUBLIC_ASSISTANT_ENABLED` | no | `true` shows the chat assistant (off by default). |
@@ -39,7 +40,13 @@ Never commit `.env`. Set the same variables in your host's dashboard.
 The form is fully built (design, validation, loading, success and error states) and only needs an endpoint.
 All logic lives in `src/lib/contact.ts`; the UI is `src/components/islands/ContactForm.tsx`.
 
-**To connect it:** set `PUBLIC_FORM_ENDPOINT` to a URL that accepts a JSON `POST` and returns any `2xx` on success.
+**To connect it**, choose one:
+
+- **EmailJS:** set `PUBLIC_EMAILJS_SERVICE_ID`, `PUBLIC_EMAILJS_TEMPLATE_ID` and `PUBLIC_EMAILJS_PUBLIC_KEY`.
+  The template receives `{{name}}`, `{{email}}`, `{{phone}}`, `{{message}}`, `{{page}}` and `{{submittedAt}}`
+  (shown in New York time). Set the template's Reply To to `{{email}}`. EmailJS is used when both options are set.
+- **Own backend:** set `PUBLIC_FORM_ENDPOINT` to a URL that accepts a JSON `POST` and returns any `2xx` on success.
+
 To use another transport (FormData, an SDK), change only `submitContact()` in `src/lib/contact.ts`.
 
 Payload sent to the backend:

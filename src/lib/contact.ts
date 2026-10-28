@@ -2,9 +2,11 @@
 //
 // BACKEND INTEGRATION POINT
 // -------------------------
-// Set PUBLIC_FORM_ENDPOINT in .env to a URL that accepts a JSON POST of `ContactPayload`
-// and returns any 2xx status on success. Nothing else needs to change.
-// To use a different transport (FormData, an SDK, a server action), edit `submitContact` only.
+// Option A, EmailJS: set PUBLIC_EMAILJS_SERVICE_ID, PUBLIC_EMAILJS_TEMPLATE_ID and PUBLIC_EMAILJS_PUBLIC_KEY.
+//   The template receives name, email, phone, message, page and submittedAt as {{variables}}.
+// Option B, own backend: set PUBLIC_FORM_ENDPOINT to a URL that accepts a JSON POST of `ContactPayload`
+//   and returns any 2xx status on success.
+// EmailJS wins when both are set. To use a different transport, edit `submitContact` only.
 
 export type ContactField = 'name' | 'email' | 'phone' | 'message';
 export type ContactValues = Record<ContactField, string>;
@@ -88,13 +90,54 @@ export class ContactNotConfiguredError extends Error {
   constructor() { super('Contact form endpoint is not configured'); this.name = 'ContactNotConfiguredError'; }
 }
 
+/** An env value, or '' when it is missing or still the `YOUR_…` placeholder from .env.example. */
+function envValue(raw: string | undefined): string {
+  const v = (raw ?? '').trim();
+  return v && !v.startsWith('YOUR_') ? v : '';
+}
+
 export function getEndpoint(): string {
-  const raw = (import.meta.env.PUBLIC_FORM_ENDPOINT ?? '').trim();
-  return raw && !raw.startsWith('YOUR_') ? raw : '';
+  return envValue(import.meta.env.PUBLIC_FORM_ENDPOINT);
+}
+
+export interface EmailJsConfig { serviceId: string; templateId: string; publicKey: string }
+
+/** All three EmailJS ids, or null when any is missing. These ids are public by design (they run in the browser). */
+export function getEmailJsConfig(): EmailJsConfig | null {
+  const serviceId = envValue(import.meta.env.PUBLIC_EMAILJS_SERVICE_ID);
+  const templateId = envValue(import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID);
+  const publicKey = envValue(import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY);
+  return serviceId && templateId && publicKey ? { serviceId, templateId, publicKey } : null;
+}
+
+export const EMAILJS_URL = 'https://api.emailjs.com/api/v1.0/email/send';
+
+/** Template variables: the payload, with the timestamp made readable for the office (New York time). */
+export function emailJsParams(payload: ContactPayload): Record<string, string> {
+  const at = new Date(payload.submittedAt);
+  const submittedAt = Number.isNaN(at.getTime()) ? payload.submittedAt
+    : `${at.toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' })} (New York)`;
+  return { ...payload, submittedAt } as Record<string, string>;
 }
 
 /** Resolves only when the backend confirms receipt (2xx). Throws otherwise. */
-export async function submitContact(payload: ContactPayload, endpoint = getEndpoint()): Promise<void> {
+export async function submitContact(
+  payload: ContactPayload, endpoint = getEndpoint(), emailjs = getEmailJsConfig(),
+): Promise<void> {
+  if (emailjs) {
+    const res = await fetch(EMAILJS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        service_id: emailjs.serviceId,
+        template_id: emailjs.templateId,
+        user_id: emailjs.publicKey,
+        template_params: emailJsParams(payload),
+      }),
+    });
+    if (!res.ok) throw new Error(`EmailJS responded ${res.status}`);
+    return;
+  }
   if (!endpoint) throw new ContactNotConfiguredError();
   const res = await fetch(endpoint, {
     method: 'POST',

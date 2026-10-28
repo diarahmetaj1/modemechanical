@@ -16,7 +16,7 @@ import maintenanceImg from '../assets/photos/service-maintenance.jpg';
 import installImg from '../assets/projects/project-01.jpg';
 import repairImg from '../assets/projects/project-02.jpg';
 import bulkheadImg from '../assets/projects/project-05.jpg';
-import furnaceImg from '../assets/projects/project-09.jpg';
+import supportImg from '../assets/photos/faq-support.jpg';
 import { seo } from '../data/seo';
 import { whyChooseHome } from '../data/features';
 import { homeFaq } from '../data/faq';
@@ -143,7 +143,7 @@ const faqSchema = {
   <section class="section section--surface">
     <div class="container split">
       <div class="faq-aside">
-        <Photo src={furnaceImg} data-reveal="zoom-in" alt="New Carrier gas furnace installed in a Brooklyn basement by Mode Mechanical" widths={[400, 800, 1200]} sizes="(max-width: 900px) 100vw, 550px" />
+        <Photo src={supportImg} data-reveal="zoom-in" alt="Customer service representative with a headset, ready to take HVAC service calls" widths={[400, 456]} sizes="(max-width: 900px) 100vw, 550px" />
         <a class="faq-aside__phone" href={business.phoneHref}>
           <span>24 Hours &amp; Emergencies</span>
           <strong><Icon name="phone" size={22} /> {business.phoneTopbar}</strong>
@@ -227,7 +227,7 @@ const faqSchema = {
   .mosaic :global(.stats) { grid-row: span 2; }
 
   .faq-aside { position: relative; }
-  .faq-aside img { border-radius: var(--radius-lg); width: 100%; aspect-ratio: 6 / 7; object-fit: cover; object-position: 50% 100%; }
+  .faq-aside img { border-radius: var(--radius-lg); width: 100%; aspect-ratio: 6 / 7; object-fit: cover; object-position: 50% 30%; }
   .faq-aside__phone { position: absolute; left: 24px; right: 24px; bottom: 24px; background: var(--blue-800); color: #fff; border-radius: var(--radius-md); padding: 18px 22px; display: grid; gap: 4px; }
   .faq-aside__phone strong { display: inline-flex; align-items: center; gap: 10px; font-size: 1.5rem; }
 

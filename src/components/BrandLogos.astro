@@ -22,7 +22,7 @@ const { title = 'Brands We Work With', boxed = false, slider = true } = Astro.pr
         {/* Second copy makes the loop seamless; it is hidden from screen readers. */}
         <ul class="marquee__copy" aria-hidden="true">
           {brands.map((b) => (
-            <li><Photo src={b.src} alt="" widths={[180, 360]} sizes="150px" draggable="false" /></li>
+            <li><Photo src={b.src} alt={b.alt} widths={[180, 360]} sizes="150px" draggable="false" /></li>
           ))}
         </ul>
       </div>

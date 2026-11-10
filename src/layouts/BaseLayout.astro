@@ -5,7 +5,8 @@ import '@fontsource/manrope/600.css';
 import '@fontsource/manrope/700.css';
 import '@fontsource-variable/bricolage-grotesque/standard.css';
 // Headings (including the hero H1, the LCP element) use this file: preload it so text paints sooner.
-import displayFontUrl from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2?url';
+// It is the core-characters cut declared in global.css.
+import displayFontUrl from '../assets/fonts/bricolage-grotesque-core.woff2?url';
 import '../styles/global.css';
 import TopBar from '../components/TopBar.astro';
 import Header from '../components/Header.astro';
@@ -13,6 +14,7 @@ import Footer from '../components/Footer.astro';
 import MobileActionBar from '../components/MobileActionBar.astro';
 import Assistant from '../components/Assistant.astro';
 import { business, profiles, services } from '../data/site';
+import { BUSINESS_ID, websiteSchema } from '../data/schema';
 import type { PageSeo } from '../data/seo';
 
 interface Props {
@@ -30,6 +32,7 @@ const { seo, breadcrumb, extraSchema = [], preloadImage, overlayHeader = true, n
 const site = Astro.site ?? new URL(business.url);
 const canonical = new URL(Astro.url.pathname, site).href;
 const ogImage = new URL(seo.ogImage, site).href;
+const ogImageAlt = seo.ogImageAlt ?? `${business.name}: HVAC installation, repair and maintenance in New York`;
 const gtagId = (import.meta.env.PUBLIC_GTAG_ID ?? '').trim();
 const hasGtag = gtagId !== '' && !gtagId.startsWith('YOUR_');
 // The "Ask a question" chat assistant is off unless PUBLIC_ASSISTANT_ENABLED=true (see ASSISTANT.md).
@@ -38,12 +41,13 @@ const assistantEnabled = (import.meta.env.PUBLIC_ASSISTANT_ENABLED ?? '').trim()
 const businessSchema = {
   '@context': 'https://schema.org',
   '@type': 'HVACBusiness',
+  '@id': BUSINESS_ID,
   name: business.name,
   // Plain facts for search engines and AI assistants that describe and recommend local businesses.
   description: `HVAC contractor based in ${business.base.city}, ${business.base.region}: AC and heating installation, repair and maintenance for homes and businesses across ${business.serviceArea}. 24/7 emergency service.`,
   url: business.url + '/',
   logo: new URL('/images/logo.png', site).href,
-  image: ogImage,
+  image: new URL('/images/og/home.jpg', site).href,
   telephone: '+1-914-223-3301',
   email: business.email,
   address: {
@@ -83,7 +87,8 @@ const breadcrumbSchema = breadcrumb && {
   })),
 };
 
-const schemas = [businessSchema, breadcrumbSchema, ...extraSchema].filter(Boolean);
+const isHome = Astro.url.pathname === '/';
+const schemas = [businessSchema, isHome && websiteSchema, breadcrumbSchema, ...extraSchema].filter(Boolean);
 ---
 <!doctype html>
 <html lang="en">
@@ -97,7 +102,7 @@ const schemas = [businessSchema, breadcrumbSchema, ...extraSchema].filter(Boolea
     <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
     <link rel="icon" href="/favicon.jpg" />
     <link rel="apple-touch-icon" href="/favicon.jpg" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
 
     <meta property="og:type" content="website" />
@@ -107,10 +112,14 @@ const schemas = [businessSchema, breadcrumbSchema, ...extraSchema].filter(Boolea
     <meta property="og:description" content={seo.description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={seo.title} />
     <meta name="twitter:description" content={seo.description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <script is:inline>
       // Enable scroll reveals only when they can complete; otherwise content stays visible.

@@ -1,3 +1,17 @@
+/* Heading font, cut to the characters the site uses (93 KB instead of 131 KB). Same font, same
+   weight / optical-size / width axes, so headings look identical. Declared after the full
+   @fontsource faces, so browsers use this file for these characters and fetch the full one only
+   if a page shows a character outside this set. Rebuild with pyftsubset (see README). */
+@font-face {
+  font-family: 'Bricolage Grotesque Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  src: url('../assets/fonts/bricolage-grotesque-core.woff2') format('woff2-variations');
+  unicode-range: U+0020-007E, U+00A0, U+00A9, U+00B0, U+00B7, U+00D7, U+2013-2014, U+2018-2019, U+201C-201D, U+2022, U+2026, U+2039-203A;
+}
+
 /* Design system: "two temperatures". The logo pairs a snowflake and a flame, so the site pairs
    a cool blue with an ember orange on a deep ink base. Old token names stay as aliases so every
    existing component picks up the new palette. */
@@ -145,6 +159,10 @@ p { margin: 0 0 1em; }
 @keyframes reveal-fade-down { from { opacity: 0; transform: translate3d(0, -30%, 0); } }
 /* Elements sliding or scaling in must not widen the page while they animate. */
 main, footer { overflow-x: clip; }
+/* Core Web Vitals: the browser skips layout and paint for sections far below the screen until
+   they come near. The first two sections (on screen at load, e.g. the projects gallery) always
+   render normally. Browsers without support ignore it. */
+main > section:nth-child(n+3) { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 
 /* Header intro: html.intro is set on the first page of a visit only (see BaseLayout),
    so the header does not replay its entrance on every navigation. Delay with --intro-delay. */

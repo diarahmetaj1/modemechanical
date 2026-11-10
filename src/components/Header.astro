@@ -15,7 +15,7 @@ const isActive = (href: string, children?: { href: string }[]) =>
   <div class="container header__inner">
     <a href="/" class="header__logo intro-item" style="--intro-delay:.1s" aria-label="Mode Mechanical home">
       <Photo class="header__logo-color" src={logoColor} alt="Mode Mechanical HVAC logo" widths={[60, 120, 180]} sizes="(max-width: 1024px) 48px, 56px" loading="eager" />
-      {overlay && <Photo class="header__logo-white" src={logoWhite} alt="" widths={[60, 120, 180]} sizes="(max-width: 1024px) 48px, 56px" loading="eager" />}
+      {overlay && <Photo class="header__logo-white" src={logoWhite} alt="Mode Mechanical HVAC logo" aria-hidden="true" widths={[60, 120, 180]} sizes="(max-width: 1024px) 48px, 56px" loading="eager" />}
     </a>
     <nav class="header__nav" aria-label="Main">
       <ul>

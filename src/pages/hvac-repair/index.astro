@@ -6,14 +6,16 @@ import Testimonials from '../../components/Testimonials.astro';
 import Photo from '../../components/Photo.astro';
 import repairPhoto from '../../assets/projects/project-06.jpg';
 import { seo } from '../../data/seo';
+import { serviceSchema } from '../../data/schema';
 import { repairFeatures, repairProblems } from '../../data/features';
 const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 // Which side of the system a symptom usually belongs to (drives the color dot).
 const kind = (t: string): 'cool' | 'warm' | 'both' =>
   /air conditioning|refrigerant|frozen|condensate/i.test(t) ? 'cool' : /heating system/i.test(t) ? 'warm' : 'both';
 const kindLabel = { cool: 'Cooling', warm: 'Heating', both: 'Cooling and heating' } as const;
+const service = serviceSchema({ name: 'AC and Heating Repair', description: seo.repair.description, path: '/hvac-repair/' });
 ---
-<ServiceLayout seo={seo.repair} crumb="HVAC Repair" path="/hvac-repair/" lede="Pick what’s happening below — we’ll tell you what usually causes it, and fix most problems on the first visit.">
+<ServiceLayout seo={seo.repair} crumb="HVAC Repair" path="/hvac-repair/" lede="Pick what’s happening below — we’ll tell you what usually causes it, and fix most problems on the first visit." extraSchema={[service]}>
   <section>
     <SectionHeading title="Common HVAC Problems We Fix in Brooklyn" highlight="Problems">
       <p>When the AC quits in August or the furnace dies in January, you need someone today — not next week. Mode Mechanical provides 24/7 emergency AC repair and heating repair across Brooklyn, Queens, Manhattan and the Bronx, with licensed technicians, stocked parts and a written price before the work starts.</p>

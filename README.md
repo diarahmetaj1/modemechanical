@@ -137,7 +137,23 @@ Before switching DNS:
 
 1. Run `npm run assets` and commit the images in `public/images` (page photos and logos are then copied into `src/assets/`; see `ASSETS.md`).
 2. Open the old `https://modemechanical.com/sitemap_index.xml`, list every URL, and add a redirect for any URL that has no page here.
-3. After launch, submit `https://modemechanical.com/sitemap-index.xml` in Google Search Console.
+3. After launch, submit `https://modemechanical.com/sitemap.xml` in Google Search Console.
+
+## Heading font file
+
+Headings use Bricolage Grotesque from `@fontsource-variable/bricolage-grotesque`. To load faster,
+`src/assets/fonts/bricolage-grotesque-core.woff2` is the same font cut to the characters the site
+uses (all weight, optical-size and width settings kept, so it looks identical); the full files still
+load for any other character. If the package is updated, or headings start using new symbols, rebuild
+it (needs `pip install fonttools brotli`):
+
+```bash
+pyftsubset node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2 \
+  --unicodes="U+0020-007E,U+00A0,U+00A9,U+00B0,U+00B7,U+00D7,U+2013,U+2014,U+2018,U+2019,U+201C,U+201D,U+2022,U+2026,U+2039,U+203A" \
+  --layout-features='*' --flavor=woff2 --output-file=src/assets/fonts/bricolage-grotesque-core.woff2
+```
+
+Keep the `unicode-range` in `src/styles/global.css` in step with `--unicodes`.
 
 ## Getting found by AI assistants
 
@@ -160,7 +176,7 @@ reviews:
 1. **Google Business Profile** (Gemini, Google AI Overviews): complete it with the services, the
    areas, hours (08:00–20:00), photos and the website link, and ask happy customers for reviews.
 2. **Bing Places** and **Bing Webmaster Tools** (ChatGPT search and Copilot use Bing): claim the
-   listing, then add the site and submit `https://modemechanical.com/sitemap-index.xml`. Bing can
+   listing, then add the site and submit `https://modemechanical.com/sitemap.xml`. Bing can
    import the site from Google Search Console in one step.
 3. **Google Search Console**: submit the same sitemap.
 4. **Yelp** and **Apple Business Connect** (Siri and Apple Maps): same name, phone and hours everywhere.
@@ -266,6 +282,10 @@ tests/           unit/ (Vitest), e2e/ (Playwright)
 Text lives in `src/data/` and the page files. Business details are in one place: `src/data/site.ts`.
 
 ## Verification already run
+
+The current SEO, Core Web Vitals and mobile status, launch steps and backlink strategy are in
+[`SEO.md`](SEO.md). `npm run verify` re-checks the SEO rules on every build. The notes below are from
+the first migration.
 
 - `astro check` + production build: 0 errors.
 - `npm run verify`: all checks passed for the 7 pages.

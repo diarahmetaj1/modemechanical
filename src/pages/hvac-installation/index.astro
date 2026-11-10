@@ -5,14 +5,16 @@ import FeatureGrid from '../../components/FeatureGrid.astro';
 import BrandLogos from '../../components/BrandLogos.astro';
 import FaqAccordion from '../../components/islands/FaqAccordion';
 import { seo } from '../../data/seo';
+import { serviceSchema } from '../../data/schema';
 import { installSystems, installationFeatures } from '../../data/features';
 import { installationFaq } from '../../data/faq';
 const faqSchema = {
   '@context': 'https://schema.org', '@type': 'FAQPage',
   mainEntity: installationFaq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
 };
+const service = serviceSchema({ name: 'HVAC Installation', description: seo.installation.description, path: '/hvac-installation/' });
 ---
-<ServiceLayout seo={seo.installation} crumb="HVAC Installation" path="/hvac-installation/" lede="Central AC, ductless mini-splits, furnaces, boilers and heat pumps — sized to your building and installed to code." extraSchema={[faqSchema]}>
+<ServiceLayout seo={seo.installation} crumb="HVAC Installation" path="/hvac-installation/" lede="Central AC, ductless mini-splits, furnaces, boilers and heat pumps — sized to your building and installed to code." extraSchema={[service, faqSchema]}>
   <section>
     <SectionHeading title="Worry-Free HVAC Installation by Certified Experts in Brooklyn" highlight="Installation">
       <p>Mode Mechanical installs central air conditioning, furnaces, boilers, heat pumps and ductless mini-split systems across Brooklyn, Queens, Manhattan, the Bronx and Staten Island. Every installation is permitted, code-compliant and backed by a manufacturer warranty.</p>

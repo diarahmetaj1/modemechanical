@@ -1,5 +1,6 @@
 ---
 import ServiceLayout from '../layouts/ServiceLayout.astro';
+import { serviceSchema } from '../data/schema';
 import SectionHeading from '../components/SectionHeading.astro';
 import Icon from '../components/Icon.astro';
 import FaqAccordion from '../components/islands/FaqAccordion';
@@ -12,22 +13,16 @@ export function getStaticPaths() {
 interface Props { area: Area }
 const { area } = Astro.props;
 const path = areaHref(area);
-const seo = { title: area.title, description: area.description, h1: area.h1, ogImage: '/images/hero-1.webp' };
+const seo = { title: area.title, description: area.description, h1: area.h1, ogImage: '/images/og/areas.jpg', ogImageAlt: 'New HVAC condensers on a flat Brooklyn rooftop with the skyline behind' };
 const others = areas.filter((a) => a.slug !== area.slug);
 
-const serviceSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Service',
-  serviceType: 'HVAC installation, repair and maintenance',
-  provider: { '@type': 'HVACBusiness', name: business.name, url: business.url + '/', telephone: '+1-914-223-3301' },
-  areaServed: { '@type': 'Place', name: `${area.name}, New York` },
-};
+const service = serviceSchema({ name: `HVAC installation, repair and maintenance ${area.inName}`, description: area.description, path, area: `${area.name}, New York` });
 const faqSchema = {
   '@context': 'https://schema.org', '@type': 'FAQPage',
   mainEntity: area.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
 };
 ---
-<ServiceLayout seo={seo} crumb={area.name} path={path} lede={area.lede} extraSchema={[serviceSchema, faqSchema]} showAreas={false}>
+<ServiceLayout seo={seo} crumb={area.name} path={path} lede={area.lede} extraSchema={[service, faqSchema]} showAreas={false}>
   <section>
     <SectionHeading pill={area.home ? 'Our home base' : 'Service area'} title={`Your Local HVAC Contractor ${area.inName}`}>
       {area.intro.map((p) => <p>{p}</p>)}

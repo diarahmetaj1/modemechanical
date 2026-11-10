@@ -176,7 +176,8 @@ export default function ProjectGallery({ projects }: { projects: GalleryProject[
                     </a>
                   ) : (
                     <button type="button" className="cf__card" tabIndex={-1} onClick={() => go(i)}>
-                      <Pic img={cover} sizes={SLIDE_SIZES} alt="" />
+                      {/* The slide is aria-hidden, so the alt text helps search engines without repeating for screen readers. */}
+                      <Pic img={cover} sizes={SLIDE_SIZES} />
                     </button>
                   )}
                 </div>

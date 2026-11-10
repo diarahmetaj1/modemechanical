@@ -45,6 +45,13 @@ for (const page of pages) {
   const levels = [...html.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
   check(levels[0] === 1, page, `first heading is h${levels[0]}`);
   levels.forEach((l, i) => check(i === 0 || l <= levels[i - 1] + 1, page, `heading skips a level: h${levels[i - 1]} then h${l}`));
+  // Every image is AVIF-first: inside a <picture> whose sources are AVIF, then WebP, then the <img> fallback.
+  const outside = html.replace(/<picture>[\s\S]*?<\/picture>/g, '');
+  check(!/<img\b/.test(outside), page, 'image outside a <picture> (no AVIF version)');
+  for (const [pic] of html.matchAll(/<picture>[\s\S]*?<\/picture>/g)) {
+    const types = [...pic.matchAll(/<source[^>]*type="([^"]+)"/g)].map((m) => m[1]).join(',');
+    check(types === 'image/avif,image/webp', page, `<picture> sources are "${types}", expected AVIF then WebP`);
+  }
   // Every image has real alt text and fixed dimensions (no layout shift).
   for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) {
     check(/\balt="[^"]+"/.test(tag), page, `image without alt text: ${tag.slice(0, 90)}`);

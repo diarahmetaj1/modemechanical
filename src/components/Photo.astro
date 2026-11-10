@@ -1,11 +1,12 @@
 ---
 // Responsive photo: AVIF first, then WebP, then the original format (JPEG for photos, PNG for
 // logos so transparency survives), at several widths, built at compile time by Astro's image
-// service (sharp). Each format gets its own quality: AVIF 42 is visually the same as 50 on these
-// photos but ~25% smaller. Lazy by default; pass loading="eager" for images at the top of the page.
-// Other attributes (class, data-reveal, …) go to the <img>.
+// service (sharp). Quality per format: src/lib/image-quality.ts. Lazy by default; pass
+// loading="eager" for images at the top of the page. Other attributes (class, data-reveal, …) go
+// to the <img>.
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { IMAGE_QUALITY } from '../lib/image-quality';
 
 interface Props {
   src: ImageMetadata;
@@ -18,11 +19,14 @@ interface Props {
 }
 const { src, alt, widths = [400, 640, 720, 800, 1200], sizes = '100vw', loading = 'lazy', ...attrs } = Astro.props;
 const finalWidths = [...widths.filter((w) => w < src.width), Math.min(src.width, Math.max(...widths))];
-const fallbackFormat = src.format === 'jpg' || src.format === 'jpeg' ? 'jpg' : 'png';
+const isPhoto = src.format === 'jpg' || src.format === 'jpeg';
+const q = isPhoto ? IMAGE_QUALITY.photo : IMAGE_QUALITY.graphic;
 const [avif, webp, fallback] = await Promise.all([
-  getImage({ src, format: 'avif', widths: finalWidths, quality: 42 }),
-  getImage({ src, format: 'webp', widths: finalWidths, quality: 72 }),
-  getImage({ src, format: fallbackFormat, widths: finalWidths, quality: 78 }),
+  getImage({ src, format: 'avif', widths: finalWidths, quality: q.avif }),
+  getImage({ src, format: 'webp', widths: finalWidths, quality: q.webp }),
+  isPhoto
+    ? getImage({ src, format: 'jpg', widths: finalWidths, quality: IMAGE_QUALITY.photo.jpg })
+    : getImage({ src, format: 'png', widths: finalWidths, quality: IMAGE_QUALITY.graphic.png }),
 ]);
 ---
 <picture>

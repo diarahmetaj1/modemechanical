@@ -8,11 +8,11 @@ any mistake.
 
 | Item | Status | Where / how it's enforced |
 | --- | --- | --- |
-| sitemap.xml | `/sitemap.xml` lists the 15 indexable pages at their canonical URLs; the 404 page is left out. Old addresses (`/sitemap_index.xml`, `/sitemap-index.xml`, `/sitemap-0.xml`) redirect to it. | `src/pages/sitemap.xml.ts`; verify fails if a page is missing or extra |
+| sitemap.xml | `/sitemap.xml` lists the 16 indexable pages at their canonical URLs; the 404 page is left out. Old addresses (`/sitemap_index.xml`, `/sitemap-index.xml`, `/sitemap-0.xml`) redirect to it. | `src/pages/sitemap.xml.ts`; verify fails if a page is missing or extra |
 | robots.txt | Every crawler allowed, AI search crawlers named, `/api/` kept out, sitemap line. | `public/robots.txt`; verified |
 | noindex | Only the 404 page is `noindex`; every other page is `index, follow`. | `BaseLayout` `noindex` prop; verified both ways |
-| Meta titles | Unique, 10–60 characters, keyword + location + brand. | `src/data/seo.ts`, `src/data/areas.ts`; verified |
-| Meta descriptions | Unique, 70–160 characters, with the phone number on service pages. | same files; verified |
+| Meta titles | Unique, 50–60 characters (counted as shown, so `&` is one), keyword + location + brand. | `src/data/seo.ts`, `src/data/areas.ts`; verified |
+| Meta descriptions | Unique, 150–160 characters, with the phone number on service and area pages. | same files; verified |
 | Canonical tags | Self-referencing `https://modemechanical.com/...` with a trailing slash; `og:url` matches. | `BaseLayout`; verified |
 | One H1 per page | Exactly one H1 on each page. | verified |
 | Heading hierarchy | Starts at H1 and never skips a level (H1 → H2 → H3). | verified on every page |
@@ -23,7 +23,9 @@ any mistake.
 | Broken links | Every internal link, image, `srcset` file and `#anchor` resolves. | verified on every build |
 | HTTPS | All URLs `https://`; no mixed content; HSTS header (2 years); Vercel redirects `http://` to `https://` automatically. Also nosniff, referrer-policy, frame and permissions headers. | `vercel.json`, `public/_headers`; verified (no `http://` URLs) |
 | Core Web Vitals | Lighthouse (lab, simulated mid-range phone on slow 4G) on all 15 pages: desktop performance 100; mobile 97–98. Largest Contentful Paint under 2.5 s (Google's "good") on 13 of 15 pages; Home and Projects at 2.56 s, since their sharper photos share bandwidth with the heading font in this slow-4G test. Layout shift 0.018 or less. Accessibility, Best Practices and SEO 100 on every page. | heading font cut to the characters the site uses (−29%, pixel-identical), sections far below the screen skip rendering until near, hero animation deferred, images sized and lazy-loaded |
-| Mobile | Every page at 320, 360, 375, 390, 414, 768 and 1024 px wide: no sideways scrolling, no text under 12 px, every section appears when scrolled to, no script errors; jump links land on target. Every tap target is at least 24×24 px (WCAG 2.2 AA). | tested in Chromium with Playwright |
+| Mobile | Every page at 320, 360, 375, 390, 414, 768 and 1024 px wide: no sideways scrolling, no text under 12 px, every section appears when scrolled to, no script errors; jump links land on target. Every tap target is at least 44×44 px on phones and tablets (Apple's and WCAG's enhanced size), apart from links inside sentences; desktop layout is unchanged. | tested in Chromium with Playwright |
+| Accessibility | 0 axe-core violations (WCAG 2.2 AA) on every page; screen-reader structure checked. | see `ACCESSIBILITY.md`, including the 10-minute VoiceOver test to do on a phone |
+| Privacy policy | `/privacy-policy/`, linked from the footer and the contact form. Sections on Google Analytics and the assistant appear only when those are switched on. | `src/pages/privacy-policy/index.astro` |
 | AI search | `/llms.txt` and `/llms-full.txt`, AI crawlers allowed. | see README "Getting found by AI assistants" |
 
 Field data (real visitors' Core Web Vitals) appears in Search Console about a month after launch,

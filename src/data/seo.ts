@@ -12,8 +12,8 @@ export const seo: Record<string, PageSeo> = {
     ogImageAlt: 'Row of new LG outdoor condensers on a rooftop during an AC installation',
   },
   about: {
-    title: 'About Mode Mechanical | Brooklyn HVAC Contractor',
-    description: 'Mode Mechanical is a licensed heating and air conditioning contractor based in Brooklyn, NY, serving homes and businesses across New York City.',
+    title: 'About Mode Mechanical | Licensed HVAC Contractor in Brooklyn',
+    description: 'Mode Mechanical is a licensed heating and air conditioning contractor based in Brooklyn, NY, serving homes and businesses in NYC, Long Island and Westchester.',
     h1: 'About Mode Mechanical — HVAC Contractor in Brooklyn, New York',
     ogImage: '/images/og/about.jpg',
     ogImageAlt: 'Mini-split outdoor units installed beside a Manhattan rooftop bulkhead',
@@ -27,14 +27,14 @@ export const seo: Record<string, PageSeo> = {
   },
   maintenance: {
     title: 'HVAC Maintenance in Brooklyn, NY | Mode Mechanical',
-    description: 'Annual AC and heating tune-ups in Brooklyn and across NYC. Clean coils, safe furnaces and boilers, lower energy bills and fewer emergency breakdowns.',
+    description: 'Annual AC and heating tune-ups in Brooklyn and across NYC. Clean coils, safe furnaces and boilers, lower energy bills and fewer breakdowns. Call (914) 223-3301.',
     h1: 'HVAC Maintenance and Tune-Ups in Brooklyn, New York',
     ogImage: '/images/og/maintenance.jpg',
     ogImageAlt: 'Refrigerant gauges connected to rooftop HVAC units during a service call',
   },
   repair: {
     title: 'AC & Heating Repair in Brooklyn, NYC | Mode Mechanical',
-    description: '24/7 AC, furnace and boiler repair in Brooklyn and across NYC. Licensed technicians and a written price before any work starts. Call (914) 223-3301.',
+    description: '24/7 AC, furnace and boiler repair in Brooklyn and across NYC. Licensed technicians and a written price before any work starts. Call (914) 223-3301 today.',
     h1: 'AC and Heating Repair in Brooklyn and New York City',
     ogImage: '/images/og/repair.jpg',
     ogImageAlt: 'Two Daikin outdoor units with service gauges connected during a repair',
@@ -59,5 +59,11 @@ export const seo: Record<string, PageSeo> = {
     h1: 'Contact Mode Mechanical — Brooklyn HVAC Contractor',
     ogImage: '/images/og/contact.jpg',
     ogImageAlt: 'Mitsubishi Electric heat pump outdoor unit mounted above a backyard garden',
+  },
+  privacy: {
+    title: 'Privacy Policy | Mode Mechanical HVAC, Brooklyn, New York',
+    description: 'How Mode Mechanical collects, uses and protects the details you send through our contact form, phone and email, what analytics we use, and the choices you have.',
+    h1: 'Privacy Policy',
+    ogImage: '/images/og/home.jpg',
   },
 };

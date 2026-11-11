@@ -127,7 +127,7 @@ export default function ContactForm({ phone, phoneHref, email }: Props) {
       <button className="btn btn--primary cform__submit" type="submit" disabled={status === 'sending'} aria-busy={status === 'sending'}>
         {status === 'sending' ? <><span className="cform__spinner" aria-hidden="true" /> Sending…</> : 'Send Message'}
       </button>
-      <p className="cform__note"><span aria-hidden="true">*</span> Required fields</p>
+      <p className="cform__note"><span aria-hidden="true">*</span> Required fields. We use your details only to respond to your request. See our <a href="/privacy-policy/">privacy policy</a>.</p>
     </form>
   );
 }

@@ -314,4 +314,6 @@ Not yet done: a side-by-side visual comparison with the live site, downloading t
 - [ ] `scripts/fetch-assets.mjs` — add the URLs of the inner-page banner image and the white footer logo (see `MISSING_ASSETS.md` after running `npm run assets`).
 - [ ] `src/pages/projects/index.astro` — replace generic captions with one-line project descriptions.
 - [ ] `public/_redirects` / `vercel.json` — add redirects for any old URLs from the WordPress sitemap.
+- [ ] `/privacy-policy/` — read it and have it reviewed by a lawyer before launch; it describes what the site does, but it is not legal advice. Update the date at the top when you change it.
+- [ ] Do the 10-minute VoiceOver test in `ACCESSIBILITY.md` on your iPhone.
 - [ ] Assistant: try it on the live site. It is free and needs no setup. AI mode is optional and paid (see `ASSISTANT.md`).

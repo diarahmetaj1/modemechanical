@@ -119,6 +119,8 @@ export default function AssistantPanel({ config, launcher, initiallyOpen }: Prop
   }, [launcher]);
 
   useEffect(() => {
+    // The panel exists only once this island has loaded, so the button points at it from then on.
+    launcher.setAttribute('aria-controls', 'mm-assistant-panel');
     launcher.setAttribute('aria-expanded', String(open));
     document.documentElement.classList.toggle('mma-open', open);
     if (open) {
@@ -137,6 +139,9 @@ export default function AssistantPanel({ config, launcher, initiallyOpen }: Prop
 
   const close = useCallback(() => {
     setOpen(false);
+    // On phones the launcher is hidden while the panel covers the screen: show it before focusing,
+    // or focus would be lost and a screen reader would land at the top of the page.
+    document.documentElement.classList.remove('mma-open');
     launcher.focus();
   }, [launcher]);
 

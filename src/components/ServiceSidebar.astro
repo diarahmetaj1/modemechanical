@@ -3,7 +3,7 @@ import Icon from './Icon.astro';
 import { services } from '../data/site';
 const path = Astro.url.pathname;
 ---
-<nav class="ssb" aria-label="Services">
+<nav class="ssb" aria-label="Service pages">
   <ul>
     {services.map((s) => (
       <li><a href={s.href} aria-current={path === s.href ? 'page' : undefined}>{s.label}{path === s.href && <Icon name="arrow" />}</a></li>

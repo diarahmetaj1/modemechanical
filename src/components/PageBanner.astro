@@ -26,4 +26,9 @@ const { h1, crumb, lede } = Astro.props;
   .banner__crumbs a:hover { color: #fff; text-decoration: underline; }
   h1 { color: #fff; max-width: 18ch; margin: 0 auto; text-wrap: balance; text-shadow: 0 2px 30px rgba(0,0,0,.25); }
   .banner__lede { max-width: 56ch; margin: 18px auto 0; font-size: 1.1rem; color: rgba(255,255,255,.82); }
+
+  /* Touch screens: a 44×44px tap area for the breadcrumb link, without making the pill taller. */
+  @media (pointer: coarse) {
+    .banner__crumbs a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -10px; padding-inline: 6px; margin-inline: -6px; }
+  }
 </style>

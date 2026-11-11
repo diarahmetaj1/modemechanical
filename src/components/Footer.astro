@@ -71,7 +71,7 @@ const company = [
 
   <div class="footer__bottom">
     <div class="container footer__bottom-inner">
-      <p>© {year} {business.name}. Licensed HVAC contractor in Brooklyn, NY.</p>
+      <p>© {year} {business.name}. Licensed HVAC contractor in Brooklyn, NY. <a class="footer__legal" href="/privacy-policy/">Privacy Policy</a></p>
       <a class="footer__top" href="#main">Back to top <span aria-hidden="true">↑</span></a>
     </div>
   </div>
@@ -145,6 +145,8 @@ const company = [
   .footer__bottom { border-top: 1px solid rgba(255,255,255,.1); font-size: .875rem; }
   .footer__bottom-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; padding-block: 20px; flex-wrap: wrap; }
   .footer__bottom p { margin: 0; }
+  .footer__legal { margin-left: 8px; text-decoration: underline; text-underline-offset: 2px; color: rgba(255,255,255,.85); }
+  .footer__legal:hover { color: #fff; }
   .footer__top { display: inline-flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; transition: color .2s ease; }
   .footer__top span { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.08); transition: transform .2s ease, background-color .2s ease; }
   .footer__top:hover span { transform: translateY(-2px); background: var(--cool); }
@@ -154,5 +156,17 @@ const company = [
     .footer__grid { grid-template-columns: 1fr 1fr; }
     .footer__grid > div:last-child { grid-column: 1 / -1; }
     .footer__actions, .footer__actions .btn { width: 100%; }
+  }
+
+  /* Touch screens: every link and button is at least 44×44px to tap (desktop layout unchanged). */
+  @media (pointer: coarse) {
+    .footer__social a { width: 44px; height: 44px; }
+    .footer__reviews a { min-height: 44px; }
+    .footer__links li { margin-bottom: 2px; }
+    .footer__links a, .footer__contact a, .footer__top { display: inline-flex; align-items: center; min-height: 44px; }
+    .footer__contact li { align-items: center; }
+    .footer__contact li > :global(svg) { margin-top: 0; }
+    .footer__area-link { display: flex; align-items: center; min-height: 44px; }
+    .footer__areas a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: 16px; }
   }
 </style>

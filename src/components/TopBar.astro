@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 import { business } from '../data/site';
 ---
-<div class="topbar">
+<aside class="topbar" aria-label="Emergency service, hours and contact">
   <div class="container topbar__inner">
     <p class="topbar__status intro-item">
       <span class="topbar__dot" aria-hidden="true"></span>
@@ -18,7 +18,7 @@ import { business } from '../data/site';
       </li>
     </ul>
   </div>
-</div>
+</aside>
 <style>
   .topbar { position: relative; background: var(--ink); color: rgba(255,255,255,.72); font-size: .82rem; line-height: 1.4; }
   /* Hairline in the two temperatures along the bottom edge. */
@@ -40,4 +40,10 @@ import { business } from '../data/site';
   @media (max-width: 1100px) { .topbar__hours { display: none !important; } }
   @media (max-width: 860px) { .topbar__area { display: none !important; } }
   @media (max-width: 640px) { .topbar { display: none; } }
+
+  /* Touch screens (tablets show this bar): 44×44px tap areas, without making the bar taller. */
+  @media (pointer: coarse) {
+    li a, .topbar__area { min-height: 44px; margin-block: -12px; }
+    .topbar__social a { width: 44px; height: 44px; margin: -9px -5px; }
+  }
 </style>

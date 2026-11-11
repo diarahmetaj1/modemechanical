@@ -1,0 +1,116 @@
+---
+// Plain-language privacy policy. Sections about optional features (Google Analytics, the chat
+// assistant, an external booking page) appear only when that feature is switched on for the
+// build, so the page always describes what the live site really does.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageBanner from '../../components/PageBanner.astro';
+import { seo } from '../../data/seo';
+import { business, bookingIsExternal } from '../../data/site';
+import { getEmailJsConfig } from '../../lib/contact';
+
+const UPDATED = 'November 11, 2026';
+const gtagId = (import.meta.env.PUBLIC_GTAG_ID ?? '').trim();
+const hasAnalytics = gtagId !== '' && !gtagId.startsWith('YOUR_');
+const assistantEnabled = (import.meta.env.PUBLIC_ASSISTANT_ENABLED ?? '').trim() === 'true';
+const formService = getEmailJsConfig() ? 'EmailJS, an email delivery service' : 'an email delivery service';
+---
+<BaseLayout seo={seo.privacy} breadcrumb={[{ name: 'Privacy Policy', path: '/privacy-policy/' }]}>
+  <PageBanner h1={seo.privacy.h1} crumb="Privacy Policy" lede="What we collect when you contact us or visit this site, why, and the choices you have." />
+
+  <section class="section">
+    <div class="container prose policy">
+      <p class="policy__updated">Last updated: <time datetime="2026-11-11">{UPDATED}</time></p>
+      <p class="lead">{business.name} is an HVAC contractor based in {business.base.city}, {business.base.region}. This page explains what personal information we collect through modemechanical.com, by phone and by email, how we use it, and how to reach us about it.</p>
+
+      <h2>Summary</h2>
+      <ul>
+        <li>We collect only what you send us and basic information about how the site is used.</li>
+        <li>We use it to answer you, provide our service and improve the site.</li>
+        <li>We do not sell your personal information.</li>
+        <li>You can ask us at any time to see, correct or delete the information we hold about you.</li>
+      </ul>
+
+      <h2>Information we collect</h2>
+
+      <h3>When you send the contact form</h3>
+      <p>We receive your name, email address, phone number and message, together with the page you sent it from and the time it was sent. If you reached the site through an ad or a tagged link, we also receive the campaign tags in that link (for example <code>utm_source</code> or <code>gclid</code>), which tell us which ad or campaign brought you. The form is delivered to our business inbox through {formService}.</p>
+
+      <h3>When you call or email us</h3>
+      <p>We receive your phone number or email address and whatever you tell us, such as your address and details about your heating or cooling system, so we can schedule and carry out the work.</p>
+
+      {hasAnalytics && (
+        <>
+          <h3>Google Analytics</h3>
+          <p>We use Google Analytics to understand how visitors use the site: which pages are viewed, how people arrived (for example from a search or an ad), the type of device and browser, and an approximate location (city or region). We also record when someone taps our phone number, email address, booking button or review links, so we know which pages lead to calls. Google Analytics uses cookies to do this. It does not give us your name, email address or phone number.</p>
+          <p>You can block these cookies in your browser settings, or install Google’s <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">Google Analytics opt-out browser add-on</a>. Read <a href="https://policies.google.com/technologies/partner-sites" rel="noopener">how Google uses information from sites that use its services</a>.</p>
+        </>
+      )}
+
+      {assistantEnabled && (
+        <>
+          <h3>The “Ask a question” assistant</h3>
+          <p>If you use the question assistant, your questions are sent to our server and to an AI service (such as Anthropic or Google) to write the answer. That service may process them under its own terms. Please don’t type personal details into the assistant; use the contact form or call us instead. The conversation is kept only in your browser tab and is cleared when you close the tab or start a new conversation. Our server logs record timings and usage counts, not the text of your messages.</p>
+        </>
+      )}
+
+      <h3>Technical information</h3>
+      <p>Like every website, ours is served by a hosting provider (Vercel), which automatically records technical information about each request, such as IP address, browser type and the time of the visit. This is used to deliver the site, keep it secure and fix problems.</p>
+
+      <h2>Information stored in your browser</h2>
+      <p>The site saves a few small items in your browser’s session storage. They stay on your device and are deleted when you close the tab:</p>
+      <ul>
+        <li><code>mm_intro</code> remembers that the opening animation has already played.</li>
+        <li><code>mm_attribution</code> keeps the campaign tags from the link you arrived through, so they can be included if you send the contact form.</li>
+        {assistantEnabled && <li><code>mm_assistant_v1</code> keeps your assistant conversation while you move between pages.</li>}
+      </ul>
+      <p>{hasAnalytics ? 'The only cookies are the Google Analytics cookies described above.' : 'The site does not set cookies.'}</p>
+
+      <h2>How we use your information</h2>
+      <ul>
+        <li>To reply to your request, give estimates, schedule visits and carry out the work.</li>
+        <li>To contact you about a job you asked us about, including follow-up questions and invoices.</li>
+        <li>To learn which pages, searches and ads bring us customers, so we can improve the site and our advertising.</li>
+        <li>To keep the site secure and working, and to meet our legal obligations.</li>
+      </ul>
+      <p>We do not use your contact details for marketing emails or text messages.</p>
+
+      <h2>Who we share it with</h2>
+      <p>We do not sell or rent your personal information. We share it only with service providers that help us run the site and reply to you ({hasAnalytics ? 'the email delivery service, Google Analytics and our hosting provider' : 'the email delivery service and our hosting provider'}), each of which handles it for that purpose, and when the law requires us to.</p>
+
+      <h2>How long we keep it</h2>
+      <p>We keep messages, emails and job records for as long as we need them to serve you and for our business and tax records, then delete them.{hasAnalytics && ' Google Analytics keeps usage data for the retention period set in our account, which is at most 14 months.'}</p>
+
+      <h2>Your choices</h2>
+      <p>You can ask us to tell you what personal information we hold about you, to correct it, or to delete it. Email <a href={`mailto:${business.email}`}>{business.email}</a> or call <a href={business.phoneHref}>{business.phoneDisplay}</a>. We will answer within 30 days. We may need to confirm who you are first, and we may keep information we are required to keep by law.</p>
+      {hasAnalytics && <p>You can stop Google Analytics from measuring your visits with the opt-out add-on or your browser’s cookie settings, as described above.</p>}
+
+      <h2>Security</h2>
+      <p>The whole site uses an encrypted connection (HTTPS), and only our team can read the messages you send. No system is completely secure, so please don’t send payment card numbers or passwords through the form or by email.</p>
+
+      <h2>Links to other sites</h2>
+      <p>The site links to our profiles on Google, Yelp, Facebook and Instagram{bookingIsExternal && ', and to an external booking page'}. Those sites have their own privacy policies, which apply when you visit them.</p>
+
+      <h2>Children</h2>
+      <p>This site is meant for adults arranging HVAC service. It is not directed at children under 13, and we do not knowingly collect their personal information. If you believe a child has sent us information, contact us and we will delete it.</p>
+
+      <h2>Changes to this policy</h2>
+      <p>If we change how we handle personal information, we will update this page and the date at the top.</p>
+
+      <h2>Contact us</h2>
+      <p>{business.name}, {business.base.city}, {business.base.region} {business.base.zip}<br />
+        Email: <a href={`mailto:${business.email}`}>{business.email}</a><br />
+        Phone: <a href={business.phoneHref}>{business.phoneDisplay}</a></p>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .policy { max-width: 780px; }
+  .policy h2 { font-size: clamp(1.4rem, 2.4vw, 1.75rem); margin: 2.2em 0 .6em; }
+  .policy h3 { font-size: 1.15rem; margin: 1.6em 0 .4em; }
+  .policy ul { margin: 0 0 1em; }
+  .policy li { margin-bottom: .4em; }
+  .policy code { font-size: .9em; padding: .1em .35em; border-radius: 4px; background: var(--paper); }
+  .policy__updated { font-size: .9rem; }
+  .policy a { color: var(--cool-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .policy a:hover { color: var(--cool); }
+</style>

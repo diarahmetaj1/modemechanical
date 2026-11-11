@@ -6,6 +6,7 @@ import { areas, areaHref } from '../data/areas';
 const PAGES = [
   '/', '/hvac-repair/', '/hvac-installation/', '/hvac-maintenance/', '/service-areas/',
   ...areas.map(areaHref), '/projects/', '/about-us/', '/contact/',
+  '/privacy-policy/',
 ];
 
 export const GET: APIRoute = ({ site }) => {

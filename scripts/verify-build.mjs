@@ -5,6 +5,7 @@ import { readFile, stat } from 'node:fs/promises';
 const pages = [
   '/', '/about-us/', '/hvac-installation/', '/hvac-maintenance/', '/hvac-repair/', '/projects/', '/contact/',
   '/service-areas/', '/hvac-brooklyn-ny/', '/hvac-queens-ny/', '/hvac-manhattan-ny/', '/hvac-bronx-ny/', '/hvac-staten-island-ny/', '/hvac-long-island-ny/', '/hvac-westchester-ny/',
+  '/privacy-policy/',
 ];
 const dist = new URL('../dist/', import.meta.url);
 let failures = 0;
@@ -21,18 +22,23 @@ const pagesHtml = {};
 for (const page of pages) pagesHtml[page] = await readFile(new URL('.' + page + 'index.html', dist), 'utf8');
 const idsOf = (page) => new Set([...pagesHtml[page].matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 
+const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", '#39': "'", '#x27': "'" };
+const decode = (s) => s.replace(/&(#?\w+);/g, (m, e) => ENTITIES[e] ?? m);
+
 const titles = new Set();
 const descriptions = new Set();
 for (const page of pages) {
   const html = pagesHtml[page];
-  const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? '';
-  const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
+  // Lengths are counted as a reader sees them: "&amp;" is one character, not five.
+  const title = decode(html.match(/<title>([^<]*)<\/title>/)?.[1] ?? '');
+  const desc = decode(html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '');
   const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)?.[1] ?? '';
   const h1s = (html.match(/<h1[\s>]/g) ?? []).length;
 
-  check(title.length > 10 && title.length <= 60, page, `title length ${title.length}: "${title}"`);
+  // 50–60 characters: long enough to carry service + place + brand, short enough not to be cut off.
+  check(title.length >= 50 && title.length <= 60, page, `title length ${title.length} (want 50–60): "${title}"`);
   check(!titles.has(title), page, 'duplicate title'); titles.add(title);
-  check(desc.length >= 70 && desc.length <= 160, page, `meta description length ${desc.length}`);
+  check(desc.length >= 150 && desc.length <= 160, page, `meta description length ${desc.length} (want 150–160): "${desc}"`);
   check(!descriptions.has(desc), page, 'duplicate meta description'); descriptions.add(desc);
   check(canonical === `https://modemechanical.com${page}`, page, `canonical is "${canonical}"`);
   check(html.includes(`<meta property="og:url" content="${canonical}"`), page, 'og:url differs from the canonical');

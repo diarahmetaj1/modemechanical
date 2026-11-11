@@ -89,6 +89,10 @@
   .cf__btn { width: 46px; height: 46px; }
   .cf__btn--play { width: 36px; height: 36px; }
 }
+/* Touch screens: the pause button is a full 44×44px tap target too. */
+@media (pointer: coarse) {
+  .cf__btn--play { width: 44px; height: 44px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .cf__slide, .cf__card, .cf__card img, .cf__bar span { transition: none !important; }
 }

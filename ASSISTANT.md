@@ -57,7 +57,8 @@ assistant. Code: `src/lib/assistant-local.ts`.
 
 Things to know:
 - **Privacy.** On the free tier, Google may use prompts and answers to improve its products (check
-  Google's current Gemini API terms). Mention it in your privacy policy. The panel asks visitors not
+  Google's current Gemini API terms). The privacy policy (`/privacy-policy/`) adds a section on the
+  assistant automatically when `PUBLIC_ASSISTANT_ENABLED=true`; check its wording names your provider. The panel asks visitors not
   to share personal details. The assistant never asks for them, and contact details are removed from
   service requests.
 - **Limits.** Google sets the free quota per project and changes it over time; Google AI Studio shows
@@ -154,8 +155,8 @@ roughly $1–4 per day. Each reply is logged with its token counts and estimated
   server. Messages are sent to Anthropic to generate the answer: the panel says so and asks
   visitors not to share personal details. Logs contain metrics only (timings, token counts,
   outcome, page path), never message text or IP addresses. Rate limiting uses a salted hash of the
-  IP address. Anthropic's API terms apply to the messages it processes. Review them, and mention
-  the assistant in your privacy policy, before you switch it on.
+  IP address. Anthropic's API terms apply to the messages it processes. Review them before you
+  switch it on; the privacy policy page gains its assistant section automatically when you do.
 
 ### Setup
 

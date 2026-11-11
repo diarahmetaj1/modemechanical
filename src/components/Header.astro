@@ -150,4 +150,9 @@ const isActive = (href: string, children?: { href: string }[]) =>
     .header__inner { justify-content: space-between; }
     .header__logo img { width: 48px; }
   }
+
+  /* Touch screens (landscape tablets show this menu): 44px-tall tap targets, same pill look. */
+  @media (pointer: coarse) {
+    .nav-item > a { min-height: 44px; }
+  }
 </style>

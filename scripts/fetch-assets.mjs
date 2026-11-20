@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 const UP = 'https://modemechanical.com/wp-content/uploads/';
 const OUT = fileURLToPath(new URL('../public/', import.meta.url));
 
+
 /** local path → candidate source URLs (first that works wins), max width and options */
 const manifest = [
   ['images/hero-1.webp', ['2026/10/11.webp'], 1600],

@@ -8,8 +8,8 @@ import Stats from '../../components/Stats.astro';
 import ServiceAreas from '../../components/ServiceAreas.astro';
 import CtaBox from '../../components/CtaBox.astro';
 import Photo from '../../components/Photo.astro';
-import condensersImg from '../../assets/photos/about-condensers.jpg';
-import rooftopImg from '../../assets/photos/about-rooftop.jpg';
+import condensersImg from '../../assets/projects/project-04.jpg';
+import backyardImg from '../../assets/projects/mitsubishi-backyard.jpg';
 import { seo } from '../../data/seo';
 import { whyChooseAbout } from '../../data/features';
 ---
@@ -26,9 +26,9 @@ import { whyChooseAbout } from '../../data/features';
         </SectionHeading>
       </div>
       <div class="mosaic">
-        <Photo src={condensersImg} data-reveal="scale-in" alt="Two Daikin outdoor units on a steel wall platform, HVAC installation in Brooklyn" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
+        <Photo src={condensersImg} data-reveal="scale-in" alt="Two LG outdoor condensing units mounted side by side on a wall in a Brooklyn building" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
         <Stats />
-        <Photo src={rooftopImg} data-reveal="scale-in" alt="Daikin outdoor unit mounted on a wall bracket outside a Brooklyn building" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
+        <Photo src={backyardImg} data-reveal="scale-in" alt="Mitsubishi Electric heat pump outdoor unit wall-mounted above a backyard garden" widths={[400, 800]} sizes="(max-width: 900px) 50vw, 300px" />
       </div>
     </div>
   </section>

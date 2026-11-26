@@ -22,8 +22,8 @@ from `src/assets/projects/` instead of keeping second copies.
 | `public/images/service-repair.jpg` | `2026/10/image00034-scaled-1.jpeg` | pages/index.astro | confirmed in live HTML |
 | `public/images/service-maintenance.jpg` (+ copy in `src/assets/photos/`) | `2026/10/mitsubishi.jpg` | data/seo.ts (social preview); the copy: pages/index.astro, data/projects.ts | confirmed in live HTML |
 | `src/assets/photos/specialty-1.jpg` | `2026/10/image_123650291-9-1.jpg` | pages/index.astro, data/projects.ts | confirmed in live HTML |
-| `public/images/about-condensers.jpg` (+ copy in `src/assets/photos/`) | `2025/09/image_123650291-9.jpg` | data/seo.ts (social preview); the copy: pages/about-us/index.astro | *unconfirmed* — matched from Projects page |
-| `src/assets/photos/about-rooftop.jpg` | `2025/09/image_123650291-10.jpg` | pages/about-us/index.astro | *unconfirmed* — matched from Projects page |
+| `public/images/about-condensers.jpg` | `2025/09/image_123650291-9.jpg` | not used (About page photos replaced in November 2026 with `project-04.jpg` and `mitsubishi-backyard.jpg`) | *unconfirmed* — matched from Projects page |
+| ~~`src/assets/photos/about-rooftop.jpg`~~ | `2025/09/image_123650291-10.jpg` | — | removed: About page photos replaced in November 2026 |
 | `public/images/banner.jpg` | `2026/10/2.webp` | components/PageBanner.astro, layouts/ServiceLayout.astro, pages/about-us/index.astro, pages/contact/index.astro, pages/projects/index.astro | *unconfirmed* — live banner is a CSS background; temporary fallback to hero slide 2 |
 | `public/images/logo.png` | `2024/05/ModeLogoTransparent.png` | components/Header.astro, layouts/BaseLayout.astro | confirmed in live HTML |
 | `public/images/logo-white.png` | `2024/05/Untitled-design-1.jpg` | components/Footer.astro | confirmed in live HTML |
